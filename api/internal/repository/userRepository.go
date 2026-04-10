@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	CreateWithTx(u *model.User) error
+	Create(tx *gorm.DB, u *model.User) error
 }
 
 type userRepository struct {
@@ -18,13 +18,6 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (r *userRepository) CreateWithTx(u *model.User) error {
-	tx := r.db.Begin()
-
-	if err := tx.Create(u).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit().Error
+func (r *userRepository) Create(tx *gorm.DB, u *model.User) error {
+	return tx.Create(u).Error
 }

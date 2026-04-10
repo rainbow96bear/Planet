@@ -2,6 +2,7 @@ package handler
 
 import (
 	"planet/internal/dto"
+	"planet/internal/pkg"
 	"planet/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -22,14 +23,15 @@ func NewUserHandler(userSvc service.UserService) UserHandler {
 func (h *userHandler) CreateUser(c *gin.Context) {
 	var req dto.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		pkg.Fail(c, 400, err.Error())
 		return
 	}
 
-	if err := h.userSvc.CreateUser(&req); err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	user, err := h.userSvc.CreateUser(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
 		return
 	}
 
-	c.JSON(201, gin.H{"message": "created"})
+	pkg.Success(c, 201, user)
 }

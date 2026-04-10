@@ -36,7 +36,7 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 
-	userSvc := service.NewUserService(userRepo)
+	userSvc := service.NewUserService(db, userRepo)
 
 	userHandler := handler.NewUserHandler(userSvc)
 
