@@ -47,3 +47,19 @@
 
 이 프로젝트는 완성도를 목표로 하기보다
 **실험과 학습, 그리고 개선 과정 자체에 의미를 둔 프로젝트입니다.**
+
+
+---
+
+## 실행 방법
+### Frontend
+- npm install (package 설치)
+- npm run dev (빌드 없이 실행)
+- npm build .
+
+### Backend
+- go run ./cmd/server/main.go (빌드 없이 실행)
+- go build ./cmd/server (빌드)
+
+### docker (postgreSQL)
+- docker compose up -d

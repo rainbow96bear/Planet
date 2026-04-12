@@ -14,3 +14,12 @@ type CreateUserResponse struct {
 	Nickname  string    `json:"nickname"`
 	CreatedAt time.Time `json:"createdAt"`
 }
+
+type CheckUsernameRequest struct {
+	Username string `form:"username" binding:"required"`
+}
+
+type CheckUsernameResponse struct {
+	Username  string `json:"username"`
+	Available bool   `json:"available"`
+}

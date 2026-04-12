@@ -10,6 +10,7 @@ import (
 
 type UserHandler interface {
 	CreateUser(c *gin.Context)
+	CheckUsername(c *gin.Context)
 }
 
 type userHandler struct {
@@ -34,4 +35,20 @@ func (h *userHandler) CreateUser(c *gin.Context) {
 	}
 
 	pkg.Success(c, 201, user)
+}
+
+func (h *userHandler) CheckUsername(c *gin.Context) {
+	var req dto.CheckUsernameRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		pkg.Fail(c, 400, err.Error())
+		return
+	}
+
+	res, err := h.userSvc.IsUsernameAvailable(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
+		return
+	}
+
+	pkg.Success(c, 200, res)
 }

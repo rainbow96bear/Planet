@@ -8,6 +8,7 @@ func RegisterRoutes(r *gin.Engine, userHandler UserHandler) {
 		users := v1.Group("/users")
 		{
 			users.POST("", userHandler.CreateUser)
+			users.GET("/check", userHandler.CheckUsername)
 		}
 	}
 }

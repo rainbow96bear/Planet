@@ -11,6 +11,7 @@ import (
 
 type UserService interface {
 	CreateUser(*dto.CreateUserRequest) (*dto.CreateUserResponse, error)
+	IsUsernameAvailable(*dto.CheckUsernameRequest) (*dto.CheckUsernameResponse, error)
 }
 
 type userService struct {
@@ -49,7 +50,7 @@ func (s *userService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 	}
 
 	// 3. 저장
-	if err := s.userRepo.Create(tx, user); err != nil {
+	if err := s.userRepo.CreateUser(tx, user); err != nil {
 		tx.Rollback()
 
 		return nil, err
@@ -66,5 +67,17 @@ func (s *userService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 		Username:  user.Username,
 		Nickname:  user.Nickname,
 		CreatedAt: user.CreatedAt,
+	}, nil
+}
+
+func (s *userService) IsUsernameAvailable(req *dto.CheckUsernameRequest) (*dto.CheckUsernameResponse, error) {
+	exists, err := s.userRepo.IsUsernameExists(req.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.CheckUsernameResponse{
+		Username:  req.Username,
+		Available: !exists,
 	}, nil
 }
