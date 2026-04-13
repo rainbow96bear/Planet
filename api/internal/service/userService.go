@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/repository"
@@ -12,6 +13,7 @@ import (
 type UserService interface {
 	CreateUser(*dto.CreateUserRequest) (*dto.CreateUserResponse, error)
 	IsUsernameAvailable(*dto.CheckUsernameRequest) (*dto.CheckUsernameResponse, error)
+	Login(*dto.LoginRequest) (*dto.LoginResponse, error)
 }
 
 type userService struct {
@@ -79,5 +81,21 @@ func (s *userService) IsUsernameAvailable(req *dto.CheckUsernameRequest) (*dto.C
 	return &dto.CheckUsernameResponse{
 		Username:  req.Username,
 		Available: !exists,
+	}, nil
+}
+
+func (s *userService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
+	user, err := s.userRepo.FindByUsername(req.Username)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	// 저장된 hash와 입력된 password 비교
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		return nil, errors.New("invalid password")
+	}
+
+	return &dto.LoginResponse{
+		Username: user.Username,
 	}, nil
 }

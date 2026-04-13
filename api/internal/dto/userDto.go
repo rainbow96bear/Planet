@@ -23,3 +23,14 @@ type CheckUsernameResponse struct {
 	Username  string `json:"username"`
 	Available bool   `json:"available"`
 }
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	Username     string `json:"username"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
