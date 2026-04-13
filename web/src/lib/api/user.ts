@@ -22,10 +22,9 @@ export const checkUsername = async (username: string): Promise<CheckUsernameResp
 }
 
 export const login = async (body: LoginBody): Promise<LoginResponse> => {
-    const res = await fetch('/api/v1/auth/login', {
+    const res = await fetch('/api/v1/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(body)
     })
 
