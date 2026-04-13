@@ -10,6 +10,7 @@ type UserRepository interface {
 	CreateUser(tx *gorm.DB, u *model.User) error
 	IsUsernameExists(username string) (bool, error)
 	FindByUsername(username string) (model.User, error)
+	FindByProviderInfo(provider, providerID string) (*model.User, error)
 }
 
 type userRepository struct {
@@ -36,4 +37,12 @@ func (r *userRepository) FindByUsername(username string) (model.User, error) {
 		return model.User{}, err
 	}
 	return user, nil
+}
+
+func (r *userRepository) FindByProviderInfo(provider, providerID string) (*model.User, error) {
+	var user model.User
+	if err := r.db.Where("provider = ? AND provider_id = ?", provider, providerID).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

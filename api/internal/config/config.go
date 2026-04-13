@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	App AppConfig
-	DB  DBConfig
+	App   AppConfig
+	DB    DBConfig
+	Token TokenConfig
 }
 
 type AppConfig struct {
@@ -24,6 +25,12 @@ type DBConfig struct {
 	Password string
 	Name     string
 	SSLMode  string
+}
+
+type TokenConfig struct {
+	AccessTokenSecret  string
+	RefreshTokenSecret string
+	TempTokenSecret    string
 }
 
 func (d DBConfig) DSN() string {
@@ -48,6 +55,11 @@ func Load() (*Config, error) {
 			Password: getEnv("DB_PASSWORD", ""),
 			Name:     getEnv("DB_NAME", "sns_db"),
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		},
+		Token: TokenConfig{
+			AccessTokenSecret:  getEnv("ACCESS_TOKEN_SECRET", "accessTokenSecret"),
+			RefreshTokenSecret: getEnv("REFRESH_TOKEN_SECRET", "refreshTokenSecret"),
+			TempTokenSecret:    getEnv("TEMP_TOKEN_SECRET", "accessTokenSecret"),
 		},
 	}
 

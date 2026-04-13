@@ -2,13 +2,16 @@ package handler
 
 import "github.com/gin-gonic/gin"
 
-func RegisterRoutes(r *gin.Engine, userHandler UserHandler) {
+func RegisterRoutes(r *gin.Engine, authHandler AuthHandler) {
 	v1 := r.Group("/api/v1")
 	{
-		users := v1.Group("/users")
+		auth := v1.Group("/auth")
 		{
-			users.POST("", userHandler.CreateUser)
-			users.GET("/check", userHandler.CheckUsername)
+			auth.GET("/check", authHandler.CheckUsername)
+			auth.POST("/signup", authHandler.CreateUser)
+			auth.POST("/signup/oauth", authHandler.CreateOAuthUser)
+			auth.POST("/login", authHandler.Login)
+			auth.POST("/login/oauth", authHandler.OauthLogin)
 		}
 	}
 }

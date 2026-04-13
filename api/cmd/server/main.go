@@ -11,6 +11,7 @@ import (
 	"planet/internal/database"
 	"planet/internal/handler"
 	"planet/internal/model"
+	"planet/internal/pkg"
 	"planet/internal/repository"
 	"planet/internal/service"
 	"syscall"
@@ -24,6 +25,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
+
+	pkg.InitToken(cfg)
+
 	db, err := database.Connect(cfg)
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
@@ -36,12 +40,12 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 
-	userSvc := service.NewUserService(db, userRepo)
+	authSvc := service.NewAuthService(db, userRepo)
 
-	userHandler := handler.NewUserHandler(userSvc)
+	authHandler := handler.NewAuthHandler(authSvc)
 
 	r := gin.Default()
-	handler.RegisterRoutes(r, userHandler)
+	handler.RegisterRoutes(r, authHandler)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.App.Port),
