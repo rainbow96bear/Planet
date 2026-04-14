@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
-  import { createUser, checkUsername } from '$lib/api/user'
+  import { createUser, checkUsername } from '$lib/api/auth'
   import './page.css'
 
   let username = $state('')
@@ -95,16 +95,6 @@
           type="text"
           bind:value={nickname}
           placeholder="표시될 이름을 입력해주세요"
-        />
-      </div>
-
-      <div class="field">
-        <label for="password">비밀번호</label>
-        <input
-          id="password"
-          type="password"
-          bind:value={password}
-          placeholder="최소 8자리"
         />
       </div>
 

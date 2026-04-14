@@ -1,12 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { login } from '$lib/api/user'
+  import { login } from '$lib/api/auth'
+  import kakaoBtn from '$lib/assets/kakaoLoginBtn.png'
   import './page.css'
 
   let username = $state('')
   let password = $state('')
   let error = $state('')
   let loading = $state(false)
+  let oauthLoading = $state(false)
 
   async function handleSubmit(e: Event) {
     e.preventDefault()
@@ -20,6 +22,10 @@
     } finally {
       loading = false
     }
+  }
+
+  async function handleKakaoLogin() {
+    await kakaoOAuthLogin()
   }
 </script>
 
@@ -59,6 +65,11 @@
         {loading ? '로그인 중...' : '로그인'}
       </button>
     </form>
+
+    <button class="btn-kakao" onclick={handleKakaoLogin} disabled={oauthLoading}>
+      <img src={kakaoLoginBtn} alt=""/>
+      {oauthLoading ? '연결 중...' : '카카오로 로그인'}
+    </button>
 
     <div class="login-footer">
       계정이 없으신가요? <a href="/signup">회원가입</a>

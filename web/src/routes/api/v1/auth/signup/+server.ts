@@ -6,7 +6,7 @@ const GO_API = env.GO_API_URL
 export const POST: RequestHandler = async ({ request, fetch }) => {
     const body = await request.json()
 
-    const res = await fetch(`${GO_API}/api/v1/users`, {
+    const res = await fetch(`${GO_API}/api/v1/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
