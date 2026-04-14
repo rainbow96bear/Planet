@@ -1,11 +1,12 @@
 import { json, redirect } from '@sveltejs/kit'
 import type { RequestHandler } from '@sveltejs/kit'
-import { env } from 'process'
+import { 
+  GO_API_URL,
+  KAKAO_REST_API_KEY, 
+  KAKAO_REDIRECT_URI, 
+  KAKAO_CLIENT_SECRET 
+} from '$env/static/private'
 
-const KAKAO_REST_API_KEY = env.KAKAO_REST_API_KEY ?? ""
-const KAKAO_REDIRECT_URI = env.KAKAO_REDIRECT_URI ?? ""
-const KAKAO_CLIENT_SECRET = env.KAKAO_CLIENT_SECRET ?? ""
-const GO_API_URL = env.GO_API_URL ?? ""
 
 export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   const code = url.searchParams.get('code')
@@ -45,7 +46,8 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   const providerId = String(userData.id)  // 카카오 고유 유저 ID
   const email = userData.kakao_account?.email
 
-  const goRes = await fetch(`${GO_API_URL}/api/v1/auth/oauth`, {
+  console.log(`${GO_API_URL}/api/v1/auth/login/oauth`)
+  const goRes = await fetch(`${GO_API_URL}/api/v1/auth/login/oauth`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

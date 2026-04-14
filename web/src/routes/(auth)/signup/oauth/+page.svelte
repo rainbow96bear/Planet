@@ -6,7 +6,6 @@
 
   let username = $state('')
   let nickname = $state('')
-  let password = $state('')
   let error = $state('')
   let loading = $state(false)
   let usernameMsg = $state('')
@@ -45,14 +44,10 @@
       error = '닉네임은 최소 2자리입니다.'
       return
     }
-    if (password.length < 8) {
-      error = '비밀번호는 최소 8자리입니다.'
-      return
-    }
     error = ''
     loading = true
     try {
-      await createUser({ username, nickname, password })
+      await createUser({ username, nickname })
       goto('/login')
     } catch {
       error = '회원가입에 실패했습니다. 다시 시도해주세요.'
@@ -95,16 +90,6 @@
           type="text"
           bind:value={nickname}
           placeholder="표시될 이름을 입력해주세요"
-        />
-      </div>
-
-      <div class="field">
-        <label for="password">비밀번호</label>
-        <input
-          id="password"
-          type="password"
-          bind:value={password}
-          placeholder="최소 8자리"
         />
       </div>
 

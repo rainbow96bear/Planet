@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { login } from '$lib/api/auth'
-  import kakaoBtn from '$lib/assets/kakaoLoginBtn.png'
+  import { kakaoOAuthLogin, login } from '$lib/api/auth'
+  import kakaoLoginBtn from '$lib/assets/kakaoLoginBtn.png'
   import './page.css'
 
   let username = $state('')
@@ -25,7 +25,7 @@
   }
 
   async function handleKakaoLogin() {
-    await kakaoOAuthLogin()
+    window.location.href = '/api/v1/auth/login/oauth/kakao'
   }
 </script>
 
@@ -68,7 +68,6 @@
 
     <button class="btn-kakao" onclick={handleKakaoLogin} disabled={oauthLoading}>
       <img src={kakaoLoginBtn} alt=""/>
-      {oauthLoading ? '연결 중...' : '카카오로 로그인'}
     </button>
 
     <div class="login-footer">
