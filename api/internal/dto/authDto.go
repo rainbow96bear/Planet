@@ -18,7 +18,7 @@ type CreateUserResponse struct {
 type CreateOAuthUserRequest struct {
 	Username  string `json:"username"   binding:"required,min=4"`
 	Nickname  string `json:"nickname"   binding:"required,min=4"`
-	TempToken string `json:"temp_token" binding:"required"`
+	TempToken string `json:"-"`
 }
 
 type CreateOAuthUserResponse struct {

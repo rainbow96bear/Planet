@@ -4,6 +4,12 @@ export interface CreateUserBody{
     password:string
 }
 
+export interface CreateOAuthUserBody{
+    username:string
+    nickname:string
+}
+
+
 export interface CheckUsernameResponse {
     username: string
     available: boolean

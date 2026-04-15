@@ -111,3 +111,33 @@
 .login-footer a:hover {
   color: #b2ede6;
 }
+
+.btn-kakao {
+  width: 100%;
+  margin-top: 0.75rem;
+  background: #FEE500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  transition: opacity 0.2s;
+}
+
+.btn-kakao:hover {
+  opacity: 0.85;
+}
+
+.btn-kakao:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-kakao img {
+  height: 45px;
+  width: auto;
+  display: block;
+}

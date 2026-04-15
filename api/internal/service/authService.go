@@ -76,7 +76,7 @@ func (s *authService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 }
 
 func (s *authService) CreateOAuthUser(req *dto.CreateOAuthUserRequest) (*dto.CreateOAuthUserResponse, error) {
-	// 2. tx 시작
+	// tx 시작
 	tx := s.db.Begin()
 
 	// panic 대비
@@ -98,19 +98,19 @@ func (s *authService) CreateOAuthUser(req *dto.CreateOAuthUserRequest) (*dto.Cre
 		ProviderID: claims.ProviderID,
 	}
 
-	// 3. 저장
+	// 저장
 	if err := s.userRepo.CreateUser(tx, user); err != nil {
 		tx.Rollback()
 
 		return nil, err
 	}
 
-	// 4. commit
+	// commit
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
-	// 5. DTO 반환
+	// DTO 반환
 	return &dto.CreateOAuthUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,

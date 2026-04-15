@@ -4,6 +4,7 @@ import (
 	"planet/internal/dto"
 	"planet/internal/pkg"
 	"planet/internal/service"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,6 +47,13 @@ func (h *authHandler) CreateOAuthUser(c *gin.Context) {
 		pkg.Fail(c, 400, err.Error())
 		return
 	}
+
+	tempToken := c.GetHeader("Authorization")
+	if tempToken == "" {
+		pkg.Fail(c, 401, "temp token이 없습니다")
+		return
+	}
+	req.TempToken = strings.TrimPrefix(tempToken, "Bearer ")
 
 	user, err := h.authSvc.CreateOAuthUser(&req)
 	if err != nil {

@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   const tokenData = await tokenRes.json()
   const accessToken = tokenData.access_token
 
-  // 2. access_token → 유저 정보 조회
+  // access_token → 유저 정보 조회
   const userRes = await fetch('https://kapi.kakao.com/v2/user/me', {
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -44,21 +44,18 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   const userData = await userRes.json()
 
   const providerId = String(userData.id)  // 카카오 고유 유저 ID
-  const email = userData.kakao_account?.email
 
-  console.log(`${GO_API_URL}/api/v1/auth/login/oauth`)
   const goRes = await fetch(`${GO_API_URL}/api/v1/auth/login/oauth`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       provider: 'kakao',
       provider_id: providerId,
-      email,
     }),
   })
   const goData = await goRes.json()
 
-  // 7. 신규 사용자 → temp_token 쿠키에 저장 후 회원가입 페이지로
+  // 신규 사용자 → temp_token 쿠키에 저장 후 회원가입 페이지로
   if (goData.is_new_user) {
     cookies.set('temp_token', goData.temp_token, {
       httpOnly: true,
@@ -68,7 +65,7 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
     redirect(302, '/signup/oauth')
   }
 
-  // 8. 기존 사용자 → access_token, refresh_token 쿠키에 저장 후 메인으로
+  // 기존 사용자 → access_token, refresh_token 쿠키에 저장 후 메인으로
   cookies.set('access_token', goData.access_token, {
     httpOnly: true,
     path: '/',

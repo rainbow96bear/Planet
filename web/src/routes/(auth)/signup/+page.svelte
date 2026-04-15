@@ -41,8 +41,8 @@
       error = '아이디 중복 확인이 필요합니다.'
       return
     }
-    if (nickname.length < 2) {
-      error = '닉네임은 최소 2자리입니다.'
+    if (nickname.length < 4) {
+      error = '닉네임은 최소 4자리입니다.'
       return
     }
     if (password.length < 8) {

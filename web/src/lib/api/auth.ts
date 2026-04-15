@@ -1,9 +1,24 @@
-import type { CreateUserBody, CreateUserResponse, CheckUsernameResponse, LoginBody, LoginResponse } from "$lib/types/auth";
+import type { CreateUserBody, CreateUserResponse, CreateOAuthUserBody, CheckUsernameResponse, LoginBody, LoginResponse } from "$lib/types/auth";
 
 export const createUser = async (body: CreateUserBody): Promise<CreateUserResponse> => {
     const res = await fetch('/api/v1/auth/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },  // 누락됨
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+
+    if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error ?? '서버 오류')
+    }
+
+    return res.json()
+}
+
+export const createOAuthUser = async (body: CreateOAuthUserBody): Promise<CreateUserResponse> => {
+    const res = await fetch('/api/v1/auth/signup/oauth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     })
 

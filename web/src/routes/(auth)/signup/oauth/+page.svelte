@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
-  import { createUser, checkUsername } from '$lib/api/auth'
+  import { createOAuthUser, checkUsername } from '$lib/api/auth'
   import './page.css'
 
   let username = $state('')
@@ -40,14 +40,14 @@
       error = '아이디 중복 확인이 필요합니다.'
       return
     }
-    if (nickname.length < 2) {
-      error = '닉네임은 최소 2자리입니다.'
+    if (nickname.length < 4) {
+      error = '닉네임은 최소 4자리입니다.'
       return
     }
     error = ''
     loading = true
     try {
-      await createUser({ username, nickname })
+      await createOAuthUser({ username, nickname })
       goto('/login')
     } catch {
       error = '회원가입에 실패했습니다. 다시 시도해주세요.'

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { kakaoOAuthLogin, login } from '$lib/api/auth'
+  import { login } from '$lib/api/auth'
   import kakaoLoginBtn from '$lib/assets/kakaoLoginBtn.png'
   import './page.css'
 
