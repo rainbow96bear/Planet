@@ -123,7 +123,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 45px;
+  height: 48px;
   transition: opacity 0.2s;
 }
 
@@ -138,6 +138,36 @@
 
 .btn-kakao img {
   height: 45px;
+  width: auto;
+  display: block;
+}
+
+.btn-naver {
+  width: 100%;
+  margin-top: 0.75rem;
+  background: #03C75A;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  transition: opacity 0.2s;
+}
+
+.btn-naver:hover {
+  opacity: 0.85;
+}
+
+.btn-naver:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-naver img {
+  height: 48px;
   width: auto;
   display: block;
 }

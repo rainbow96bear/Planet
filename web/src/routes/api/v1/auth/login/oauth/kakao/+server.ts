@@ -7,7 +7,6 @@ import {
 } from '$env/static/private'
 
 export const GET: RequestHandler = async () => {
-    console.log("KAKAO_REST : ", KAKAO_REST_API_KEY)
 
     const params = new URLSearchParams()
     params.append('response_type', 'code')

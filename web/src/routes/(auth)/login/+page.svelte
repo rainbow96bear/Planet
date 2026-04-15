@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation'
   import { login } from '$lib/api/auth'
   import kakaoLoginBtn from '$lib/assets/kakaoLoginBtn.png'
+  import naverLoginBtn from '$lib/assets/naverLoginBtn.png'
   import './page.css'
 
   let username = $state('')
@@ -24,8 +25,14 @@
     }
   }
 
-  async function handleKakaoLogin() {
+  function handleKakaoLogin() {
+    oauthLoading = true
     window.location.href = '/api/v1/auth/login/oauth/kakao'
+  }
+
+  function handleNaverLogin(){
+    oauthLoading = true
+    window.location.href = '/api/v1/auth/login/oauth/naver'
   }
 </script>
 
@@ -68,6 +75,10 @@
 
     <button class="btn-kakao" onclick={handleKakaoLogin} disabled={oauthLoading}>
       <img src={kakaoLoginBtn} alt=""/>
+    </button>
+
+    <button class="btn-naver" onclick={handleNaverLogin} disabled={oauthLoading}>
+      <img src={naverLoginBtn} alt=""/>
     </button>
 
     <div class="login-footer">
