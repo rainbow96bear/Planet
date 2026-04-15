@@ -116,6 +116,7 @@
   width: 100%;
   margin-top: 0.75rem;
   background: #FEE500;
+  color: #000000bf;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -123,7 +124,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   height: 48px;
+  font-size: 0.95rem;
+  font-weight: 600;
   transition: opacity 0.2s;
 }
 
@@ -136,16 +140,11 @@
   cursor: not-allowed;
 }
 
-.btn-kakao img {
-  height: 45px;
-  width: auto;
-  display: block;
-}
-
 .btn-naver {
   width: 100%;
   margin-top: 0.75rem;
   background: #03C75A;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -153,7 +152,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   height: 48px;
+  font-size: 0.95rem;
+  font-weight: 600;
   transition: opacity 0.2s;
 }
 
@@ -164,10 +166,4 @@
 .btn-naver:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-}
-
-.btn-naver img {
-  height: 48px;
-  width: auto;
-  display: block;
 }

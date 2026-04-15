@@ -2,8 +2,8 @@ import { json, redirect } from '@sveltejs/kit'
 import type { RequestHandler } from '@sveltejs/kit'
 import { 
   GO_API_URL,
-  NAVER_CLIENT_ID, 
-  NAVER_CLIENT_SECRET 
+  NAVER_CLIENT_ID,
+  NAVER_CLIENT_SECRET
 } from '$env/static/private'
 
 
@@ -26,7 +26,6 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   params.append('client_secret', NAVER_CLIENT_SECRET)
   params.append('code', code)
   params.append('state', state)
-
   const tokenRes = await fetch('https://nid.naver.com/oauth2.0/token', {
     method: 'POST',
     headers: {
@@ -46,8 +45,7 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   })
 
   const userData = await userRes.json()
-
-  const providerId = String(userData.id)  // 카카오 고유 유저 ID
+  const providerId = String(userData.response.id)  // 카카오 고유 유저 ID
 
   const goRes = await fetch(`${GO_API_URL}/api/v1/auth/login/oauth`, {
     method: 'POST',

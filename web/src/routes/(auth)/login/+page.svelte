@@ -9,7 +9,6 @@
   let password = $state('')
   let error = $state('')
   let loading = $state(false)
-  let oauthLoading = $state(false)
 
   async function handleSubmit(e: Event) {
     e.preventDefault()
@@ -26,12 +25,12 @@
   }
 
   function handleKakaoLogin() {
-    oauthLoading = true
+    loading = true
     window.location.href = '/api/v1/auth/login/oauth/kakao'
   }
 
   function handleNaverLogin(){
-    oauthLoading = true
+    loading = true
     window.location.href = '/api/v1/auth/login/oauth/naver'
   }
 </script>
@@ -73,12 +72,12 @@
       </button>
     </form>
 
-    <button class="btn-kakao" onclick={handleKakaoLogin} disabled={oauthLoading}>
-      <img src={kakaoLoginBtn} alt=""/>
+    <button class="btn-kakao" onclick={handleKakaoLogin} disabled={loading}>
+    카카오로그인
     </button>
 
-    <button class="btn-naver" onclick={handleNaverLogin} disabled={oauthLoading}>
-      <img src={naverLoginBtn} alt=""/>
+    <button class="btn-naver" onclick={handleNaverLogin} disabled={loading}>
+    네이버로그인
     </button>
 
     <div class="login-footer">

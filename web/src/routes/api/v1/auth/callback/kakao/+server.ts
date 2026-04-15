@@ -44,7 +44,6 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
   const userData = await userRes.json()
 
   const providerId = String(userData.id)  // 카카오 고유 유저 ID
-
   const goRes = await fetch(`${GO_API_URL}/api/v1/auth/login/oauth`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

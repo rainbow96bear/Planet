@@ -11,8 +11,10 @@ export interface CreateOAuthUserBody{
 
 
 export interface CheckUsernameResponse {
-    username: string
-    available: boolean
+    data : {
+        username: string
+        available: boolean
+    }
 }
 
 export interface LoginBody {
