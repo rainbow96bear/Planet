@@ -16,6 +16,7 @@ var (
 
 type TokenClaims struct {
 	Username string `json:"username"`
+	Nickname string `json:"nickname"`
 	jwt.RegisteredClaims
 }
 
@@ -33,9 +34,10 @@ func InitToken(cfg *config.Config) {
 }
 
 // Access Token 생성 (1시간)
-func GenerateAccessToken(username string) (string, error) {
+func GenerateAccessToken(username, nickname string) (string, error) {
 	claims := TokenClaims{
 		Username: username,
+		Nickname: nickname,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -45,9 +47,10 @@ func GenerateAccessToken(username string) (string, error) {
 }
 
 // Refresh Token 생성 (7일)
-func GenerateRefreshToken(username string) (string, error) {
+func GenerateRefreshToken(username, nickname string) (string, error) {
 	claims := TokenClaims{
 		Username: username,
+		Nickname: nickname,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

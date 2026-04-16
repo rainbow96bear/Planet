@@ -20,7 +20,9 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
         },
         body: JSON.stringify(body)
     })
-
     const data = await res.json()
+    
+    cookies.delete('temp_token', { path: '/' })
+    
     return json(data, { status: res.status })
 }

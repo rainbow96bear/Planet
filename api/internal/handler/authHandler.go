@@ -15,6 +15,7 @@ type AuthHandler interface {
 	CheckUsername(c *gin.Context)
 	Login(c *gin.Context)
 	OauthLogin(c *gin.Context)
+	Refresh(c *gin.Context)
 }
 
 type authHandler struct {
@@ -109,4 +110,21 @@ func (h *authHandler) OauthLogin(c *gin.Context) {
 	}
 
 	c.JSON(200, res)
+}
+
+func (h *authHandler) Refresh(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		pkg.Fail(c, 401, "refresh token이 없습니다")
+		return
+	}
+	refreshToken := strings.TrimPrefix(authHeader, "Bearer ")
+
+	res, err := h.authSvc.Refresh(&dto.RefreshRequest{RefreshToken: refreshToken})
+	if err != nil {
+		pkg.Fail(c, 401, err.Error())
+		return
+	}
+
+	pkg.Success(c, 200, res)
 }

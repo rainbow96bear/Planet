@@ -62,3 +62,12 @@ type OauthLoginResponse struct {
 	AccessToken  string `json:"access_token,omitempty"`  // 기존 유저만
 	RefreshToken string `json:"refresh_token,omitempty"` // 기존 유저만
 }
+
+type RefreshRequest struct {
+	RefreshToken string
+}
+
+type RefreshResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}

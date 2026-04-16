@@ -17,6 +17,7 @@ type AuthService interface {
 	IsUsernameAvailable(*dto.CheckUsernameRequest) (*dto.CheckUsernameResponse, error)
 	Login(*dto.LoginRequest) (*dto.LoginResponse, error)
 	OauthLogin(*dto.OauthLoginRequest) (*dto.OauthLoginResponse, error)
+	Refresh(*dto.RefreshRequest) (*dto.RefreshResponse, error)
 }
 
 type authService struct {
@@ -142,11 +143,11 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 		return nil, errors.New("invalid password")
 	}
 
-	accessToken, err := pkg.GenerateAccessToken(req.Username)
+	accessToken, err := pkg.GenerateAccessToken(user.Username, user.Nickname)
 	if err != nil {
 
 	}
-	refreshToken, err := pkg.GenerateRefreshToken(req.Username)
+	refreshToken, err := pkg.GenerateRefreshToken(user.Username, user.Nickname)
 	if err != nil {
 
 	}
@@ -172,11 +173,11 @@ func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginRes
 	}
 
 	// 기존 유저면 JWT 발급
-	accessToken, err := pkg.GenerateAccessToken(user.Username)
+	accessToken, err := pkg.GenerateAccessToken(user.Username, user.Nickname)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := pkg.GenerateRefreshToken(user.Username)
+	refreshToken, err := pkg.GenerateRefreshToken(user.Username, user.Nickname)
 	if err != nil {
 		return nil, err
 	}
@@ -185,6 +186,34 @@ func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginRes
 		IsNewUser:    false,
 		Username:     user.Username,
 		Nickname:     user.Nickname,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (s *authService) Refresh(req *dto.RefreshRequest) (*dto.RefreshResponse, error) {
+	claims, err := pkg.ParseRefreshToken(req.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	username := claims.Username
+	nickname := claims.Nickname
+	_, err = s.userRepo.FindByUsername(username)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	accessToken, err := pkg.GenerateAccessToken(username, nickname)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken, err := pkg.GenerateRefreshToken(username, nickname)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.RefreshResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
