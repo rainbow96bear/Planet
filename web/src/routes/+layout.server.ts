@@ -1,4 +1,5 @@
 // +layout.server.ts
+import { decodeJwtPayload } from '$lib/utils/jwt'
 import { 
   GO_API_URL,
 } from '$env/static/private'
@@ -8,14 +9,12 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
     if (!accessToken) return { user: null }
 
     try {
-        const payload = JSON.parse(atob(accessToken.split('.')[1]))
+        const payload = decodeJwtPayload(accessToken)
         
-        // 만료 안됨
         if (payload.exp * 1000 > Date.now()) {
             return { user: { id: payload.sub, username: payload.username, nickname: payload.nickname } }
         }
 
-        // 만료됨 → refresh 시도
         const refreshToken = cookies.get('refresh_token')
         if (!refreshToken) return { user: null }
 
@@ -38,7 +37,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
             httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 30 
         })
         
-        const newPayload = JSON.parse(atob(data.access_token.split('.')[1]))
+        const newPayload = decodeJwtPayload(data.access_token)
         return { user: { id: newPayload.sub, username: newPayload.username, nickname: newPayload.nickname } }
 
     } catch {

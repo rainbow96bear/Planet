@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
   import { createOAuthUser, checkUsername } from '$lib/api/auth'
+  import { validateNickname } from '$lib/utils/validation'
   import './page.css'
 
   let username = $state('')
@@ -10,12 +11,14 @@
   let loading = $state(false)
   let usernameMsg = $state('')
   let usernameOk = $state(false)
+  let nicknameMsg = $state('')
 
   let debounceTimer: ReturnType<typeof setTimeout>
 
   onDestroy(() => clearTimeout(debounceTimer))
 
   function onUsernameInput() {
+    username = username.replace(/[^a-zA-Z0-9_]/g, '')
     usernameMsg = ''
     usernameOk = false
     clearTimeout(debounceTimer)
@@ -34,14 +37,19 @@
     }, 500)
   }
 
+  function onNicknameInput() {
+    nicknameMsg = validateNickname(nickname)
+  }
+
   async function handleSubmit(e: Event) {
     e.preventDefault()
     if (!usernameOk) {
       error = '아이디 중복 확인이 필요합니다.'
       return
     }
-    if (nickname.length < 4) {
-      error = '닉네임은 최소 4자리입니다.'
+    const nicknameError = validateNickname(nickname)
+    if (nicknameError) {
+      error = nicknameError
       return
     }
     error = ''
@@ -76,7 +84,7 @@
           type="text"
           bind:value={username}
           oninput={onUsernameInput}
-          placeholder="영문과 숫자만 사용 가능, 최소 4자리"
+          placeholder="영문, 숫자, 언더바만 사용 가능, 최소 4자리"
         />
         {#if usernameMsg}
           <span class={usernameOk ? 'field-ok' : 'field-error'}>{usernameMsg}</span>
@@ -89,8 +97,12 @@
           id="nickname"
           type="text"
           bind:value={nickname}
-          placeholder="표시될 이름을 입력해주세요"
+          oninput={onNicknameInput}
+          placeholder="한글, 영문, 숫자, 언더바 사용 가능, 최소 2자리"
         />
+        {#if nicknameMsg}
+          <span class="field-error">{nicknameMsg}</span>
+        {/if}
       </div>
 
       <button class="btn-primary" type="submit" disabled={loading || !usernameOk}>
