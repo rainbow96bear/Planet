@@ -58,3 +58,9 @@ export const kakaoOAuthLogin = async() => {
 export const naverOAuthLogin = async () => {
     const res = await fetch('/api/v1/auth/login/oauth/naver')
 }
+
+export const logout = async () => {
+    const res = await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+    })
+}
