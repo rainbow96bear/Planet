@@ -39,13 +39,18 @@ func main() {
 	}
 
 	userRepo := repository.NewUserRepository(db)
+	taskRepo := repository.NewTaskRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
+	taskSvc := service.NewTaskService(db, taskRepo)
+	userSvc := service.NewUserService(db, userRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
+	taskHandler := handler.NewTaskHandler(taskSvc)
+	userHandler := handler.NewUserHandler(userSvc)
 
 	r := gin.Default()
-	handler.RegisterRoutes(r, authHandler)
+	handler.RegisterRoutes(r, authHandler, taskHandler, userHandler)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.App.Port),

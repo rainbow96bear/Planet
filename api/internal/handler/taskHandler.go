@@ -7,19 +7,19 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type TaskHandler interface {
 	CreateTask(c *gin.Context)
 	DeleteTask(c *gin.Context)
+	GetTasksByMonth(c *gin.Context)
 }
 
 type taskHandler struct {
 	taskSvc service.TaskService
 }
 
-func NewTaskHandler(db *gorm.DB, taskSvc service.TaskService) TaskHandler {
+func NewTaskHandler(taskSvc service.TaskService) TaskHandler {
 	return &taskHandler{
 		taskSvc: taskSvc,
 	}
@@ -59,4 +59,38 @@ func (h *taskHandler) DeleteTask(c *gin.Context) {
 		return
 	}
 	pkg.Success(c, 204, nil)
+}
+
+func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
+	username := c.Param("username")
+
+	yearStr := c.Query("year")
+	monthStr := c.Query("month")
+
+	year, err := strconv.Atoi(yearStr)
+	if err != nil {
+		pkg.Fail(c, 400, "잘못된 year 값입니다")
+		return
+	}
+
+	month, err := strconv.Atoi(monthStr)
+	if err != nil || month < 1 || month > 12 {
+		pkg.Fail(c, 400, "잘못된 month 값입니다")
+		return
+	}
+
+	req := dto.GetTasksByMonthRequest{
+		Username:          username,
+		RequesterUsername: c.GetString("username"),
+		Year:              year,
+		Month:             month,
+	}
+
+	tasks, err := h.taskSvc.GetTasksByMonth(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
+		return
+	}
+
+	pkg.Success(c, 200, tasks)
 }

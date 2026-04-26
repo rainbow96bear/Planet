@@ -6,7 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(r *gin.Engine, authHandler AuthHandler, taskHandler TaskHandler) {
+func RegisterRoutes(
+	r *gin.Engine,
+	authHandler AuthHandler,
+	taskHandler TaskHandler,
+	userHandler UserHandler,
+) {
+
 	v1 := r.Group("/api/v1")
 	{
 		auth := v1.Group("/auth")
@@ -28,7 +34,13 @@ func RegisterRoutes(r *gin.Engine, authHandler AuthHandler, taskHandler TaskHand
 				authenticated.POST("", taskHandler.CreateTask)
 				authenticated.DELETE("/:id", taskHandler.DeleteTask)
 			}
+		}
 
+		users := v1.Group("/users")
+		users.Use(middleware.OptionalAuthMiddleware())
+		{
+			users.GET("/:username", userHandler.GetProfile)
+			users.GET("/:username/tasks", taskHandler.GetTasksByMonth)
 		}
 	}
 }

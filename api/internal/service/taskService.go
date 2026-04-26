@@ -12,6 +12,7 @@ import (
 type TaskService interface {
 	CreateTask(*dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
 	DeleteTask(*dto.DeleteTaskRequest) error
+	GetTasksByMonth(*dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error)
 }
 
 type taskService struct {
@@ -85,4 +86,27 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 	}
 
 	return nil
+}
+
+func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error) {
+	isOwner := req.Username == req.RequesterUsername
+
+	tasks, err := s.taskRepo.GetTasksByMonth(req.Username, req.Year, req.Month, isOwner)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*dto.GetTasksByMonthResponse, len(tasks))
+	for i, task := range tasks {
+		result[i] = &dto.GetTasksByMonthResponse{
+			ID:          task.ID,
+			Title:       task.Title,
+			Description: task.Description,
+			Date:        task.Date,
+			IsCompleted: task.IsCompleted,
+			IsPublic:    task.IsPublic,
+		}
+	}
+
+	return result, nil
 }
