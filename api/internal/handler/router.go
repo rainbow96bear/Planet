@@ -26,14 +26,10 @@ func RegisterRoutes(
 		}
 
 		tasks := v1.Group("/tasks")
+		tasks.Use(middleware.AuthMiddleware())
 		{
-			// 인증 필요 (본인만)
-			authenticated := tasks.Group("")
-			authenticated.Use(middleware.AuthMiddleware())
-			{
-				authenticated.POST("", taskHandler.CreateTask)
-				authenticated.DELETE("/:id", taskHandler.DeleteTask)
-			}
+			tasks.POST("", taskHandler.CreateTask)
+			tasks.DELETE("/:id", taskHandler.DeleteTask)
 		}
 
 		users := v1.Group("/users")

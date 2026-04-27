@@ -5,6 +5,10 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
     const { username } = params
     const token = cookies.get('access_token')
 
+    const me = token ? await fetch(`${GO_API_URL}/api/v1/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+    }).then(r => r.json()) : null
+
     const now = new Date()
     const year = now.getFullYear()
     const month = now.getMonth() + 1
@@ -22,5 +26,5 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
     const user = await userRes.json()
     const tasks = await tasksRes.json()
 
-    return { user, tasks, year, month }
+    return { user, tasks, year, month, me }
 }
