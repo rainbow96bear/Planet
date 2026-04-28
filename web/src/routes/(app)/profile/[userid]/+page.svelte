@@ -7,20 +7,19 @@
 
     let { data }: { data: PageData } = $props()
 
-    const username = $page.params.username
-    const isOwner = data.user.username === data.me?.username
+    const userid = Number($page.params.userid!)
+    const isOwner = data.user.userid === data.me?.userid
 
     let tasks = $state(data.tasks)
     let year = $state(data.year)
     let month = $state(data.month)
     let loading = $state(false)
     let selectedDay = $state<number | null>(null)
-
     async function prevMonth() {
         if (month === 1) { year -= 1; month = 12 }
         else { month -= 1 }
         loading = true
-        tasks = await getTasksByMonth(username, year, month)
+        tasks = await getTasksByMonth(userid, year, month)
         loading = false
     }
 
@@ -28,7 +27,7 @@
         if (month === 12) { year += 1; month = 1 }
         else { month += 1 }
         loading = true
-        tasks = await getTasksByMonth(username, year, month)
+        tasks = await getTasksByMonth(userid, year, month)
         loading = false
     }
 
@@ -61,7 +60,7 @@
         <div class="profile-avatar">🪐</div>
         <div class="profile-info">
             <h1 class="profile-nickname">{data.user.nickname}</h1>
-            <span class="profile-username">@{username}</span>
+            <span class="profile-username">@{data.user.username}</span>
         </div>
     </div>
 
@@ -109,7 +108,7 @@
         day={selectedDay}
         {year}
         {month}
-        {username}
+        username={data.user.username}
         tasks={getTasksForDay(selectedDay)}
         {isOwner}
         onClose={closeModal}

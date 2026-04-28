@@ -35,8 +35,8 @@ func RegisterRoutes(
 		users := v1.Group("/users")
 		users.Use(middleware.OptionalAuthMiddleware())
 		{
-			users.GET("/:username", userHandler.GetProfile)
-			users.GET("/:username/tasks", taskHandler.GetTasksByMonth)
+			users.GET("/:userid", userHandler.GetProfile)
+			users.GET("/:userid/tasks", taskHandler.GetTasksByMonth)
 		}
 	}
 }

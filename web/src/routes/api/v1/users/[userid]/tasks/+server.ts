@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit'
 import { GO_API_URL } from '$env/static/private'
 
 export const GET: RequestHandler = async ({ params, url, fetch, cookies }) => {
-    const { username } = params
+    const { userid } = params
     const year = url.searchParams.get('year')
     const month = url.searchParams.get('month')
     const token = cookies.get('access_token')
@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ params, url, fetch, cookies }) => {
     }
 
     const res = await fetch(
-        `${GO_API_URL}/api/v1/users/${username}/tasks?year=${year}&month=${month}`,
+        `${GO_API_URL}/api/v1/users/${userid}/tasks?year=${year}&month=${month}`,
         { headers }
     )
 

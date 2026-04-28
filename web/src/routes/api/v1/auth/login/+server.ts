@@ -14,15 +14,14 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
     })
 
     const data = await res.json()
-
     if (res.ok) {
-        cookies.set('access_token', data.data.access_token, {
+        cookies.set('access_token', data.access_token, {
             path: '/',
             httpOnly: true,
             secure: false,           // production에서 true
             maxAge: 60 * 60          // 1시간
         })
-        cookies.set('refresh_token', data.data.refresh_token, {
+        cookies.set('refresh_token', data.refresh_token, {
             path: '/',
             httpOnly: true,
             secure: false,

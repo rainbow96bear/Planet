@@ -2,6 +2,7 @@ package repository
 
 import (
 	"planet/internal/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -40,9 +41,13 @@ func (r *taskRepository) GetTaskByID(taskId uint) (*model.Task, error) {
 func (r *taskRepository) GetTasksByMonth(username string, year, month int, isOwner bool) ([]*model.Task, error) {
 	var tasks []*model.Task
 
+	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	endDate := startDate.AddDate(0, 1, 0)
+
 	query := r.db.Model(&model.Task{}).
+		Select("tasks.*").
 		Joins("JOIN users ON users.id = tasks.user_id").
-		Where("users.username = ? AND YEAR(tasks.date) = ? AND MONTH(tasks.date) = ?", username, year, month)
+		Where("users.username = ? AND tasks.date >= ? AND tasks.date < ?", username, startDate, endDate)
 
 	if !isOwner {
 		query = query.Where("tasks.is_public = ?", true)

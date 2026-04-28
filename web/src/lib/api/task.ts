@@ -1,11 +1,11 @@
-import { GetTasksByMonthResponse } from "$lib/types/task";
+import type { CreateTaskBody, CreateTaskResponse, GetTasksByMonthResponse } from "$lib/types/task"
 
 export const getTasksByMonth = async (
-    username: string,
+    userid: number,
     year: number,
     month: number
 ): Promise<GetTasksByMonthResponse> => {
-    const res = await fetch(`/api/v1/users/${username}/tasks?year=${year}&month=${month}`)
+    const res = await fetch(`/api/v1/users/${userid}/tasks?year=${year}&month=${month}`)
 
     if (!res.ok) {
         const err = await res.json()

@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/pkg"
@@ -138,6 +139,7 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 		return nil, errors.New("user not found")
 	}
 
+	fmt.Printf("user : %+v", user)
 	// 저장된 hash와 입력된 password 비교
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return nil, errors.New("invalid password")

@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"net/http"
 	"planet/internal/dto"
 	"planet/internal/pkg"
 	"planet/internal/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,9 +25,15 @@ func NewUserHandler(userSvc service.UserService) UserHandler {
 }
 
 func (h *userHandler) GetProfile(c *gin.Context) {
+	userID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
+
 	req := dto.GetProfileRequest{
-		Username:          c.Param("username"),
-		RequesterUsername: c.GetString("username"), // 비로그인이면 ""
+		UserId:          uint(userID),
+		RequesterUserId: c.GetUint("userID"),
 	}
 
 	profile, err := h.userSvc.GetProfile(&req)

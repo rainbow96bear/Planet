@@ -10,9 +10,8 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 
     try {
         const payload = decodeJwtPayload(accessToken)
-        
         if (payload.exp * 1000 > Date.now()) {
-            return { user: { id: payload.sub, username: payload.username, nickname: payload.nickname } }
+            return { user: { userid: payload.userid, username: payload.username, nickname: payload.nickname } }
         }
 
         const refreshToken = cookies.get('refresh_token')
@@ -38,7 +37,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
         })
         
         const newPayload = decodeJwtPayload(data.access_token)
-        return { user: { id: newPayload.sub, username: newPayload.username, nickname: newPayload.nickname } }
+        return { user: { userid: newPayload.userid, username: newPayload.username, nickname: newPayload.nickname } ,newPayload}
 
     } catch {
         return { user: null }

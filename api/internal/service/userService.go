@@ -25,7 +25,7 @@ func NewUserService(db *gorm.DB, userRepo repository.UserRepository) UserService
 
 // service
 func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileResponse, error) {
-	user, err := s.userRepo.FindByUsername(req.Username)
+	user, err := s.userRepo.FindByUserId(req.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -33,6 +33,6 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 	return &dto.GetProfileResponse{
 		Username: user.Username,
 		Nickname: user.Nickname,
-		IsOwner:  req.Username == req.RequesterUsername,
+		IsOwner:  req.UserId == req.RequesterUserId,
 	}, nil
 }

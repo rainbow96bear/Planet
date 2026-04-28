@@ -11,6 +11,7 @@ type UserRepository interface {
 	IsUsernameExists(username string) (bool, error)
 	FindByUsername(username string) (model.User, error)
 	FindByProviderInfo(provider, providerID string) (*model.User, error)
+	FindByUserId(userid uint) (model.User, error)
 }
 
 type userRepository struct {
@@ -45,4 +46,12 @@ func (r *userRepository) FindByProviderInfo(provider, providerID string) (*model
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *userRepository) FindByUserId(userid uint) (model.User, error) {
+	var user model.User
+	if err := r.db.Where("id = ?", userid).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
+	return user, nil
 }

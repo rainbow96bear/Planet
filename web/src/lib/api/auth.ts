@@ -1,6 +1,6 @@
-import type { CreateUserBody, CreateUserResponse, CreateOAuthUserBody, CheckUsernameResponse, LoginBody, LoginResponse } from "$lib/types/auth";
+import type { CreateUserBody, CreateOAuthUserBody, CheckUsernameResponse, LoginBody, LoginResponse } from "$lib/types/auth";
 
-export const createUser = async (body: CreateUserBody): Promise<CreateUserResponse> => {
+export const createUser = async (body: CreateUserBody) => {
     const res = await fetch('/api/v1/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -15,7 +15,7 @@ export const createUser = async (body: CreateUserBody): Promise<CreateUserRespon
     return res.json()
 }
 
-export const createOAuthUser = async (body: CreateOAuthUserBody): Promise<CreateUserResponse> => {
+export const createOAuthUser = async (body: CreateOAuthUserBody) => {
     const res = await fetch('/api/v1/auth/signup/oauth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
