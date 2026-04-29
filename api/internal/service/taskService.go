@@ -13,6 +13,7 @@ type TaskService interface {
 	CreateTask(*dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
 	DeleteTask(*dto.DeleteTaskRequest) error
 	GetTasksByMonth(*dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error)
+	ToggleTask(*dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error)
 }
 
 type taskService struct {
@@ -67,7 +68,7 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 		}
 	}()
 
-	task, err := s.taskRepo.GetTaskByID(req.TaskID)
+	task, err := s.taskRepo.GetTaskByID(req.ID)
 	if err != nil {
 		return errors.New("존재하지 않는 할 일입니다")
 	}
@@ -76,7 +77,7 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 		return errors.New("권한이 없습니다")
 	}
 
-	if err := s.taskRepo.DeleteTask(tx, req.TaskID); err != nil {
+	if err := s.taskRepo.DeleteTask(tx, req.ID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -109,4 +110,28 @@ func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.G
 	}
 
 	return result, nil
+}
+
+func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error) {
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	task, err := s.taskRepo.ToggleTask(tx, req.ID)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return &dto.ToggleTaskResponse{
+		ID:          task.ID,
+		IsCompleted: task.IsCompleted,
+	}, nil
 }

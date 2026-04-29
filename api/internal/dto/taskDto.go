@@ -19,7 +19,7 @@ type CreateTaskResponse struct {
 }
 
 type DeleteTaskRequest struct {
-	TaskID uint `json:"-" `
+	ID     uint `json:"-" `
 	UserID uint `json:"-" `
 }
 
@@ -40,4 +40,13 @@ type GetTasksByMonthResponse struct {
 	Date        time.Time `json:"date"`
 	IsCompleted bool      `json:"is_completed"`
 	IsPublic    bool      `json:"is_public"`
+}
+
+type ToggleTaskRequest struct {
+	ID uint `json:"id"`
+}
+
+type ToggleTaskResponse struct {
+	ID          uint `json:"id"`
+	IsCompleted bool `json:"is_completed"`
 }

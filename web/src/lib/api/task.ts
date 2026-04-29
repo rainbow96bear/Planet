@@ -1,4 +1,5 @@
 import type { CreateTaskBody, CreateTaskResponse, GetTasksByMonthResponse } from "$lib/types/task"
+import { ToggleTaskResponse } from "../types/task"
 
 export const getTasksByMonth = async (
     userid: number,
@@ -39,4 +40,14 @@ export const deleteTask = async (taskId: number): Promise<void> => {
         const err = await res.json()
         throw new Error(err.error ?? '서버 오류')
     }
+}
+
+export const toggleTask = async (taskId: number): Promise<ToggleTaskResponse> => {
+    const res = await fetch(`/api/v1/tasks/${taskId}/toggle`, {
+        method: 'POST',
+    })
+ 
+    if (!res.ok) throw new Error('Failed to toggle task')
+ 
+    return res.json()
 }

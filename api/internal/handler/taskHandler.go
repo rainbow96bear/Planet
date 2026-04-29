@@ -13,6 +13,7 @@ type TaskHandler interface {
 	CreateTask(c *gin.Context)
 	DeleteTask(c *gin.Context)
 	GetTasksByMonth(c *gin.Context)
+	ToggleTask(c *gin.Context)
 }
 
 type taskHandler struct {
@@ -50,7 +51,7 @@ func (h *taskHandler) DeleteTask(c *gin.Context) {
 	}
 
 	req := dto.DeleteTaskRequest{
-		TaskID: uint(taskID),
+		ID:     uint(taskID),
 		UserID: c.GetUint("userID"),
 	}
 
@@ -93,4 +94,24 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 	}
 
 	pkg.Success(c, 200, tasks)
+}
+
+func (h *taskHandler) ToggleTask(c *gin.Context) {
+	taskID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		pkg.Fail(c, 400, "잘못된 요청입니다")
+		return
+	}
+
+	req := dto.ToggleTaskRequest{
+		ID: uint(taskID),
+	}
+
+	task, err := h.taskSvc.ToggleTask(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
+		return
+	}
+
+	pkg.Success(c, 201, task)
 }

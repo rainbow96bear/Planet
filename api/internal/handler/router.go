@@ -30,6 +30,7 @@ func RegisterRoutes(
 		{
 			tasks.POST("", taskHandler.CreateTask)
 			tasks.DELETE("/:id", taskHandler.DeleteTask)
+			tasks.POST("/:id/toggle", taskHandler.ToggleTask)
 		}
 
 		users := v1.Group("/users")

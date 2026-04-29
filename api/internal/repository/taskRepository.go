@@ -12,6 +12,7 @@ type TaskRepository interface {
 	DeleteTask(tx *gorm.DB, taskId uint) error
 	GetTaskByID(taskId uint) (*model.Task, error)
 	GetTasksByMonth(username string, year, month int, isOwner bool) ([]*model.Task, error)
+	ToggleTask(tx *gorm.DB, taskId uint) (*model.Task, error)
 }
 
 type taskRepository struct {
@@ -58,4 +59,16 @@ func (r *taskRepository) GetTasksByMonth(username string, year, month int, isOwn
 	}
 
 	return tasks, nil
+}
+
+func (r *taskRepository) ToggleTask(tx *gorm.DB, taskId uint) (*model.Task, error) {
+	var task model.Task
+	if err := tx.First(&task, taskId).Error; err != nil {
+		return nil, err
+	}
+	task.IsCompleted = !task.IsCompleted
+	if err := tx.Model(&task).Update("is_completed", task.IsCompleted).Error; err != nil {
+		return nil, err
+	}
+	return &task, nil
 }

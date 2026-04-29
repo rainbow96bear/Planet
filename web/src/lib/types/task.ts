@@ -24,3 +24,8 @@ export interface CreateTaskResponse {
     is_public: boolean
     created_at: string
 }
+
+export interface ToggleTaskResponse {
+    id: number,
+    is_completed: boolean,
+}

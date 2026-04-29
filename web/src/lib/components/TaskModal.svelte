@@ -1,46 +1,26 @@
 <script lang="ts">
     import type { Task } from '$lib/types/task'
-    import { createTask, deleteTask } from '$lib/api/task'
+    import { deleteTask, toggleTask } from '$lib/api/task'
 
     let {
         day,
         year,
         month,
-        username,
         tasks = $bindable(),
         isOwner,
-        onClose
+        onClose,
+        onAddClick
     }: {
         day: number
         year: number
         month: number
-        username: string
         tasks: Task[]
         isOwner: boolean
         onClose: () => void
+        onAddClick?: () => void
     } = $props()
 
-    let newTitle = $state('')
-    let loading = $state(false)
     let error = $state('')
-
-    async function handleCreate() {
-        if (!newTitle.trim()) return
-        loading = true
-        try {
-            const task = await createTask({
-                title: newTitle,
-                date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
-                is_public: true
-            })
-            tasks = [...tasks, task]
-            newTitle = ''
-        } catch {
-            error = '추가에 실패했습니다.'
-        } finally {
-            loading = false
-        }
-    }
 
     async function handleDelete(taskId: number) {
         try {
@@ -51,12 +31,28 @@
         }
     }
 
+    async function handleToggle(task: Task) {
+        try {
+            await toggleTask(task.id)
+            tasks = tasks.map(t =>
+                t.id === task.id ? { ...t, is_completed: !t.is_completed } : t
+            )
+        } catch {
+            error = '변경에 실패했습니다.'
+        }
+    }
+
     function handleBackdropClick(e: MouseEvent) {
         if (e.target === e.currentTarget) onClose()
     }
 </script>
 
-<div class="modal-backdrop" onclick={handleBackdropClick}>
+<div
+    class="modal-backdrop"
+    role="presentation"
+    onclick={handleBackdropClick}
+    onkeydown={(e) => e.key === 'Escape' && onClose()}
+>
     <div class="modal">
         <div class="modal-header">
             <span class="modal-date">{year}년 {month}월 {day}일</span>
@@ -71,9 +67,22 @@
             <ul class="task-list">
                 {#each tasks as task}
                     <li class="task-item {task.is_completed ? 'completed' : ''}">
-                        <span>{task.title}</span>
                         {#if isOwner}
-                            <button class="btn-delete" onclick={() => handleDelete(task.id)}>✕</button>
+                            <button
+                                class="btn-toggle"
+                                onclick={() => handleToggle(task)}
+                                title={task.is_completed ? '완료 취소' : '완료로 표시'}
+                            >
+                                {task.is_completed ? '✓' : '○'}
+                            </button>
+                        {/if}
+                        <span class="task-title">{task.title}</span>
+                        {#if isOwner}
+                            <button
+                                class="btn-delete"
+                                onclick={() => handleDelete(task.id)}
+                                title="삭제"
+                            >✕</button>
                         {/if}
                     </li>
                 {:else}
@@ -82,17 +91,9 @@
             </ul>
 
             {#if isOwner}
-                <div class="task-input">
-                    <input
-                        type="text"
-                        bind:value={newTitle}
-                        placeholder="할 일을 입력하세요"
-                        onkeydown={(e) => e.key === 'Enter' && handleCreate()}
-                    />
-                    <button class="btn-add" onclick={handleCreate} disabled={loading}>
-                        {loading ? '...' : '+'}
-                    </button>
-                </div>
+                <button class="btn-open-add" onclick={onAddClick}>
+                    <span>+</span> 할 일 추가
+                </button>
             {/if}
         </div>
     </div>
@@ -155,8 +156,8 @@
 
     .task-item {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
         background: #1a1a26;
         border: 1px solid #a89fd420;
         border-radius: 8px;
@@ -167,15 +168,42 @@
 
     .task-item.completed {
         color: #a89fd4;
+    }
+
+    .task-item.completed .task-title {
         text-decoration: line-through;
+    }
+
+    .task-title {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .btn-toggle {
+        background: none;
+        border: none;
+        color: #a89fd4;
+        font-size: 0.85rem;
+        cursor: pointer;
+        width: 20px;
+        flex-shrink: 0;
+        transition: color 0.2s;
+    }
+
+    .btn-toggle:hover {
+        color: #b2ede6;
     }
 
     .btn-delete {
         background: none;
         border: none;
-        color: #a89fd4;
-        font-size: 0.8rem;
+        color: #a89fd450;
+        font-size: 0.75rem;
         cursor: pointer;
+        flex-shrink: 0;
         transition: color 0.2s;
     }
 
@@ -187,53 +215,30 @@
         font-size: 0.85rem;
         color: #a89fd4;
         text-align: center;
-        padding: 1rem 0;
+        padding: 1.5rem 0;
+        margin: 0;
     }
 
-    .task-input {
+    .btn-open-add {
         display: flex;
-        gap: 8px;
-    }
-
-    .task-input input {
-        flex: 1;
-        background: #1a1a26;
-        border: 1px solid #a89fd440;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        width: 100%;
+        padding: 0.6rem;
+        background: #b2ede610;
+        border: 1px dashed #b2ede640;
         border-radius: 8px;
-        padding: 0.6rem 0.9rem;
-        color: #fff;
-        font-size: 0.9rem;
-        outline: none;
-        transition: border-color 0.2s;
-    }
-
-    .task-input input:focus {
-        border-color: #b2ede6;
-    }
-
-    .task-input input::placeholder {
-        color: #3a3a50;
-    }
-
-    .btn-add {
-        background: #b2ede6;
-        border: none;
-        border-radius: 8px;
-        color: #0a0a0f;
-        font-size: 1.2rem;
-        font-weight: 700;
-        width: 40px;
+        color: #b2ede6;
+        font-size: 0.85rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: opacity 0.2s;
+        transition: background 0.2s, border-color 0.2s;
     }
 
-    .btn-add:hover:not(:disabled) {
-        opacity: 0.85;
-    }
-
-    .btn-add:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
+    .btn-open-add:hover {
+        background: #b2ede620;
+        border-color: #b2ede6;
     }
 
     .error-msg {
