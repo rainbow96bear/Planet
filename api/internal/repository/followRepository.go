@@ -9,7 +9,7 @@ import (
 type FollowRepository interface {
 	Follow(tx *gorm.DB, f *model.Follow) error
 	Unfollow(tx *gorm.DB, followerID, followingID uint) error
-	IsFollowing(tx *gorm.DB, followerID, followingID uint) (bool, error)
+	IsFollowing(followerID, followingID uint) (bool, error)
 }
 
 type followRepository struct {
@@ -28,8 +28,8 @@ func (r *followRepository) Unfollow(tx *gorm.DB, followerID, followingID uint) e
 	return tx.Where("follower_id = ? AND following_id = ?", followerID, followingID).Delete(&model.Follow{}).Error
 }
 
-func (r *followRepository) IsFollowing(tx *gorm.DB, followerID, followingID uint) (bool, error) {
+func (r *followRepository) IsFollowing(followerID, followingID uint) (bool, error) {
 	var count int64
-	err := tx.Model(&model.Follow{}).Where("follower_id = ? AND following_id = ?", followerID, followingID).Count(&count).Error
+	err := r.db.Model(&model.Follow{}).Where("follower_id = ? AND following_id = ?", followerID, followingID).Count(&count).Error
 	return count > 0, err
 }

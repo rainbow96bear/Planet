@@ -40,10 +40,16 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 		return nil, err
 	}
 
+	isFollowing, err := s.followRepo.IsFollowing(req.RequesterUserId, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
 	return &dto.GetProfileResponse{
-		Username: user.Username,
-		Nickname: user.Nickname,
-		IsOwner:  req.UserId == req.RequesterUserId,
+		Username:    user.Username,
+		Nickname:    user.Nickname,
+		IsOwner:     req.UserId == req.RequesterUserId,
+		IsFollowing: isFollowing,
 	}, nil
 }
 

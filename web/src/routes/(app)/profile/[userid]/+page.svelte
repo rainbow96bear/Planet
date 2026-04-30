@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getTasksByMonth } from '$lib/api/task'
+    import { follow, unfollow } from '$lib/api/user'
     import { page } from '$app/stores'
     import type { PageData } from './$types'
     import type { Task } from '$lib/types/task'
@@ -16,7 +17,7 @@
     let year = $state(data.year)
     let month = $state(data.month)
     let loading = $state(false)
-    let isFollowing = $state(data.isFollowing ?? false)
+    let isFollowing = $state(data.user.is_following ?? false)
     let followLoading = $state(false)
 
     // 모달 상태: selectedDay = TaskModal, addDay = AddTaskModal

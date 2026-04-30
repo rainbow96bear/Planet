@@ -6,11 +6,10 @@ type GetProfileRequest struct {
 }
 
 type GetProfileResponse struct {
-	Username  string `json:"username"`
-	Nickname  string `json:"nickname"`
-	Bio       string `json:"bio"`
-	AvatarURL string `json:"avatar_url"`
-	IsOwner   bool   `json:"is_owner"`
+	Username    string `json:"username"`
+	Nickname    string `json:"nickname"`
+	IsOwner     bool   `json:"is_owner"`
+	IsFollowing bool   `json:"is_following"`
 }
 
 type GetMeRequest struct {
