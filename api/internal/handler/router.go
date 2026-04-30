@@ -38,6 +38,8 @@ func RegisterRoutes(
 		{
 			users.GET("/:userid", userHandler.GetProfile)
 			users.GET("/:userid/tasks", taskHandler.GetTasksByMonth)
+			users.POST("/:userid/follow", userHandler.Follow)
+			users.DELETE("/:userid/follow", userHandler.Unfollow)
 		}
 	}
 }

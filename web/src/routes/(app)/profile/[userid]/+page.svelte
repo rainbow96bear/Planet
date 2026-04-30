@@ -39,16 +39,30 @@
         loading = false
     }
 
-    async function toggleFollow() {
+    async function handleFollow() {
         followLoading = true
         try {
-            // TODO: 실제 follow/unfollow API 연결
-            isFollowing = !isFollowing
+            await follow(userid)
+            isFollowing = true
+        } catch (e) {
+            console.error(e)
         } finally {
             followLoading = false
         }
     }
 
+    async function handleUnfollow() {
+        followLoading = true
+        try {
+            await unfollow(userid)
+            isFollowing = false
+        } catch (e) {
+            console.error(e)
+        } finally {
+            followLoading = false
+        }
+    }
+    
     const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
     function getCalendarDays(year: number, month: number) {
@@ -114,19 +128,25 @@
                     프로필 수정
                 </a>
             {:else}
-                <button
-                    class="action-btn {isFollowing ? 'following' : 'primary'}"
-                    onclick={toggleFollow}
-                    disabled={followLoading}
-                >
-                    {#if followLoading}
+                {#if followLoading}
+                    <button class="action-btn primary" disabled>
                         <span class="spinner"></span>
-                    {:else if isFollowing}
+                    </button>
+                {:else if isFollowing}
+                    <button
+                        class="action-btn following"
+                        onclick={handleUnfollow}
+                    >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
                         팔로잉
-                    {:else}
+                    </button>
+                {:else}
+                    <button
+                        class="action-btn primary"
+                        onclick={handleFollow}
+                    >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
@@ -134,8 +154,8 @@
                             <line x1="22" y1="11" x2="16" y2="11"/>
                         </svg>
                         팔로우
-                    {/if}
-                </button>
+                    </button>
+                {/if}
             {/if}
         </div>
     </div>

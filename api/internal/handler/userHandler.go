@@ -12,6 +12,8 @@ import (
 
 type UserHandler interface {
 	GetProfile(c *gin.Context)
+	Follow(c *gin.Context)
+	Unfollow(c *gin.Context)
 }
 
 type userHandler struct {
@@ -43,4 +45,48 @@ func (h *userHandler) GetProfile(c *gin.Context) {
 	}
 
 	pkg.Success(c, 200, profile)
+}
+
+func (h *userHandler) Follow(c *gin.Context) {
+	followingID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		pkg.Fail(c, 400, "잘못된 요청입니다")
+		return
+	}
+
+	followerID := c.GetUint("userID") // JWT 미들웨어에서 세팅한 값
+
+	req := dto.FollowRequest{
+		FollowerID:  followerID,
+		FollowingID: uint(followingID),
+	}
+
+	result, err := h.userSvc.Follow(&req)
+	if err != nil {
+		pkg.Fail(c, 409, err.Error())
+		return
+	}
+	pkg.Success(c, 201, result)
+}
+
+func (h *userHandler) Unfollow(c *gin.Context) {
+	followingID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		pkg.Fail(c, 400, "잘못된 요청입니다")
+		return
+	}
+
+	followerID := c.GetUint("userID") // JWT 미들웨어에서 세팅한 값
+
+	req := dto.UnfollowRequest{
+		FollowerID:  followerID,
+		FollowingID: uint(followingID),
+	}
+
+	result, err := h.userSvc.Unfollow(&req)
+	if err != nil {
+		pkg.Fail(c, 400, err.Error())
+		return
+	}
+	pkg.Success(c, 200, result)
 }
