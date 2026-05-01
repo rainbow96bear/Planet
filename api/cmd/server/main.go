@@ -34,16 +34,17 @@ func main() {
 	}
 
 	// Auto migrate
-	if err := db.AutoMigrate(&model.User{}, &model.Task{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Task{}, &model.Follow{}); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
 
 	userRepo := repository.NewUserRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
+	followRepo := repository.NewFollowRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
 	taskSvc := service.NewTaskService(db, taskRepo)
-	userSvc := service.NewUserService(db, userRepo)
+	userSvc := service.NewUserService(db, userRepo, followRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	taskHandler := handler.NewTaskHandler(taskSvc)

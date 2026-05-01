@@ -3,7 +3,6 @@
   import './layout.css'
 
   let { children } = $props()
-   $inspect($page.data) 
 </script>
 
 {@render children()}

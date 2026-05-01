@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params, fetch, cookies, parent }) =
     const now = new Date()
     const year = now.getFullYear()
     const month = now.getMonth() + 1
-
+    
     const headers: Record<string, string> = token
         ? { Authorization: `Bearer ${token}` }
         : {}

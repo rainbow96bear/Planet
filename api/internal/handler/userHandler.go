@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"planet/internal/dto"
 	"planet/internal/pkg"
@@ -37,7 +38,7 @@ func (h *userHandler) GetProfile(c *gin.Context) {
 		UserId:          uint(userID),
 		RequesterUserId: c.GetUint("userID"),
 	}
-
+	fmt.Printf("user id : %+v, requester user id : %+v\n", req.UserId, req.RequesterUserId)
 	profile, err := h.userSvc.GetProfile(&req)
 	if err != nil {
 		pkg.Fail(c, 500, err.Error())
