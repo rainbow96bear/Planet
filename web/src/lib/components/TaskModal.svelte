@@ -9,7 +9,9 @@
         tasks = $bindable(),
         isOwner,
         onClose,
-        onAddClick
+        onAddClick,
+        onDeleted,
+        onToggled
     }: {
         day: number
         year: number
@@ -18,6 +20,8 @@
         isOwner: boolean
         onClose: () => void
         onAddClick?: () => void
+        onDeleted?: (taskId: number) => void
+        onToggled?: (taskId: number) => void
     } = $props()
 
     let error = $state('')
@@ -26,6 +30,7 @@
         try {
             await deleteTask(taskId)
             tasks = tasks.filter(t => t.id !== taskId)
+            onDeleted?.(taskId)
         } catch {
             error = '삭제에 실패했습니다.'
         }
@@ -37,6 +42,7 @@
             tasks = tasks.map(t =>
                 t.id === task.id ? { ...t, is_completed: !t.is_completed } : t
             )
+            onToggled?.(task.id)
         } catch {
             error = '변경에 실패했습니다.'
         }

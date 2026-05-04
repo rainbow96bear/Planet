@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/repository"
@@ -90,9 +91,9 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 }
 
 func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error) {
-	isOwner := req.Username == req.RequesterUsername
+	isOwner := req.UserID == req.RequesterUsername
 
-	tasks, err := s.taskRepo.GetTasksByMonth(req.Username, req.Year, req.Month, isOwner)
+	tasks, err := s.taskRepo.GetTasksByMonth(req.UserID, req.Year, req.Month, isOwner)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.G
 			IsPublic:    task.IsPublic,
 		}
 	}
-
+	fmt.Printf("tasks : %+v\n", result)
 	return result, nil
 }
 

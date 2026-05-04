@@ -14,13 +14,12 @@ export const load: PageServerLoad = async ({ params, fetch, cookies, parent }) =
         ? { Authorization: `Bearer ${token}` }
         : {}
 
-    const [userRes, tasksRes] = await Promise.all([
+    const [profileUserRes, tasksRes] = await Promise.all([
         fetch(`${GO_API_URL}/api/v1/users/${userid}`, { headers }),
         fetch(`${GO_API_URL}/api/v1/users/${userid}/tasks?year=${year}&month=${month}`, { headers })
     ])
 
-    const user = await userRes.json()
+    const profileUser = await profileUserRes.json()
     const tasks = await tasksRes.json()
-
-    return { user, tasks, year, month, me }
+    return { profileUser, tasks, year, month, me }
 }

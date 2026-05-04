@@ -5,7 +5,7 @@
   import '../app.css'
 
   let { children } = $props()
-
+  console.log($page)
   async function handleLogout() {
     await logout()
     window.location.reload()
@@ -21,7 +21,9 @@
     <a href="/" class="logo">🪐 Planet</a>
     <nav class="nav">
       {#if $page.data.user}
-        <span class="nickname">{$page.data.user.nickname}</span>
+        <a href={`/profile/${$page.data.user.userid}`} class="nickname">
+          {$page.data.user.nickname}
+        </a>
         <button onclick={handleLogout} class="btn-logout">로그아웃</button>
       {:else}
         <a href="/login" class="btn-login">로그인</a>

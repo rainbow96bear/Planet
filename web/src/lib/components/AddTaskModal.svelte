@@ -34,7 +34,7 @@
         try {
             const task = await createTask({
                 title: title.trim(),
-                date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+                date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00:00Z`,
                 is_public: isPublic
             })
             onCreated(task)

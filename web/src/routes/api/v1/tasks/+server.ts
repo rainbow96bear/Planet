@@ -7,7 +7,6 @@ import {
 export const POST: RequestHandler = async ({ fetch, request, cookies }) => {
     const token = cookies.get('access_token')
     const body = await request.json()
-
     const res = await fetch(`${GO_API_URL}/api/v1/tasks`, {
         method: 'POST',
         headers: {

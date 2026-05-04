@@ -11,8 +11,7 @@
     let { data }: { data: PageData } = $props()
 
     const userid = Number($page.params.userid!)
-    const isOwner = data.user.userid === data.me?.userid
-
+    const isOwner = userid === data.me?.userid
     let tasks = $state(data.tasks)
     let year = $state(data.year)
     let month = $state(data.month)
@@ -20,7 +19,6 @@
     let isFollowing = $state(data.user.is_following ?? false)
     let followLoading = $state(false)
 
-    // 모달 상태: selectedDay = TaskModal, addDay = AddTaskModal
     let selectedDay = $state<number | null>(null)
     let addDay = $state<number | null>(null)
 
@@ -63,7 +61,19 @@
             followLoading = false
         }
     }
-    
+
+    // 삭제 콜백: 페이지 tasks에서 제거
+    function handleTaskDeleted(taskId: number) {
+        tasks = tasks.filter(t => t.id !== taskId)
+    }
+
+    // 토글 콜백: 페이지 tasks에서 완료 상태 반전
+    function handleTaskToggled(taskId: number) {
+        tasks = tasks.map(t =>
+            t.id === taskId ? { ...t, is_completed: !t.is_completed } : t
+        )
+    }
+
     const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
     function getCalendarDays(year: number, month: number) {
@@ -87,25 +97,21 @@
         return null
     }
 
-    // TaskModal 열기 (목록 보기)
     function openTaskModal(day: number) {
         selectedDay = day
     }
 
-    // AddTaskModal 열기: 셀 + 버튼에서 해당 날짜로 직접 오픈
     function openAddModal(day: number, e: MouseEvent) {
         e.stopPropagation()
         addDay = day
     }
 
-    // TaskModal 내부의 "할 일 추가" 버튼 → AddTaskModal로 전환
     function handleAddClick() {
         if (selectedDay !== null) {
             addDay = selectedDay
         }
     }
 
-    // 새 할 일이 생성됐을 때 tasks에 반영
     function handleTaskCreated(task: Task) {
         tasks = [...tasks, task]
     }
@@ -134,20 +140,14 @@
                         <span class="spinner"></span>
                     </button>
                 {:else if isFollowing}
-                    <button
-                        class="action-btn following"
-                        onclick={handleUnfollow}
-                    >
+                    <button class="action-btn following" onclick={handleUnfollow}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
                         팔로잉
                     </button>
                 {:else}
-                    <button
-                        class="action-btn primary"
-                        onclick={handleFollow}
-                    >
+                    <button class="action-btn primary" onclick={handleFollow}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
@@ -211,7 +211,6 @@
     </div>
 </div>
 
-<!-- 목록 보기 모달 -->
 {#if selectedDay !== null && addDay === null}
     <TaskModal
         day={selectedDay}
@@ -221,10 +220,11 @@
         {isOwner}
         onClose={() => selectedDay = null}
         onAddClick={handleAddClick}
+        onDeleted={handleTaskDeleted}
+        onToggled={handleTaskToggled}
     />
 {/if}
 
-<!-- 할 일 추가 모달 -->
 {#if addDay !== null}
     <AddTaskModal
         day={addDay}

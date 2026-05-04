@@ -11,7 +11,7 @@ type TaskRepository interface {
 	CreateTask(tx *gorm.DB, task *model.Task) error
 	DeleteTask(tx *gorm.DB, taskId uint) error
 	GetTaskByID(taskId uint) (*model.Task, error)
-	GetTasksByMonth(username string, year, month int, isOwner bool) ([]*model.Task, error)
+	GetTasksByMonth(userid uint, year, month int, isOwner bool) ([]*model.Task, error)
 	ToggleTask(tx *gorm.DB, taskId uint) (*model.Task, error)
 }
 
@@ -39,16 +39,15 @@ func (r *taskRepository) GetTaskByID(taskId uint) (*model.Task, error) {
 	return &task, nil
 }
 
-func (r *taskRepository) GetTasksByMonth(username string, year, month int, isOwner bool) ([]*model.Task, error) {
+func (r *taskRepository) GetTasksByMonth(userid uint, year, month int, isOwner bool) ([]*model.Task, error) {
 	var tasks []*model.Task
 
 	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
 	endDate := startDate.AddDate(0, 1, 0)
-
 	query := r.db.Model(&model.Task{}).
 		Select("tasks.*").
 		Joins("JOIN users ON users.id = tasks.user_id").
-		Where("users.username = ? AND tasks.date >= ? AND tasks.date < ?", username, startDate, endDate)
+		Where("users.id = ? AND tasks.date >= ? AND tasks.date < ?", userid, startDate, endDate)
 
 	if !isOwner {
 		query = query.Where("tasks.is_public = ?", true)

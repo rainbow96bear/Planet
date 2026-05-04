@@ -27,8 +27,8 @@ type DeleteTaskResponse struct {
 }
 
 type GetTasksByMonthRequest struct {
-	Username          string
-	RequesterUsername string
+	UserID            uint
+	RequesterUsername uint
 	Year              int
 	Month             int
 }

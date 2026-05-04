@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"net/http"
 	"planet/internal/dto"
 	"planet/internal/pkg"
 	"planet/internal/service"
@@ -63,7 +64,11 @@ func (h *taskHandler) DeleteTask(c *gin.Context) {
 }
 
 func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
-	username := c.Param("username")
+	userID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
 
 	yearStr := c.Query("year")
 	monthStr := c.Query("month")
@@ -81,8 +86,8 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 	}
 
 	req := dto.GetTasksByMonthRequest{
-		Username:          username,
-		RequesterUsername: c.GetString("username"),
+		UserID:            uint(userID),
+		RequesterUsername: c.GetUint("userID"),
 		Year:              year,
 		Month:             month,
 	}

@@ -16,6 +16,7 @@ export const getTasksByMonth = async (
 }
 
 export const createTask = async (body: CreateTaskBody): Promise<CreateTaskResponse> => {
+    console.log(body)
     const res = await fetch('/api/v1/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -49,7 +49,7 @@ func (h *userHandler) GetProfile(c *gin.Context) {
 }
 
 func (h *userHandler) Follow(c *gin.Context) {
-	followingID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	followingID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
 	if err != nil {
 		pkg.Fail(c, 400, "잘못된 요청입니다")
 		return
@@ -71,7 +71,7 @@ func (h *userHandler) Follow(c *gin.Context) {
 }
 
 func (h *userHandler) Unfollow(c *gin.Context) {
-	followingID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	followingID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
 	if err != nil {
 		pkg.Fail(c, 400, "잘못된 요청입니다")
 		return
