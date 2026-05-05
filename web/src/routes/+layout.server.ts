@@ -6,20 +6,23 @@ import {
 
 export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
     const accessToken = cookies.get('access_token')
-    if (!accessToken) return { user: null }
+    const refreshToken = cookies.get('refresh_token')
+
+    if (!accessToken && !refreshToken) return { user: null }
 
     try {
-        const payload = decodeJwtPayload(accessToken)
-        if (payload.exp * 1000 > Date.now()) {
-            return { user: { userid: payload.userid, username: payload.username, nickname: payload.nickname } }
+        if (accessToken) {
+            const payload = decodeJwtPayload(accessToken)
+            if (payload.exp * 1000 > Date.now()) {
+                return { user: { userid: payload.userid, username: payload.username, nickname: payload.nickname } }
+            }
         }
 
-        const refreshToken = cookies.get('refresh_token')
         if (!refreshToken) return { user: null }
 
         const res = await fetch(`${GO_API_URL}/api/v1/auth/refresh`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${refreshToken}` }
+            headers: { Authorization: `Bearer ${refreshToken}` }
         })
 
         if (!res.ok) {
@@ -30,14 +33,14 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 
         const data = await res.json()
         cookies.set('access_token', data.access_token, {
-             httpOnly: true, path: '/', maxAge: 60 * 60 
+            httpOnly: true, path: '/', maxAge: 60 * 60
         })
-        cookies.set('refresh_token', data.refresh_token, { 
-            httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 30 
+        cookies.set('refresh_token', data.refresh_token, {
+            httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 30
         })
-        
+
         const newPayload = decodeJwtPayload(data.access_token)
-        return { user: { userid: newPayload.userid, username: newPayload.username, nickname: newPayload.nickname } ,newPayload}
+        return { user: { userid: newPayload.userid, username: newPayload.username, nickname: newPayload.nickname } }
 
     } catch {
         return { user: null }

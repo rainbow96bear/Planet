@@ -1,45 +1,30 @@
 import { json } from '@sveltejs/kit'
 import type { RequestHandler } from '@sveltejs/kit'
 import { GO_API_URL } from '$env/static/private'
+import { fetchWithRefresh } from '$lib/server/fetchWithRefresh'
 
-export const POST: RequestHandler = async ({ params, url, fetch, cookies }) => {
+export const POST: RequestHandler = async ({ params, fetch, cookies }) => {
     const { userid } = params
 
-    const token = cookies.get('access_token')
-
-    const headers: Record<string, string> = {}
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-    }
-
-    const res = await fetch(
+    const res = await fetchWithRefresh(
         `${GO_API_URL}/api/v1/users/${userid}/follow`,
-        { 
-            method: 'POST',
-            headers
-        }
+        { method: 'POST' },
+        cookies,
+        fetch
     )
 
     const data = await res.json()
     return json(data, { status: res.status })
 }
 
-export const DELETE: RequestHandler = async ({ params, url, fetch, cookies }) => {
+export const DELETE: RequestHandler = async ({ params, fetch, cookies }) => {
     const { userid } = params
 
-    const token = cookies.get('access_token')
-
-    const headers: Record<string, string> = {}
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-    }
-
-    const res = await fetch(
+    const res = await fetchWithRefresh(
         `${GO_API_URL}/api/v1/users/${userid}/follow`,
-        { 
-            method: 'DELETE',
-            headers 
-        }
+        { method: 'DELETE' },
+        cookies,
+        fetch
     )
 
     const data = await res.json()
