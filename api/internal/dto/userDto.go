@@ -32,3 +32,14 @@ type GetProfilByUserIdeResponse struct {
 	AvatarURL string `json:"avatar_url"`
 	IsOwner   bool   `json:"is_owner"`
 }
+
+type UpdateProfileRequest struct {
+	UserID   uint   `json:"-"`
+	Nickname string `json:"nickname" binding:"required"`
+}
+
+type UpdateProfileResponse struct {
+	UserID   uint   `json:"userid"`
+	Username string `json:"username"`
+	Nickname string `json:"nickname"`
+}

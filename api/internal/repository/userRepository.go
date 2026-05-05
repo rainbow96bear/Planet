@@ -12,6 +12,7 @@ type UserRepository interface {
 	FindByUsername(username string) (model.User, error)
 	FindByProviderInfo(provider, providerID string) (*model.User, error)
 	FindByUserId(userid uint) (model.User, error)
+	UpdateProfile(tx *gorm.DB, u *model.User) error
 }
 
 type userRepository struct {
@@ -54,4 +55,10 @@ func (r *userRepository) FindByUserId(userid uint) (model.User, error) {
 		return model.User{}, err
 	}
 	return user, nil
+}
+
+func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
+	return tx.Model(u).Updates(model.User{
+		Nickname: u.Nickname,
+	}).Error
 }

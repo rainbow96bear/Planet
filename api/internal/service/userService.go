@@ -13,6 +13,7 @@ type UserService interface {
 	GetProfile(*dto.GetProfileRequest) (*dto.GetProfileResponse, error)
 	Follow(*dto.FollowRequest) (*dto.FollowResponse, error)
 	Unfollow(*dto.UnfollowRequest) (*dto.UnfollowResponse, error)
+	UpdateProfile(*dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error)
 }
 
 type userService struct {
@@ -94,4 +95,33 @@ func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse,
 	}
 
 	return &dto.UnfollowResponse{IsFollowing: false}, nil
+}
+
+func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error) {
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	user := &model.User{
+		ID:       req.UserID,
+		Nickname: req.Nickname,
+	}
+
+	if err := s.userRepo.UpdateProfile(tx, user); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return &dto.UpdateProfileResponse{
+		UserID:   user.ID,
+		Username: user.Username,
+		Nickname: user.Nickname,
+	}, nil
 }

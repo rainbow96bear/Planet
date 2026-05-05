@@ -38,8 +38,14 @@ func RegisterRoutes(
 		{
 			users.GET("/:userid", userHandler.GetProfile)
 			users.GET("/:userid/tasks", taskHandler.GetTasksByMonth)
-			users.POST("/:userid/follow", userHandler.Follow)
-			users.DELETE("/:userid/follow", userHandler.Unfollow)
+		}
+
+		usersAuth := v1.Group("/users")
+		usersAuth.Use(middleware.AuthMiddleware())
+		{
+			usersAuth.PATCH("/:userid", userHandler.UpdateProfile)
+			usersAuth.POST("/:userid/follow", userHandler.Follow)
+			usersAuth.DELETE("/:userid/follow", userHandler.Unfollow)
 		}
 	}
 }

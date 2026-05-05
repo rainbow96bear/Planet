@@ -5,7 +5,6 @@
   import '../app.css'
 
   let { children } = $props()
-  console.log($page)
   async function handleLogout() {
     await logout()
     window.location.reload()

@@ -1,0 +1,251 @@
+.settings-container {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* ── 헤더 ── */
+.settings-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #a89fd4;
+    font-size: 0.85rem;
+    text-decoration: none;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid #a89fd430;
+    border-radius: 8px;
+    background: #1a1a26;
+    transition: color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    color: #d0c8f0;
+    border-color: #a89fd4;
+}
+
+.settings-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+/* ── 카드 ── */
+.settings-card {
+    background: #12121a;
+    border: 1px solid #a89fd430;
+    border-radius: 16px;
+    padding: 1.75rem;
+}
+
+/* ── 아바타 섹션 ── */
+.avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.avatar {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a26;
+    border: 1px solid #a89fd430;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.avatar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.avatar-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.avatar-username {
+    font-size: 0.85rem;
+    color: #a89fd4;
+}
+
+/* ── 구분선 ── */
+.divider {
+    height: 1px;
+    background: #a89fd420;
+    margin-bottom: 1.5rem;
+}
+
+/* ── 폼 ── */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #a89fd4;
+    letter-spacing: 0.03em;
+}
+
+.form-input {
+    background: #1a1a26;
+    border: 1px solid #a89fd430;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.form-input:focus {
+    border-color: #a89fd4;
+}
+
+.form-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-textarea {
+    resize: none;
+    line-height: 1.6;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: #a89fd480;
+    text-align: right;
+}
+
+/* ── 메시지 ── */
+.form-error {
+    font-size: 0.82rem;
+    color: #e05c5c;
+    margin: 0;
+    padding: 0.6rem 0.85rem;
+    background: #e05c5c15;
+    border: 1px solid #e05c5c30;
+    border-radius: 8px;
+}
+
+.form-success {
+    font-size: 0.82rem;
+    color: #b2ede6;
+    margin: 0;
+    padding: 0.6rem 0.85rem;
+    background: #b2ede615;
+    border: 1px solid #b2ede630;
+    border-radius: 8px;
+}
+
+/* ── 액션 버튼 ── */
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #a89fd4;
+    background: #1a1a26;
+    border: 1px solid #a89fd440;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #22223a;
+    border-color: #a89fd4;
+    color: #d0c8f0;
+}
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1.4rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #b2ede6;
+    background: #b2ede620;
+    border: 1px solid #b2ede650;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    min-width: 70px;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: #b2ede630;
+    border-color: #b2ede6;
+}
+
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── 스피너 ── */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── 반응형 ── */
+@media (max-width: 520px) {
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-cancel,
+    .btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
+}

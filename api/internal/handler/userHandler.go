@@ -15,6 +15,7 @@ type UserHandler interface {
 	GetProfile(c *gin.Context)
 	Follow(c *gin.Context)
 	Unfollow(c *gin.Context)
+	UpdateProfile(c *gin.Context)
 }
 
 type userHandler struct {
@@ -87,6 +88,30 @@ func (h *userHandler) Unfollow(c *gin.Context) {
 	result, err := h.userSvc.Unfollow(&req)
 	if err != nil {
 		pkg.Fail(c, 400, err.Error())
+		return
+	}
+	pkg.Success(c, 200, result)
+}
+
+func (h *userHandler) UpdateProfile(c *gin.Context) {
+	userid, _ := strconv.ParseUint(c.Param("userid"), 10, 64)
+	requesterID := c.GetUint("userID")
+
+	if uint(userid) != requesterID {
+		pkg.Fail(c, 403, "권한이 없습니다")
+		return
+	}
+
+	var req dto.UpdateProfileRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.Fail(c, 400, err.Error())
+		return
+	}
+	req.UserID = uint(userid)
+
+	result, err := h.userSvc.UpdateProfile(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
 		return
 	}
 	pkg.Success(c, 200, result)
