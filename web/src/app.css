@@ -37,9 +37,16 @@ html, body {
     gap: 1rem;
 }
 
-.nickname {
-    font-size: 0.9rem;
+.profile-icon {
     color: #a89fd4;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.profile-icon:hover {
+    color: #b2ede6;
 }
 
 .btn-login {

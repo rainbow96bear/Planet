@@ -145,11 +145,11 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 		return nil, errors.New("invalid password")
 	}
 
-	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username, user.Nickname)
+	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username)
 	if err != nil {
 
 	}
-	refreshToken, err := pkg.GenerateRefreshToken(user.ID, user.Username, user.Nickname)
+	refreshToken, err := pkg.GenerateRefreshToken(user.ID, user.Username)
 	if err != nil {
 
 	}
@@ -175,11 +175,11 @@ func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginRes
 	}
 
 	// 기존 유저면 JWT 발급
-	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username, user.Nickname)
+	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := pkg.GenerateRefreshToken(user.ID, user.Username, user.Nickname)
+	refreshToken, err := pkg.GenerateRefreshToken(user.ID, user.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -201,17 +201,16 @@ func (s *authService) Refresh(req *dto.RefreshRequest) (*dto.RefreshResponse, er
 
 	userid := claims.UserID
 	username := claims.Username
-	nickname := claims.Nickname
 	_, err = s.userRepo.FindByUsername(username)
 	if err != nil {
 		return nil, errors.New("user not found")
 	}
 
-	accessToken, err := pkg.GenerateAccessToken(userid, username, nickname)
+	accessToken, err := pkg.GenerateAccessToken(userid, username)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := pkg.GenerateRefreshToken(userid, username, nickname)
+	refreshToken, err := pkg.GenerateRefreshToken(userid, username)
 	if err != nil {
 		return nil, err
 	}
