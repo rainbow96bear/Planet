@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
+  import { goto, invalidateAll } from '$app/navigation'
   import { login } from '$lib/api/auth'
   import kakaoLoginBtn from '$lib/assets/kakaoLoginBtn.png'
   import naverLoginBtn from '$lib/assets/naverLoginBtn.png'
@@ -16,6 +16,7 @@
     loading = true
     try {
       await login({ username, password })
+      await invalidateAll()
       goto('/')
     } catch {
       error = '로그인에 실패했습니다.'
