@@ -91,7 +91,7 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 }
 
 func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error) {
-	isOwner := req.UserID == req.RequesterUsername
+	isOwner := req.UserID == req.RequesterUserId
 
 	tasks, err := s.taskRepo.GetTasksByMonth(req.UserID, req.Year, req.Month, isOwner)
 	if err != nil {

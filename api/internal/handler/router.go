@@ -11,6 +11,7 @@ func RegisterRoutes(
 	authHandler AuthHandler,
 	taskHandler TaskHandler,
 	userHandler UserHandler,
+	searchHandler SearchHandler,
 ) {
 
 	v1 := r.Group("/api/v1")
@@ -46,6 +47,12 @@ func RegisterRoutes(
 			usersAuth.PATCH("/:userid", userHandler.UpdateProfile)
 			usersAuth.POST("/:userid/follow", userHandler.Follow)
 			usersAuth.DELETE("/:userid/follow", userHandler.Unfollow)
+		}
+
+		search := v1.Group("/search")
+		search.Use(middleware.OptionalAuthMiddleware())
+		{
+			search.GET("/users", searchHandler.SearchUsers)
 		}
 	}
 }

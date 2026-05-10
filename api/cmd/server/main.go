@@ -45,13 +45,15 @@ func main() {
 	authSvc := service.NewAuthService(db, userRepo)
 	taskSvc := service.NewTaskService(db, taskRepo)
 	userSvc := service.NewUserService(db, userRepo, followRepo)
+	searchSvc := service.NewSearchService(db, userRepo, followRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	taskHandler := handler.NewTaskHandler(taskSvc)
 	userHandler := handler.NewUserHandler(userSvc)
+	searchHandler := handler.NewSearchHandler(searchSvc)
 
 	r := gin.Default()
-	handler.RegisterRoutes(r, authHandler, taskHandler, userHandler)
+	handler.RegisterRoutes(r, authHandler, taskHandler, userHandler, searchHandler)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.App.Port),

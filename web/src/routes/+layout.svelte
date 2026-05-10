@@ -1,13 +1,24 @@
 <script lang="ts">
   import favicon from '$lib/assets/favicon.png'
   import { page } from '$app/stores'
+  import { goto } from '$app/navigation'
   import { logout } from '$lib/api/auth'
   import '../app.css'
+  import './layout.css'
 
   let { children } = $props()
+
+  let searchQuery = $state('')
+
   async function handleLogout() {
     await logout()
     window.location.reload()
+  }
+
+  function handleSearch(e: Event) {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+    goto(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
   }
 </script>
 
@@ -18,6 +29,22 @@
 <div class="app-layout">
   <header class="header">
     <a href="/" class="logo">🪐 Planet</a>
+
+    <form class="search-form" onsubmit={handleSearch}>
+      <div class="search-wrapper">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="사용자 검색"
+          bind:value={searchQuery}
+        />
+      </div>
+    </form>
+
     <nav class="nav">
       {#if $page.data.user}
         <a href={`/profile/${$page.data.user.userid}`} class="profile-icon">

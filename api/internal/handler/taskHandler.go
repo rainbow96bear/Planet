@@ -70,27 +70,14 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 		return
 	}
 
-	yearStr := c.Query("year")
-	monthStr := c.Query("month")
-
-	year, err := strconv.Atoi(yearStr)
-	if err != nil {
-		pkg.Fail(c, 400, "잘못된 year 값입니다")
+	var req dto.GetTasksByMonthRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		pkg.Fail(c, 400, err.Error())
 		return
 	}
 
-	month, err := strconv.Atoi(monthStr)
-	if err != nil || month < 1 || month > 12 {
-		pkg.Fail(c, 400, "잘못된 month 값입니다")
-		return
-	}
-
-	req := dto.GetTasksByMonthRequest{
-		UserID:            uint(userID),
-		RequesterUsername: c.GetUint("userID"),
-		Year:              year,
-		Month:             month,
-	}
+	req.UserID = uint(userID)
+	req.RequesterUserId = c.GetUint("userID")
 
 	tasks, err := h.taskSvc.GetTasksByMonth(&req)
 	if err != nil {

@@ -27,10 +27,10 @@ type DeleteTaskResponse struct {
 }
 
 type GetTasksByMonthRequest struct {
-	UserID            uint
-	RequesterUsername uint
-	Year              int
-	Month             int
+	UserID          uint `form:"-"`
+	RequesterUserId uint `form:"-"`
+	Year            int  `form:"year" binding:"required"`
+	Month           int  `form:"month" binding:"required,min=1,max=12"`
 }
 
 type GetTasksByMonthResponse struct {

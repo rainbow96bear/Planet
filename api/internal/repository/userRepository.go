@@ -13,6 +13,7 @@ type UserRepository interface {
 	FindByProviderInfo(provider, providerID string) (*model.User, error)
 	FindByUserId(userid uint) (model.User, error)
 	UpdateProfile(tx *gorm.DB, u *model.User) error
+	SearchByKeyword(q string) ([]*model.User, error)
 }
 
 type userRepository struct {
@@ -61,4 +62,17 @@ func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
 	return tx.Model(u).Updates(model.User{
 		Nickname: u.Nickname,
 	}).Error
+}
+
+func (r *userRepository) SearchByKeyword(q string) ([]*model.User, error) {
+	var users []*model.User
+	keyword := "%" + q + "%"
+	if err := r.db.
+		Where("username LIKE ? OR nickname LIKE ?", keyword, keyword).
+		Limit(20).
+		Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
