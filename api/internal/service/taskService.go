@@ -18,15 +18,20 @@ type TaskService interface {
 }
 
 type taskService struct {
-	db *gorm.DB
-	// userRepo repository.UserRepository
-	taskRepo repository.TaskRepository
+	db           *gorm.DB
+	taskRepo     repository.TaskRepository
+	activityRepo repository.ActivityRepository
 }
 
-func NewTaskService(db *gorm.DB, taskRepo repository.TaskRepository) TaskService {
+func NewTaskService(
+	db *gorm.DB,
+	taskRepo repository.TaskRepository,
+	activityRepo repository.ActivityRepository,
+) TaskService {
 	return &taskService{
-		db:       db,
-		taskRepo: taskRepo,
+		db:           db,
+		taskRepo:     taskRepo,
+		activityRepo: activityRepo,
 	}
 }
 
@@ -46,6 +51,19 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 		IsPublic:    req.IsPublic,
 	}
 	if err := s.taskRepo.CreateTask(tx, task); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 추가
+	targetType := model.TargetTypeTask
+	if err := s.activityRepo.Create(tx, &model.Activity{
+		UserID:     req.UserID,
+		Type:       model.ActivityTaskCreated,
+		TargetID:   task.ID,
+		TargetType: targetType,
+	}); err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
@@ -125,6 +143,20 @@ func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskRes
 	if err != nil {
 		tx.Rollback()
 		return nil, err
+	}
+
+	// 완료 시에만 기록
+	if task.IsCompleted {
+		targetType := model.TargetTypeTask
+		if err := s.activityRepo.Create(tx, &model.Activity{
+			UserID:     task.UserID,
+			Type:       model.ActivityTaskCompleted,
+			TargetID:   task.ID,
+			TargetType: targetType,
+		}); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
 
 	if err := tx.Commit().Error; err != nil {

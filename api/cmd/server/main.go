@@ -41,19 +41,29 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
 	followRepo := repository.NewFollowRepository(db)
+	activityRepo := repository.NewActivityRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
-	taskSvc := service.NewTaskService(db, taskRepo)
-	userSvc := service.NewUserService(db, userRepo, followRepo)
+	taskSvc := service.NewTaskService(db, taskRepo, activityRepo)
+	userSvc := service.NewUserService(db, userRepo, followRepo, activityRepo)
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
+	feedSvc := service.NewFeedService(db, activityRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	taskHandler := handler.NewTaskHandler(taskSvc)
 	userHandler := handler.NewUserHandler(userSvc)
 	searchHandler := handler.NewSearchHandler(searchSvc)
+	feedHandler := handler.NewFeedHandler(feedSvc)
 
 	r := gin.Default()
-	handler.RegisterRoutes(r, authHandler, taskHandler, userHandler, searchHandler)
+	handler.RegisterRoutes(
+		r,
+		authHandler,
+		taskHandler,
+		userHandler,
+		searchHandler,
+		feedHandler,
+	)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.App.Port),

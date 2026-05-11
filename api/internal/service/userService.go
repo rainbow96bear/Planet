@@ -17,20 +17,23 @@ type UserService interface {
 }
 
 type userService struct {
-	db         *gorm.DB
-	userRepo   repository.UserRepository
-	followRepo repository.FollowRepository
+	db           *gorm.DB
+	userRepo     repository.UserRepository
+	followRepo   repository.FollowRepository
+	activityRepo repository.ActivityRepository
 }
 
 func NewUserService(
 	db *gorm.DB,
 	userRepo repository.UserRepository,
 	followRepo repository.FollowRepository,
+	activityRepo repository.ActivityRepository,
 ) UserService {
 	return &userService{
-		db:         db,
-		userRepo:   userRepo,
-		followRepo: followRepo,
+		db:           db,
+		userRepo:     userRepo,
+		followRepo:   followRepo,
+		activityRepo: activityRepo,
 	}
 }
 
@@ -85,6 +88,18 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 	}); err != nil {
 		tx.Rollback()
 		return nil, errors.New("이미 팔로우 중입니다")
+	}
+
+	// 추가
+	targetType := model.TargetTypeUser
+	if err := s.activityRepo.Create(tx, &model.Activity{
+		UserID:     req.FollowerID,
+		Type:       model.ActivityFollowed,
+		TargetID:   req.FollowingID,
+		TargetType: targetType,
+	}); err != nil {
+		tx.Rollback()
+		return nil, err
 	}
 
 	if err := tx.Commit().Error; err != nil {

@@ -12,6 +12,7 @@ func RegisterRoutes(
 	taskHandler TaskHandler,
 	userHandler UserHandler,
 	searchHandler SearchHandler,
+	feedHandler FeedHandler,
 ) {
 
 	v1 := r.Group("/api/v1")
@@ -53,6 +54,12 @@ func RegisterRoutes(
 		search.Use(middleware.OptionalAuthMiddleware())
 		{
 			search.GET("/users", searchHandler.SearchUsers)
+		}
+
+		feed := v1.Group("/feed")
+		feed.Use(middleware.OptionalAuthMiddleware())
+		{
+			// feed.GET("", feedHandler.GetFeed)
 		}
 	}
 }

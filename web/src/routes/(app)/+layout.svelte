@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-  import './layout.css'
+    import { page } from '$app/stores'
+    import './layout.css'
 
-  let { children } = $props()
+    let { children } = $props()
 </script>
 
 {@render children()}
