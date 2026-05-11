@@ -30,7 +30,7 @@ export const createTask = async (body: CreateTaskBody): Promise<CreateTaskRespon
     return res.json()
 }
 
-export const deleteTask = async (taskId: number): Promise<void> => {
+export const deleteTask = async (taskId: string): Promise<void> => {
     const res = await fetch(`/api/v1/tasks/${taskId}`, {
         method: 'DELETE',
     })
@@ -41,7 +41,7 @@ export const deleteTask = async (taskId: number): Promise<void> => {
     }
 }
 
-export const toggleTask = async (taskId: number): Promise<ToggleTaskResponse> => {
+export const toggleTask = async (taskId: string): Promise<ToggleTaskResponse> => {
     const res = await fetch(`/api/v1/tasks/${taskId}/toggle`, {
         method: 'POST',
     })

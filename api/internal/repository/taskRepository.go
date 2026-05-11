@@ -9,10 +9,10 @@ import (
 
 type TaskRepository interface {
 	CreateTask(tx *gorm.DB, task *model.Task) error
-	DeleteTask(tx *gorm.DB, taskId uint) error
-	GetTaskByID(taskId uint) (*model.Task, error)
-	GetTasksByMonth(userid uint, year, month int, isOwner bool) ([]*model.Task, error)
-	ToggleTask(tx *gorm.DB, taskId uint) (*model.Task, error)
+	DeleteTask(tx *gorm.DB, taskId string) error
+	GetTaskByID(taskId string) (*model.Task, error)
+	GetTasksByMonth(userid string, year, month int, isOwner bool) ([]*model.Task, error)
+	ToggleTask(tx *gorm.DB, taskId string) (*model.Task, error)
 }
 
 type taskRepository struct {
@@ -27,11 +27,11 @@ func (r *taskRepository) CreateTask(tx *gorm.DB, task *model.Task) error {
 	return tx.Create(task).Error
 }
 
-func (r *taskRepository) DeleteTask(tx *gorm.DB, taskId uint) error {
+func (r *taskRepository) DeleteTask(tx *gorm.DB, taskId string) error {
 	return tx.Delete(&model.Task{}, taskId).Error
 }
 
-func (r *taskRepository) GetTaskByID(taskId uint) (*model.Task, error) {
+func (r *taskRepository) GetTaskByID(taskId string) (*model.Task, error) {
 	var task model.Task
 	if err := r.db.First(&task, taskId).Error; err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (r *taskRepository) GetTaskByID(taskId uint) (*model.Task, error) {
 	return &task, nil
 }
 
-func (r *taskRepository) GetTasksByMonth(userid uint, year, month int, isOwner bool) ([]*model.Task, error) {
+func (r *taskRepository) GetTasksByMonth(userid string, year, month int, isOwner bool) ([]*model.Task, error) {
 	var tasks []*model.Task
 
 	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
@@ -60,7 +60,7 @@ func (r *taskRepository) GetTasksByMonth(userid uint, year, month int, isOwner b
 	return tasks, nil
 }
 
-func (r *taskRepository) ToggleTask(tx *gorm.DB, taskId uint) (*model.Task, error) {
+func (r *taskRepository) ToggleTask(tx *gorm.DB, taskId string) (*model.Task, error) {
 	var task model.Task
 	if err := tx.First(&task, taskId).Error; err != nil {
 		return nil, err

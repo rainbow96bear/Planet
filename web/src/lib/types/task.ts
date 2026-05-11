@@ -1,5 +1,5 @@
 export interface Task {
-    id: number
+    id: string
     title: string
     description: string
     date: string
@@ -17,7 +17,7 @@ export interface CreateTaskBody {
 }
 
 export interface CreateTaskResponse {
-    id: number
+    id: string
     title: string
     date: string
     is_completed: boolean
@@ -26,6 +26,6 @@ export interface CreateTaskResponse {
 }
 
 export interface ToggleTaskResponse {
-    id: number,
+    id: string,
     is_completed: boolean,
 }

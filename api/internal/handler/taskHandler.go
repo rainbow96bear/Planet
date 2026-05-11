@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"net/http"
 	"planet/internal/dto"
 	"planet/internal/pkg"
 	"planet/internal/service"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +32,7 @@ func (h *taskHandler) CreateTask(c *gin.Context) {
 		return
 	}
 
-	req.UserID = c.GetUint("userID")
+	req.UserID = c.GetString("userID")
 
 	task, err := h.taskSvc.CreateTask(&req)
 	if err != nil {
@@ -45,15 +43,11 @@ func (h *taskHandler) CreateTask(c *gin.Context) {
 }
 
 func (h *taskHandler) DeleteTask(c *gin.Context) {
-	taskID, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		pkg.Fail(c, 400, "잘못된 요청입니다")
-		return
-	}
+	taskID := c.Param("id")
 
 	req := dto.DeleteTaskRequest{
-		ID:     uint(taskID),
-		UserID: c.GetUint("userID"),
+		ID:     taskID,
+		UserID: c.GetString("userID"),
 	}
 
 	if err := h.taskSvc.DeleteTask(&req); err != nil {
@@ -64,11 +58,7 @@ func (h *taskHandler) DeleteTask(c *gin.Context) {
 }
 
 func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
-		return
-	}
+	userID := c.Param("userid")
 
 	var req dto.GetTasksByMonthRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -76,8 +66,8 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 		return
 	}
 
-	req.UserID = uint(userID)
-	req.RequesterUserId = c.GetUint("userID")
+	req.UserID = userID
+	req.RequesterUserId = c.GetString("userID")
 
 	tasks, err := h.taskSvc.GetTasksByMonth(&req)
 	if err != nil {
@@ -89,14 +79,10 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 }
 
 func (h *taskHandler) ToggleTask(c *gin.Context) {
-	taskID, err := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err != nil {
-		pkg.Fail(c, 400, "잘못된 요청입니다")
-		return
-	}
+	taskID := c.Param("id")
 
 	req := dto.ToggleTaskRequest{
-		ID: uint(taskID),
+		ID: taskID,
 	}
 
 	task, err := h.taskSvc.ToggleTask(&req)

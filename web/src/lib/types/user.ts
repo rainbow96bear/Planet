@@ -1,10 +1,10 @@
 export interface FollowResponse {
-    id:number,
+    id:string,
     is_following:boolean,
 }
 
 export interface UnfollowResponse {
-    id:number,
+    id:string,
     is_following:boolean,
 }
 
@@ -13,6 +13,6 @@ export interface UpdateProfileRequest {
 }
 
 export interface UpdateProfileResponse {
-    id : number,
+    id : string,
     nickname : string,
 }

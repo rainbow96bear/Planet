@@ -29,7 +29,7 @@ func (h *searchHandler) SearchUsers(c *gin.Context) {
 		return
 	}
 
-	req.RequesterUserId = c.GetUint("userID")
+	req.RequesterUserId = c.GetString("userID")
 	users, err := h.searchSvc.SearchUsers(&req)
 	if err != nil {
 		pkg.Fail(c, 500, err.Error())

@@ -15,7 +15,7 @@ var (
 )
 
 type TokenClaims struct {
-	UserID   uint   `json:"userid"`
+	UserID   string `json:"userid"`
 	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
@@ -34,7 +34,7 @@ func InitToken(cfg *config.Config) {
 }
 
 // Access Token 생성 (1시간)
-func GenerateAccessToken(userid uint, username string) (string, error) {
+func GenerateAccessToken(userid, username string) (string, error) {
 	claims := TokenClaims{
 		UserID:   userid,
 		Username: username,
@@ -47,7 +47,7 @@ func GenerateAccessToken(userid uint, username string) (string, error) {
 }
 
 // Refresh Token 생성 (7일)
-func GenerateRefreshToken(userid uint, username string) (string, error) {
+func GenerateRefreshToken(userid, username string) (string, error) {
 	claims := TokenClaims{
 		UserID:   userid,
 		Username: username,

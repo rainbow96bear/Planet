@@ -11,7 +11,7 @@ type UserRepository interface {
 	IsUsernameExists(username string) (bool, error)
 	FindByUsername(username string) (model.User, error)
 	FindByProviderInfo(provider, providerID string) (*model.User, error)
-	FindByUserId(userid uint) (model.User, error)
+	FindByUserId(userid string) (model.User, error)
 	UpdateProfile(tx *gorm.DB, u *model.User) error
 	SearchByKeyword(q string) ([]*model.User, error)
 }
@@ -50,7 +50,7 @@ func (r *userRepository) FindByProviderInfo(provider, providerID string) (*model
 	return &user, nil
 }
 
-func (r *userRepository) FindByUserId(userid uint) (model.User, error) {
+func (r *userRepository) FindByUserId(userid string) (model.User, error) {
 	var user model.User
 	if err := r.db.Where("id = ?", userid).First(&user).Error; err != nil {
 		return model.User{}, err

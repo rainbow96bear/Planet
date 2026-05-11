@@ -2,11 +2,9 @@ package handler
 
 import (
 	"fmt"
-	"net/http"
 	"planet/internal/dto"
 	"planet/internal/pkg"
 	"planet/internal/service"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,15 +27,11 @@ func NewUserHandler(userSvc service.UserService) UserHandler {
 }
 
 func (h *userHandler) GetProfile(c *gin.Context) {
-	userID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
-		return
-	}
+	userID := c.Param("userid")
 
 	req := dto.GetProfileRequest{
-		UserId:          uint(userID),
-		RequesterUserId: c.GetUint("userID"),
+		UserId:          userID,
+		RequesterUserId: c.GetString("userID"),
 	}
 	fmt.Printf("user id : %+v, requester user id : %+v\n", req.UserId, req.RequesterUserId)
 	profile, err := h.userSvc.GetProfile(&req)
@@ -50,17 +44,12 @@ func (h *userHandler) GetProfile(c *gin.Context) {
 }
 
 func (h *userHandler) Follow(c *gin.Context) {
-	followingID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
-	if err != nil {
-		pkg.Fail(c, 400, "잘못된 요청입니다")
-		return
-	}
-
-	followerID := c.GetUint("userID") // JWT 미들웨어에서 세팅한 값
+	followingID := c.Param("userid")
+	followerID := c.GetString("userID") // JWT 미들웨어에서 세팅한 값
 
 	req := dto.FollowRequest{
 		FollowerID:  followerID,
-		FollowingID: uint(followingID),
+		FollowingID: followingID,
 	}
 
 	result, err := h.userSvc.Follow(&req)
@@ -72,17 +61,13 @@ func (h *userHandler) Follow(c *gin.Context) {
 }
 
 func (h *userHandler) Unfollow(c *gin.Context) {
-	followingID, err := strconv.ParseUint(c.Param("userid"), 10, 64)
-	if err != nil {
-		pkg.Fail(c, 400, "잘못된 요청입니다")
-		return
-	}
+	followingID := c.Param("userid")
 
-	followerID := c.GetUint("userID") // JWT 미들웨어에서 세팅한 값
+	followerID := c.GetString("userID") // JWT 미들웨어에서 세팅한 값
 
 	req := dto.UnfollowRequest{
 		FollowerID:  followerID,
-		FollowingID: uint(followingID),
+		FollowingID: followingID,
 	}
 
 	result, err := h.userSvc.Unfollow(&req)
@@ -94,10 +79,10 @@ func (h *userHandler) Unfollow(c *gin.Context) {
 }
 
 func (h *userHandler) UpdateProfile(c *gin.Context) {
-	userid, _ := strconv.ParseUint(c.Param("userid"), 10, 64)
-	requesterID := c.GetUint("userID")
+	userid := c.Param("userid")
+	requesterID := c.GetString("userID")
 
-	if uint(userid) != requesterID {
+	if userid != requesterID {
 		pkg.Fail(c, 403, "권한이 없습니다")
 		return
 	}
@@ -107,7 +92,7 @@ func (h *userHandler) UpdateProfile(c *gin.Context) {
 		pkg.Fail(c, 400, err.Error())
 		return
 	}
-	req.UserID = uint(userid)
+	req.UserID = userid
 
 	result, err := h.userSvc.UpdateProfile(&req)
 	if err != nil {

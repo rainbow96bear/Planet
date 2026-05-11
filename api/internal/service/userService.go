@@ -41,9 +41,24 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 		return nil, err
 	}
 
-	isFollowing, err := s.followRepo.IsFollowing(req.RequesterUserId, req.UserId)
+	followers, err := s.followRepo.CountFollowers(req.UserId)
 	if err != nil {
 		return nil, err
+	}
+
+	following, err := s.followRepo.CountFollowing(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	isOwner := req.UserId == req.RequesterUserId
+
+	var isFollowing bool
+	if !isOwner {
+		isFollowing, err = s.followRepo.IsFollowing(req.RequesterUserId, req.UserId)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &dto.GetProfileResponse{
@@ -51,6 +66,8 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 		Nickname:    user.Nickname,
 		IsOwner:     req.UserId == req.RequesterUserId,
 		IsFollowing: isFollowing,
+		Followers:   followers,
+		Following:   following,
 	}, nil
 }
 
@@ -106,8 +123,8 @@ func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateP
 	}()
 
 	user := &model.User{
-		ID:       req.UserID,
-		Nickname: req.Nickname,
+		BaseModel: model.BaseModel{ID: req.UserID},
+		Nickname:  req.Nickname,
 	}
 
 	if err := s.userRepo.UpdateProfile(tx, user); err != nil {

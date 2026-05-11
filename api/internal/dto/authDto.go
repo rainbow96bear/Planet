@@ -9,7 +9,7 @@ type CreateUserRequest struct {
 }
 
 type CreateUserResponse struct {
-	ID        uint      `json:"id"`
+	ID        string    `json:"id"`
 	Username  string    `json:"username"`
 	Nickname  string    `json:"nickname"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -22,7 +22,7 @@ type CreateOAuthUserRequest struct {
 }
 
 type CreateOAuthUserResponse struct {
-	ID        uint      `json:"id"`
+	ID        string    `json:"id"`
 	Username  string    `json:"username"`
 	Nickname  string    `json:"nickname"`
 	CreatedAt time.Time `json:"createdAt"`

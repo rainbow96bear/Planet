@@ -1,8 +1,8 @@
 package dto
 
 type GetProfileRequest struct {
-	UserId          uint
-	RequesterUserId uint
+	UserId          string
+	RequesterUserId string
 }
 
 type GetProfileResponse struct {
@@ -10,19 +10,21 @@ type GetProfileResponse struct {
 	Nickname    string `json:"nickname"`
 	IsOwner     bool   `json:"is_owner"`
 	IsFollowing bool   `json:"is_following"`
+	Followers   int64  `json:"followers"`
+	Following   int64  `json:"following"`
 }
 
 type GetMeRequest struct {
 }
 
 type GetMeResponse struct {
-	ID       uint   `json:"id"`
+	ID       string `json:"id"`
 	Username string `json:"username"`
 }
 
 type GetProfileByUserIdRequest struct {
-	UserId          uint
-	RequesterUserId uint
+	UserId          string
+	RequesterUserId string
 }
 
 type GetProfilByUserIdeResponse struct {
@@ -34,12 +36,12 @@ type GetProfilByUserIdeResponse struct {
 }
 
 type UpdateProfileRequest struct {
-	UserID   uint   `json:"-"`
+	UserID   string `json:"-"`
 	Nickname string `json:"nickname" binding:"required"`
 }
 
 type UpdateProfileResponse struct {
-	UserID   uint   `json:"userid"`
+	UserID   string `json:"userid"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
 }

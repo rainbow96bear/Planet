@@ -1,6 +1,6 @@
 import type { FollowResponse, UnfollowResponse, UpdateProfileRequest } from "$lib/types/user"
 
-export const follow = async (userid: number): Promise<FollowResponse> => {
+export const follow = async (userid: string): Promise<FollowResponse> => {
     const res = await fetch(`/api/v1/users/${userid}/follow`, {
         method: 'POST',
     })
@@ -14,7 +14,7 @@ export const follow = async (userid: number): Promise<FollowResponse> => {
 }
 
 
-export const unfollow = async (userid: number): Promise<UnfollowResponse> => {
+export const unfollow = async (userid: string): Promise<UnfollowResponse> => {
     const res = await fetch(`/api/v1/users/${userid}/follow`, {
         method: 'DELETE',
     })
@@ -27,7 +27,7 @@ export const unfollow = async (userid: number): Promise<UnfollowResponse> => {
     return res.json()
 }
 
-export const updateProfile = async (userid: number, body: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
+export const updateProfile = async (userid: string, body: UpdateProfileRequest): Promise<UpdateProfileResponse> => {
     const res = await fetch(`/api/v1/users/${userid}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

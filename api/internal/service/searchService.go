@@ -38,7 +38,7 @@ func (s *searchService) SearchUsers(req *dto.SearchUsersRequest) ([]*dto.SearchU
 	result := make([]*dto.SearchUsersResponse, len(users))
 	for i, u := range users {
 		isFollowing := false
-		if req.RequesterUserId != 0 {
+		if req.RequesterUserId != "" {
 			isFollowing, err = s.followRepo.IsFollowing(req.RequesterUserId, u.ID)
 			if err != nil {
 				return nil, err

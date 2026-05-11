@@ -20,13 +20,13 @@
         isOwner: boolean
         onClose: () => void
         onAddClick?: () => void
-        onDeleted?: (taskId: number) => void
-        onToggled?: (taskId: number) => void
+        onDeleted?: (taskId: string) => void
+        onToggled?: (taskId: string) => void
     } = $props()
 
     let error = $state('')
 
-    async function handleDelete(taskId: number) {
+    async function handleDelete(taskId: string) {
         try {
             await deleteTask(taskId)
             tasks = tasks.filter(t => t.id !== taskId)

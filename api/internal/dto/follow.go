@@ -1,8 +1,8 @@
 package dto
 
 type FollowRequest struct {
-	FollowerID  uint
-	FollowingID uint
+	FollowerID  string
+	FollowingID string
 }
 
 type FollowResponse struct {
@@ -10,8 +10,8 @@ type FollowResponse struct {
 }
 
 type UnfollowRequest struct {
-	FollowerID  uint
-	FollowingID uint
+	FollowerID  string
+	FollowingID string
 }
 
 type UnfollowResponse struct {
@@ -19,8 +19,8 @@ type UnfollowResponse struct {
 }
 
 type IsFollowingRequest struct {
-	FollowerID  uint
-	FollowingID uint
+	FollowerID  string
+	FollowingID string
 }
 
 type IsFollowingResponse struct {
