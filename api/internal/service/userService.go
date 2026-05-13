@@ -18,11 +18,12 @@ type UserService interface {
 }
 
 type userService struct {
-	db           *gorm.DB
-	userRepo     repository.UserRepository
-	followRepo   repository.FollowRepository
-	taskRepo     repository.TaskRepository
-	activityRepo repository.ActivityRepository
+	db               *gorm.DB
+	userRepo         repository.UserRepository
+	followRepo       repository.FollowRepository
+	taskRepo         repository.TaskRepository
+	activityRepo     repository.ActivityRepository
+	notificationRepo repository.NotificationRepository
 }
 
 func NewUserService(
@@ -31,13 +32,16 @@ func NewUserService(
 	followRepo repository.FollowRepository,
 	taskRepo repository.TaskRepository,
 	activityRepo repository.ActivityRepository,
+	notificationRepo repository.NotificationRepository,
+
 ) UserService {
 	return &userService{
-		db:           db,
-		userRepo:     userRepo,
-		followRepo:   followRepo,
-		taskRepo:     taskRepo,
-		activityRepo: activityRepo,
+		db:               db,
+		userRepo:         userRepo,
+		followRepo:       followRepo,
+		taskRepo:         taskRepo,
+		activityRepo:     activityRepo,
+		notificationRepo: notificationRepo,
 	}
 }
 
@@ -101,6 +105,15 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 		Type:       model.ActivityFollowed,
 		TargetID:   req.FollowingID,
 		TargetType: targetType,
+	}); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := s.notificationRepo.Create(tx, &model.Notification{
+		ReceiverID: req.FollowingID,
+		ActorID:    req.FollowerID,
+		Type:       model.NotificationFollowed,
 	}); err != nil {
 		tx.Rollback()
 		return nil, err

@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ parent, cookies, fetch }) => {
 
     const [feedRes, exploreRes] = await Promise.all([
         fetch(`${GO_API_URL}/api/v1/feed`, { headers }),
-        fetch(`${GO_API_URL}/api/v1/feed/explore`, { headers })
+        // fetch(`${GO_API_URL}/api/v1/feed/explore`, { headers })
     ])
 
     const [feed, exploreFeed] = await Promise.all([
