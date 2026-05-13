@@ -4,17 +4,9 @@ import (
 	"errors"
 	"planet/internal/dto"
 	"planet/internal/model"
-	"time"
 
 	"gorm.io/gorm"
 )
-
-type ActivityWithTask struct {
-	ID        string
-	Type      model.ActivityType
-	TaskTitle *string
-	CreatedAt time.Time
-}
 
 type ActivityRepository interface {
 	Create(tx *gorm.DB, a *model.Activity) error
@@ -116,8 +108,8 @@ func (r *activityRepository) FindExploreFeed(limit int) ([]*dto.GetFeedResponse,
             a.created_at
         `).
 		Joins("JOIN users u ON u.id = a.user_id").
-		Joins("LEFT JOIN tasks t ON t.id = a.target_id AND a.target_type = 'task'").
-		Where("t.is_public = ? OR a.target_type = ?", true, model.TargetTypeUser).
+		Joins("JOIN tasks t ON t.id = a.target_id").
+		Where("t.is_public = ?", true).
 		Order("a.created_at DESC").
 		Limit(limit).
 		Scan(&result).Error
