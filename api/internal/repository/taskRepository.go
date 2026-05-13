@@ -23,17 +23,24 @@ func NewTaskRepository(db *gorm.DB) TaskRepository {
 	return &taskRepository{db: db}
 }
 
+func (r *taskRepository) getDB(tx *gorm.DB) *gorm.DB {
+	if tx != nil {
+		return tx
+	}
+	return r.db
+}
+
 func (r *taskRepository) CreateTask(tx *gorm.DB, task *model.Task) error {
-	return tx.Create(task).Error
+	return r.getDB(tx).Create(task).Error
 }
 
 func (r *taskRepository) DeleteTask(tx *gorm.DB, taskId string) error {
-	return tx.Delete(&model.Task{}, taskId).Error
+	return r.getDB(tx).Where("id = ?", taskId).Delete(&model.Task{}).Error
 }
 
 func (r *taskRepository) GetTaskByID(taskId string) (*model.Task, error) {
 	var task model.Task
-	if err := r.db.First(&task, taskId).Error; err != nil {
+	if err := r.db.Where("id = ?", taskId).First(&task).Error; err != nil {
 		return nil, err
 	}
 	return &task, nil
@@ -44,13 +51,12 @@ func (r *taskRepository) GetTasksByMonth(userid string, year, month int, isOwner
 
 	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
 	endDate := startDate.AddDate(0, 1, 0)
+
 	query := r.db.Model(&model.Task{}).
-		Select("tasks.*").
-		Joins("JOIN users ON users.id = tasks.user_id").
-		Where("users.id = ? AND tasks.date >= ? AND tasks.date < ?", userid, startDate, endDate)
+		Where("user_id = ? AND date >= ? AND date < ?", userid, startDate, endDate)
 
 	if !isOwner {
-		query = query.Where("tasks.is_public = ?", true)
+		query = query.Where("is_public = ?", true)
 	}
 
 	if err := query.Find(&tasks).Error; err != nil {
@@ -62,11 +68,11 @@ func (r *taskRepository) GetTasksByMonth(userid string, year, month int, isOwner
 
 func (r *taskRepository) ToggleTask(tx *gorm.DB, taskId string) (*model.Task, error) {
 	var task model.Task
-	if err := tx.First(&task, taskId).Error; err != nil {
+	if err := r.getDB(tx).Where("id = ?", taskId).First(&task).Error; err != nil {
 		return nil, err
 	}
 	task.IsCompleted = !task.IsCompleted
-	if err := tx.Model(&task).Update("is_completed", task.IsCompleted).Error; err != nil {
+	if err := r.getDB(tx).Model(&task).Update("is_completed", task.IsCompleted).Error; err != nil {
 		return nil, err
 	}
 	return &task, nil

@@ -14,12 +14,14 @@ type UserService interface {
 	Follow(*dto.FollowRequest) (*dto.FollowResponse, error)
 	Unfollow(*dto.UnfollowRequest) (*dto.UnfollowResponse, error)
 	UpdateProfile(*dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error)
+	GetActivity(*dto.GetActivityRequest) (*dto.GetActivityResponse, error)
 }
 
 type userService struct {
 	db           *gorm.DB
 	userRepo     repository.UserRepository
 	followRepo   repository.FollowRepository
+	taskRepo     repository.TaskRepository
 	activityRepo repository.ActivityRepository
 }
 
@@ -27,12 +29,14 @@ func NewUserService(
 	db *gorm.DB,
 	userRepo repository.UserRepository,
 	followRepo repository.FollowRepository,
+	taskRepo repository.TaskRepository,
 	activityRepo repository.ActivityRepository,
 ) UserService {
 	return &userService{
 		db:           db,
 		userRepo:     userRepo,
 		followRepo:   followRepo,
+		taskRepo:     taskRepo,
 		activityRepo: activityRepo,
 	}
 }
@@ -156,4 +160,37 @@ func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateP
 		Username: user.Username,
 		Nickname: user.Nickname,
 	}, nil
+}
+
+func (s *userService) GetActivity(req *dto.GetActivityRequest) (*dto.GetActivityResponse, error) {
+	isOwner := req.UserID == req.RequesterUserId
+
+	activity, err := s.activityRepo.FindLatestByUserID(req.UserID)
+	if err != nil || activity == nil {
+		return nil, err
+	}
+
+	switch activity.TargetType {
+	case model.TargetTypeTask:
+		task, err := s.taskRepo.GetTaskByID(activity.TargetID)
+		if err != nil {
+			return nil, err
+		}
+		if !isOwner && !task.IsPublic {
+			return nil, nil
+		}
+		return &dto.GetActivityResponse{
+			Type:      string(activity.Type),
+			TaskTitle: &task.Title,
+			CreatedAt: activity.CreatedAt,
+		}, nil
+
+	case model.TargetTypeUser:
+		return &dto.GetActivityResponse{
+			Type:      string(activity.Type),
+			CreatedAt: activity.CreatedAt,
+		}, nil
+	}
+
+	return nil, nil
 }
