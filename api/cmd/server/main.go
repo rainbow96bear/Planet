@@ -42,18 +42,21 @@ func main() {
 	taskRepo := repository.NewTaskRepository(db)
 	followRepo := repository.NewFollowRepository(db)
 	activityRepo := repository.NewActivityRepository(db)
+	notificationRepo := repository.NewNotificationRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
 	taskSvc := service.NewTaskService(db, taskRepo, activityRepo)
-	userSvc := service.NewUserService(db, userRepo, followRepo, activityRepo)
+	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, activityRepo, notificationRepo)
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
 	feedSvc := service.NewFeedService(db, activityRepo)
+	notificationSvc := service.NewNotificationService(db, notificationRepo, userRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	taskHandler := handler.NewTaskHandler(taskSvc)
 	userHandler := handler.NewUserHandler(userSvc)
 	searchHandler := handler.NewSearchHandler(searchSvc)
 	feedHandler := handler.NewFeedHandler(feedSvc)
+	notificationHandler := handler.NewNotificationHandler(notificationSvc)
 
 	r := gin.Default()
 	handler.RegisterRoutes(
@@ -63,6 +66,7 @@ func main() {
 		userHandler,
 		searchHandler,
 		feedHandler,
+		notificationHandler,
 	)
 
 	srv := &http.Server{

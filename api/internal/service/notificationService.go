@@ -3,6 +3,8 @@ package service
 import (
 	"planet/internal/dto"
 	"planet/internal/repository"
+
+	"gorm.io/gorm"
 )
 
 type NotificationService interface {
@@ -12,15 +14,18 @@ type NotificationService interface {
 }
 
 type notificationService struct {
+	db               *gorm.DB
 	notificationRepo repository.NotificationRepository
 	userRepo         repository.UserRepository
 }
 
 func NewNotificationService(
+	db *gorm.DB,
 	notificationRepo repository.NotificationRepository,
 	userRepo repository.UserRepository,
 ) NotificationService {
 	return &notificationService{
+		db:               db,
 		notificationRepo: notificationRepo,
 		userRepo:         userRepo,
 	}

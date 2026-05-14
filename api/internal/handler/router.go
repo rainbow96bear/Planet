@@ -13,6 +13,7 @@ func RegisterRoutes(
 	userHandler UserHandler,
 	searchHandler SearchHandler,
 	feedHandler FeedHandler,
+	notificationHandler NotificationHandler,
 ) {
 
 	v1 := r.Group("/api/v1")
@@ -40,6 +41,7 @@ func RegisterRoutes(
 		{
 			users.GET("/:userid", userHandler.GetProfile)
 			users.GET("/:userid/tasks", taskHandler.GetTasksByMonth)
+			users.GET("/:userid/activites", userHandler.GetActivity)
 		}
 
 		usersAuth := v1.Group("/users")
@@ -59,7 +61,15 @@ func RegisterRoutes(
 		feed := v1.Group("/feed")
 		feed.Use(middleware.OptionalAuthMiddleware())
 		{
-			// feed.GET("", feedHandler.GetFeed)
+			feed.GET("", feedHandler.GetFeed)
+		}
+
+		notifications := v1.Group("/notifications")
+		notifications.Use(middleware.AuthMiddleware())
+		{
+			notifications.GET("", notificationHandler.GetNotifications)
+			notifications.GET("/unread-count", notificationHandler.GetUnreadCount)
+			notifications.PATCH("/read", notificationHandler.MarkAllAsRead)
 		}
 	}
 }
