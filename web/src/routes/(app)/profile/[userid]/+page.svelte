@@ -1,7 +1,6 @@
 <script lang="ts">
     import { getTasksByMonth } from '$lib/api/task'
     import { follow, unfollow } from '$lib/api/user'
-    import { page } from '$app/stores'
     import type { PageData } from './$types'
     import type { Task } from '$lib/types/task'
     import TaskModal from '$lib/components/TaskModal.svelte'
@@ -10,7 +9,7 @@
 
     let { data }: { data: PageData } = $props()
 
-    const userid = Number($page.params.userid!)
+    const userid = data.user.userid
     const isOwner = userid === data.me?.userid
     let tasks = $state(data.tasks)
     let year = $state(data.year)
