@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"planet/internal/dto"
 	"planet/internal/model"
 
@@ -88,7 +89,7 @@ func (r *activityRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedR
 		Order("a.created_at DESC").
 		Limit(limit).
 		Scan(&result).Error
-
+	fmt.Printf("result : %+v\n", result)
 	return result, err
 }
 

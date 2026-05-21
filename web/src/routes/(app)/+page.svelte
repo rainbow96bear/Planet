@@ -3,7 +3,6 @@
     import './page.css'
 
     let { data }: { data: PageData } = $props()
-
     const isLoggedIn = !!data.user
     let activeTab = $state<'feed' | 'explore'>(isLoggedIn ? 'feed' : 'explore')
 

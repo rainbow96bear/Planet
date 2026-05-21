@@ -34,7 +34,13 @@ func main() {
 	}
 
 	// Auto migrate
-	if err := db.AutoMigrate(&model.User{}, &model.Task{}, &model.Follow{}); err != nil {
+	if err := db.AutoMigrate(
+		&model.User{},
+		&model.Task{},
+		&model.Follow{},
+		&model.Activity{},
+		&model.Notification{},
+	); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
 

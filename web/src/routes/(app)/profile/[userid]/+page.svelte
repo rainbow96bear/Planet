@@ -9,13 +9,13 @@
 
     let { data }: { data: PageData } = $props()
 
-    const userid = data.user.userid
+    const userid = data.user?.userid
     const isOwner = userid === data.me?.userid
     let tasks = $state(data.tasks)
     let year = $state(data.year)
     let month = $state(data.month)
     let loading = $state(false)
-    let isFollowing = $state(data.user.is_following ?? false)
+    let isFollowing = $state(data.profileUser.is_following ?? false)
     let followLoading = $state(false)
 
     let selectedDay = $state<number | null>(null)
@@ -120,8 +120,8 @@
     <div class="profile-header">
         <div class="profile-avatar">🪐</div>
         <div class="profile-info">
-            <h1 class="profile-nickname">{data.user.nickname}</h1>
-            <span class="profile-username">@{data.user.username}</span>
+            <h1 class="profile-nickname">{data.profileUser.nickname}</h1>
+            <span class="profile-username">@{data.profileUser.username}</span>
         </div>
 
         <div class="profile-actions">

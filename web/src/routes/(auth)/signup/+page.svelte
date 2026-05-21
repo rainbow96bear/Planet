@@ -30,8 +30,8 @@
     debounceTimer = setTimeout(async () => {
       try {
         const res = await checkUsername(username)
-        usernameOk = res.data.available
-        usernameMsg = res.data.available ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.'
+        usernameOk = res.available
+        usernameMsg = res.available ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.'
       } catch {
         usernameMsg = '확인 중 오류가 발생했습니다.'
       }
