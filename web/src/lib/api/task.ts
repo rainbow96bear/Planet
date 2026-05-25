@@ -1,7 +1,7 @@
 import type { CreateTaskBody, CreateTaskResponse, GetTasksByMonthResponse, ToggleTaskResponse } from "$lib/types/task"
 
 export const getTasksByMonth = async (
-    userid: number,
+    userid: string,
     year: number,
     month: number
 ): Promise<GetTasksByMonthResponse> => {

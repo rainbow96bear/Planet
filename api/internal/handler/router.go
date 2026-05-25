@@ -69,7 +69,7 @@ func RegisterRoutes(
 		{
 			notifications.GET("", notificationHandler.GetNotifications)
 			notifications.GET("/unread-count", notificationHandler.GetUnreadCount)
-			notifications.PATCH("/read", notificationHandler.MarkAllAsRead)
+			notifications.PATCH("/read-all", notificationHandler.MarkAllAsRead)
 		}
 	}
 }

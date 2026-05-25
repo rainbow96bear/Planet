@@ -3,6 +3,7 @@ import { decodeJwtPayload } from '$lib/utils/jwt'
 import { 
   GO_API_URL,
 } from '$env/static/private'
+import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
     const accessToken = cookies.get('access_token')

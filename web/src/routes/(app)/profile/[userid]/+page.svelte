@@ -6,11 +6,11 @@
     import TaskModal from '$lib/components/TaskModal.svelte'
     import AddTaskModal from '$lib/components/AddTaskModal.svelte'
     import './page.css'
+	import { page } from '$app/stores';
 
     let { data }: { data: PageData } = $props()
-
-    const userid = data.user?.userid
-    const isOwner = userid === data.me?.userid
+    const userid = $derived($page.params.userid || "")
+    const isOwner = $derived(userid === data.me?.userid)
     let tasks = $state(data.tasks)
     let year = $state(data.year)
     let month = $state(data.month)

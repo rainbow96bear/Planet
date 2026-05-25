@@ -20,7 +20,5 @@ export const load: LayoutServerLoad = async ({ parent, cookies, fetch }) => {
         feedRes.ok ? feedRes.json() : [],
         exploreRes.ok ? exploreRes.json() : []
     ])
-console.log("feed : ", feed)
-console.log("exploreFeed : ", exploreFeed)
     return { user, feed: feed ?? [], exploreFeed: exploreFeed ?? [] }
 }

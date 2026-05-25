@@ -34,7 +34,6 @@ func (h *feedHandler) GetFeed(c *gin.Context) {
 		pkg.Fail(c, 500, "피드를 불러오지 못했습니다")
 		return
 	}
-	fmt.Printf("feed : %+v\n", feed)
 	pkg.Success(c, 200, feed)
 }
 
