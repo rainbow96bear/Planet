@@ -99,20 +99,22 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 	}
 
 	// 추가
-	targetType := model.TargetTypeUser
-	if err := s.activityRepo.Create(tx, &model.Activity{
-		UserID:     req.FollowerID,
-		Type:       model.ActivityFollowed,
-		TargetID:   req.FollowingID,
-		TargetType: targetType,
-	}); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
+	// targetType := model.TargetTypeUser
+	// if err := s.activityRepo.Create(tx, &model.Activity{
+	// 	UserID:     req.FollowerID,
+	// 	Type:       model.ActivityFollowed,
+	// 	TargetID:   req.FollowingID,
+	// 	TargetType: targetType,
+	// }); err != nil {
+	// 	tx.Rollback()
+	// 	return nil, err
+	// }
 
-	if err := s.notificationRepo.Create(tx, &model.Notification{
+	if err := s.notificationRepo.Upsert(tx, &model.Notification{
 		ReceiverID: req.FollowingID,
 		ActorID:    req.FollowerID,
+		TargetID:   req.FollowerID,
+		TargetType: model.NotificationTargetTypeUser,
 		Type:       model.NotificationFollowed,
 	}); err != nil {
 		tx.Rollback()
@@ -135,6 +137,16 @@ func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse,
 	}()
 
 	if err := s.followRepo.Unfollow(tx, req.FollowerID, req.FollowingID); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := s.notificationRepo.DeleteByActorAndTask(
+		tx,
+		req.FollowerID,
+		"", // 팔로우 알림은 TaskID 없으니 빈 문자열
+		model.NotificationFollowed,
+	); err != nil {
 		tx.Rollback()
 		return nil, err
 	}

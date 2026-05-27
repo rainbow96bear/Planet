@@ -14,6 +14,7 @@ func RegisterRoutes(
 	searchHandler SearchHandler,
 	feedHandler FeedHandler,
 	notificationHandler NotificationHandler,
+	reactionHandler ReactionHandler,
 ) {
 
 	v1 := r.Group("/api/v1")
@@ -34,6 +35,9 @@ func RegisterRoutes(
 			tasks.POST("", taskHandler.CreateTask)
 			tasks.DELETE("/:id", taskHandler.DeleteTask)
 			tasks.POST("/:id/toggle", taskHandler.ToggleTask)
+
+			tasks.POST("/:task_id/reactions", reactionHandler.AddReaction)
+			tasks.DELETE("/:task_id/reactions/:type", reactionHandler.RemoveReaction)
 		}
 
 		users := v1.Group("/users")

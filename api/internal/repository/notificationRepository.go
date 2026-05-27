@@ -4,10 +4,12 @@ import (
 	"planet/internal/model"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type NotificationRepository interface {
-	Create(tx *gorm.DB, n *model.Notification) error
+	Upsert(tx *gorm.DB, n *model.Notification) error                                              // 추가
+	DeleteByActorAndTask(tx *gorm.DB, actorID, taskID string, nType model.NotificationType) error // 추가
 	FindByReceiverID(receiverID string) ([]*model.Notification, error)
 	CountUnread(receiverID string) (int64, error)
 	MarkAllAsRead(receiverID string) error
@@ -28,8 +30,25 @@ func (r *notificationRepository) getDB(tx *gorm.DB) *gorm.DB {
 	return r.db
 }
 
-func (r *notificationRepository) Create(tx *gorm.DB, n *model.Notification) error {
-	return r.getDB(tx).Create(n).Error
+func (r *notificationRepository) Upsert(tx *gorm.DB, n *model.Notification) error {
+	return r.getDB(tx).
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "receiver_id"},
+				{Name: "actor_id"},
+				{Name: "target_id"},
+				{Name: "target_type"},
+				{Name: "type"},
+			},
+			DoUpdates: clause.AssignmentColumns([]string{"updated_at", "is_read"}),
+		}).
+		Create(n).Error
+}
+
+func (r *notificationRepository) DeleteByActorAndTask(tx *gorm.DB, actorID, taskID string, nType model.NotificationType) error {
+	return r.getDB(tx).
+		Where("actor_id = ? AND task_id = ? AND type = ?", actorID, taskID, nType).
+		Delete(&model.Notification{}).Error
 }
 
 func (r *notificationRepository) FindByReceiverID(receiverID string) ([]*model.Notification, error) {

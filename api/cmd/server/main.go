@@ -49,6 +49,7 @@ func main() {
 	followRepo := repository.NewFollowRepository(db)
 	activityRepo := repository.NewActivityRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
+	reactionRepo := repository.NewReactionRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
 	taskSvc := service.NewTaskService(db, taskRepo, activityRepo)
@@ -56,6 +57,7 @@ func main() {
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
 	feedSvc := service.NewFeedService(db, activityRepo)
 	notificationSvc := service.NewNotificationService(db, notificationRepo, userRepo)
+	reactionSvc := service.NewReactionService(db, reactionRepo, notificationRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	taskHandler := handler.NewTaskHandler(taskSvc)
@@ -63,6 +65,7 @@ func main() {
 	searchHandler := handler.NewSearchHandler(searchSvc)
 	feedHandler := handler.NewFeedHandler(feedSvc)
 	notificationHandler := handler.NewNotificationHandler(notificationSvc)
+	reactionHandler := handler.NewReactionHandler(reactionSvc)
 
 	r := gin.Default()
 	handler.RegisterRoutes(
@@ -73,6 +76,7 @@ func main() {
 		searchHandler,
 		feedHandler,
 		notificationHandler,
+		reactionHandler,
 	)
 
 	srv := &http.Server{

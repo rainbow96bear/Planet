@@ -23,5 +23,4 @@ type ActivityType string
 const (
 	ActivityTaskCreated   ActivityType = "task.created"
 	ActivityTaskCompleted ActivityType = "task.completed"
-	ActivityFollowed      ActivityType = "user.followed"
 )

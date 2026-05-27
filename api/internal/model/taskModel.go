@@ -11,4 +11,6 @@ type Task struct {
 	Date        time.Time `gorm:"not null;index"`
 	IsCompleted bool      `gorm:"not null;default:false"`
 	IsPublic    bool      `gorm:"not null;default:true"`
+
+	Reactions []Reaction `gorm:"foreignKey:TaskID"`
 }
