@@ -43,7 +43,7 @@ func (h *taskHandler) CreateTask(c *gin.Context) {
 }
 
 func (h *taskHandler) DeleteTask(c *gin.Context) {
-	taskID := c.Param("id")
+	taskID := c.Param("task_id")
 
 	req := dto.DeleteTaskRequest{
 		ID:     taskID,
@@ -79,7 +79,7 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 }
 
 func (h *taskHandler) ToggleTask(c *gin.Context) {
-	taskID := c.Param("id")
+	taskID := c.Param("task_id")
 
 	req := dto.ToggleTaskRequest{
 		ID: taskID,

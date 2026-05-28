@@ -12,8 +12,8 @@
 
   const filtered = $derived(
     filter === 'all' ? notifications
-    : filter === 'follow' ? notifications.filter(n => n.type === 'follow')
-    : notifications.filter(n => n.type !== 'follow')
+    : filter === 'follow' ? notifications.filter(n => n.type === 'followed')
+    : notifications.filter(n => n.type !== 'followed')
   )
 
   $effect(() => {
@@ -36,6 +36,7 @@
     open = true
     loading = true
     notifications = await getNotifications()
+    console.log("notifications : ", notifications)
     unreadCount = 0
     loading = false
     await markAllRead()
@@ -108,7 +109,7 @@
           {#each filtered as notif}
             <li class="notif-item" class:unread={!notif.is_read}>
               <div class="notif-avatar">
-                {notif.from_user.nickname.charAt(0)}
+                {notif.actor_nickname.charAt(0)}
                 <span class="type-badge">{TYPE_ICON[notif.type]}</span>
               </div>
               <div class="notif-body">
@@ -129,29 +130,32 @@
     position: relative;
   }
 
+  /* ── 벨 버튼 ── */
   .bell-btn {
     position: relative;
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: none;
-    border: none;
+    background: #1a1a26;
+    border: 1px solid #a89fd440;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: inherit;
-    transition: background 0.15s;
+    color: #a89fd4;
+    transition: border-color 0.2s, color 0.2s;
   }
   .bell-btn:hover {
-    background: rgba(0, 0, 0, 0.06);
+    border-color: #a89fd4;
+    color: #d0c8f0;
   }
 
+  /* ── 뱃지 ── */
   .badge {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    background: #ef4444;
+    top: -3px;
+    right: -3px;
+    background: #e05c5c;
     color: #fff;
     font-size: 10px;
     font-weight: 700;
@@ -162,50 +166,55 @@
     align-items: center;
     justify-content: center;
     padding: 0 3px;
-    border: 2px solid white;
+    border: 2px solid #12121a;
     line-height: 1;
   }
 
+  /* ── 드롭다운 ── */
   .dropdown {
     position: absolute;
     top: calc(100% + 10px);
     right: -8px;
     width: 340px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    background: #12121a;
+    border: 1px solid #a89fd430;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     z-index: 200;
     overflow: hidden;
   }
 
+  /* ── 헤더 ── */
   .drop-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px 10px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #a89fd420;
   }
   .drop-title {
     font-size: 15px;
     font-weight: 600;
+    color: #ffffff;
   }
   .mark-all-btn {
     background: none;
     border: none;
     font-size: 12px;
-    color: #3b82f6;
+    color: #b2ede6;
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 6px;
+    transition: background 0.15s;
   }
   .mark-all-btn:hover {
-    background: #eff6ff;
+    background: #b2ede615;
   }
 
+  /* ── 탭 ── */
   .tabs {
     display: flex;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #a89fd420;
     padding: 0 6px;
   }
   .tab {
@@ -213,21 +222,22 @@
     border: none;
     border-bottom: 2px solid transparent;
     font-size: 13px;
-    color: #6b7280;
+    color: #a89fd4;
     padding: 8px 10px;
     cursor: pointer;
     transition: color 0.15s;
     margin-bottom: -1px;
   }
   .tab:hover {
-    color: #111;
+    color: #d0c8f0;
   }
   .tab.active {
-    color: #111;
+    color: #b2ede6;
     font-weight: 600;
-    border-bottom-color: #111;
+    border-bottom-color: #b2ede6;
   }
 
+  /* ── 알림 목록 ── */
   .notif-list {
     list-style: none;
     margin: 0;
@@ -235,20 +245,31 @@
     max-height: 360px;
     overflow-y: auto;
   }
+  .notif-list::-webkit-scrollbar {
+    width: 4px;
+  }
+  .notif-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .notif-list::-webkit-scrollbar-thumb {
+    background: #a89fd430;
+    border-radius: 999px;
+  }
 
   .notif-empty {
     padding: 32px 16px;
     text-align: center;
-    color: #9ca3af;
+    color: #a89fd4;
     font-size: 13px;
   }
 
+  /* ── 알림 아이템 ── */
   .notif-item {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     padding: 12px 16px;
-    border-bottom: 1px solid #f9fafb;
+    border-bottom: 1px solid #a89fd415;
     cursor: pointer;
     transition: background 0.12s;
   }
@@ -256,26 +277,29 @@
     border-bottom: none;
   }
   .notif-item:hover {
-    background: #f9fafb;
+    background: #1a1a26;
   }
   .notif-item.unread {
-    background: #eff6ff;
+    background: #b2ede608;
   }
   .notif-item.unread:hover {
-    background: #dbeafe;
+    background: #b2ede615;
   }
 
+  /* ── 아바타 ── */
   .notif-avatar {
     position: relative;
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #e5e7eb;
+    background: #1a1a26;
+    border: 1px solid #a89fd430;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 14px;
     font-weight: 600;
+    color: #d0c8f0;
     flex-shrink: 0;
   }
   .type-badge {
@@ -283,16 +307,17 @@
     bottom: -2px;
     right: -2px;
     font-size: 11px;
-    background: white;
+    background: #12121a;
     border-radius: 50%;
     width: 18px;
     height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #a89fd430;
   }
 
+  /* ── 본문 ── */
   .notif-body {
     flex: 1;
     min-width: 0;
@@ -300,20 +325,21 @@
   .notif-msg {
     margin: 0 0 3px;
     font-size: 13px;
-    color: #111;
+    color: #ffffff;
     line-height: 1.45;
   }
   .notif-time {
     font-size: 11px;
-    color: #9ca3af;
+    color: #a89fd4;
   }
 
+  /* ── 읽지 않음 점 ── */
   .unread-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: #3b82f6;
+    background: #b2ede6;
     flex-shrink: 0;
-    margin-top: 5px;
+    margin-top: 6px;
   }
 </style>

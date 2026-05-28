@@ -1,8 +1,9 @@
 export interface Notification {
-  id: number
-  type: 'follow' | 'comment' | 'reaction'
+  id: string
+  type: 'followed' | 'comment' | 'reaction'
   message: string
   is_read: boolean
   created_at: string
-  from_user: { userid: string; nickname: string; username: string }
+  actor_id : string
+  actor_nickname : string
 }
