@@ -1,5 +1,5 @@
-export interface Activity {
-    activity_id: string
+export interface Feed {
+    feed_id: string
     actor_id: string
     actor_nickname: string
     type: 'task.created' | 'task.completed'

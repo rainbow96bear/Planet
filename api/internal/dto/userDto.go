@@ -1,7 +1,5 @@
 package dto
 
-import "time"
-
 type GetProfileRequest struct {
 	UserId          string
 	RequesterUserId string
@@ -46,15 +44,4 @@ type UpdateProfileResponse struct {
 	UserID   string `json:"userid"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
-}
-
-type GetActivityRequest struct {
-	UserID          string
-	RequesterUserId string
-}
-
-type GetActivityResponse struct {
-	Type      string    `json:"type"`
-	TaskTitle *string   `json:"task_title,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
 }

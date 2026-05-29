@@ -14,7 +14,6 @@ type UserHandler interface {
 	Follow(c *gin.Context)
 	Unfollow(c *gin.Context)
 	UpdateProfile(c *gin.Context)
-	GetActivity(c *gin.Context)
 }
 
 type userHandler struct {
@@ -100,23 +99,5 @@ func (h *userHandler) UpdateProfile(c *gin.Context) {
 		pkg.Fail(c, 500, err.Error())
 		return
 	}
-	pkg.Success(c, 200, result)
-}
-
-func (h *userHandler) GetActivity(c *gin.Context) {
-	userID := c.Param("userid")
-	requesterUserId := c.GetString("userID")
-
-	req := &dto.GetActivityRequest{
-		UserID:          userID,
-		RequesterUserId: requesterUserId,
-	}
-
-	result, err := h.userSvc.GetActivity(req)
-	if err != nil {
-		pkg.Fail(c, 500, err.Error())
-		return
-	}
-
 	pkg.Success(c, 200, result)
 }

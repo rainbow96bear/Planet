@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { Activity } from '$lib/types'
+    import type { Feed } from '$lib/types'
 
-    let { activity }: { activity: Activity } = $props()
+    let { feed }: { feed: Feed } = $props()
 
     let liked   = $state(false)
     let cheered = $state(false)
-    let likeCount  = $state(activity.reactions?.like ?? 0)
-    let cheerCount = $state(activity.reactions?.cheer ?? 0)
+    let likeCount  = $state(feed.reactions?.like ?? 0)
+    let cheerCount = $state(feed.reactions?.cheer ?? 0)
 
     function toggleLike() {
         liked = !liked
@@ -48,31 +48,31 @@
     }
 </script>
 
-<article class="activity-card">
+<article class="feed-card">
     <div class="card-main">
-        <span class="activity-icon" aria-hidden="true">
-            {iconMap[activity.type] ?? '🪐'}
+        <span class="feed-icon" aria-hidden="true">
+            {iconMap[feed.type] ?? '🪐'}
         </span>
 
-        <div class="activity-body">
-            <div class="activity-meta">
-                <a href={`/profile/${activity.actor_id}`} class="activity-actor">
-                    @{activity.actor_nickname}
+        <div class="feed-body">
+            <div class="feed-meta">
+                <a href={`/profile/${feed.actor_id}`} class="feed-actor">
+                    @{feed.actor_nickname}
                 </a>
-                <span class="type-label">{labelMap[activity.type] ?? '활동'}</span>
+                <span class="type-label">{labelMap[feed.type] ?? '활동'}</span>
             </div>
 
-            <p class="activity-text">
-                {textMap[activity.type] ?? '활동했습니다'}
+            <p class="feed-text">
+                {textMap[feed.type] ?? '활동했습니다'}
             </p>
 
-            {#if activity.task_title}
-                <span class="task-badge">"{activity.task_title}"</span>
+            {#if feed.task_title}
+                <span class="task-badge">"{feed.task_title}"</span>
             {/if}
         </div>
 
-        <time class="activity-time" datetime={activity.created_at}>
-            {formatTime(activity.created_at)}
+        <time class="feed-time" datetime={feed.created_at}>
+            {formatTime(feed.created_at)}
         </time>
     </div>
 
@@ -104,7 +104,7 @@
 </article>
 
 <style>
-    .activity-card {
+    .feed-card {
         background: #12121a;
         border: 1px solid #a89fd420;
         border-radius: 12px;
@@ -112,7 +112,7 @@
         transition: border-color 0.2s;
     }
 
-    .activity-card:hover {
+    .feed-card:hover {
         border-color: #a89fd440;
     }
 
@@ -124,7 +124,7 @@
     }
 
     /* ── 아이콘 ── */
-    .activity-icon {
+    .feed-icon {
         font-size: 1.25rem;
         width: 38px;
         height: 38px;
@@ -138,12 +138,12 @@
     }
 
     /* ── 본문 ── */
-    .activity-body {
+    .feed-body {
         flex: 1;
         min-width: 0;
     }
 
-    .activity-meta {
+    .feed-meta {
         display: flex;
         align-items: baseline;
         gap: 0.4rem;
@@ -151,7 +151,7 @@
         margin-bottom: 0.2rem;
     }
 
-    .activity-actor {
+    .feed-actor {
         font-size: 0.88rem;
         font-weight: 700;
         color: #b2ede6;
@@ -160,7 +160,7 @@
         transition: color 0.2s;
     }
 
-    .activity-actor:hover {
+    .feed-actor:hover {
         color: #d4f5f0;
     }
 
@@ -174,7 +174,7 @@
         padding: 1px 7px;
     }
 
-    .activity-text {
+    .feed-text {
         font-size: 0.85rem;
         color: #a89fd4;
         margin: 0;
@@ -195,7 +195,7 @@
     }
 
     /* ── 시간 ── */
-    .activity-time {
+    .feed-time {
         font-size: 0.75rem;
         color: #a89fd460;
         flex-shrink: 0;
@@ -261,7 +261,7 @@
 
     /* ── 반응형 ── */
     @media (max-width: 520px) {
-        .activity-card {
+        .feed-card {
             padding: 0.75rem;
         }
 
@@ -269,7 +269,7 @@
             gap: 0.65rem;
         }
 
-        .activity-icon {
+        .feed-icon {
             width: 32px;
             height: 32px;
             font-size: 1rem;

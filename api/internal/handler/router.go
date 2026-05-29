@@ -37,7 +37,7 @@ func RegisterRoutes(
 			tasks.POST("/:task_id/toggle", taskHandler.ToggleTask)
 
 			tasks.POST("/:task_id/reactions", reactionHandler.AddReaction)
-			tasks.DELETE("/:task_id/reactions/:type", reactionHandler.RemoveReaction)
+			tasks.DELETE("/:task_id/reactions", reactionHandler.RemoveReaction)
 		}
 
 		users := v1.Group("/users")
@@ -45,7 +45,6 @@ func RegisterRoutes(
 		{
 			users.GET("/:userid", userHandler.GetProfile)
 			users.GET("/:userid/tasks", taskHandler.GetTasksByMonth)
-			users.GET("/:userid/activites", userHandler.GetActivity)
 		}
 
 		usersAuth := v1.Group("/users")

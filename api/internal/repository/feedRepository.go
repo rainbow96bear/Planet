@@ -9,51 +9,51 @@ import (
 	"gorm.io/gorm"
 )
 
-type ActivityRepository interface {
-	Create(tx *gorm.DB, a *model.Activity) error
-	FindByUserID(userID string, limit int) ([]model.Activity, error)
-	FindLatestByUserID(userID string) (*model.Activity, error)
+type FeedRepository interface {
+	Create(tx *gorm.DB, a *model.Feed) error
+	FindByUserID(userID string, limit int) ([]model.Feed, error)
+	FindLatestByUserID(userID string) (*model.Feed, error)
 	FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error)
 	FindExploreFeed(limit int) ([]*dto.GetFeedResponse, error)
 }
 
-type activityRepository struct {
+type feedRepository struct {
 	db *gorm.DB
 }
 
-func NewActivityRepository(db *gorm.DB) ActivityRepository {
-	return &activityRepository{db: db}
+func NewFeedRepository(db *gorm.DB) FeedRepository {
+	return &feedRepository{db: db}
 }
 
-func (r *activityRepository) getDB(tx *gorm.DB) *gorm.DB {
+func (r *feedRepository) getDB(tx *gorm.DB) *gorm.DB {
 	if tx != nil {
 		return tx
 	}
 	return r.db
 }
 
-func (r *activityRepository) Create(tx *gorm.DB, a *model.Activity) error {
+func (r *feedRepository) Create(tx *gorm.DB, a *model.Feed) error {
 	return r.getDB(tx).Create(a).Error
 }
 
-func (r *activityRepository) FindByUserID(userID string, limit int) ([]model.Activity, error) {
-	var activities []model.Activity
+func (r *feedRepository) FindByUserID(userID string, limit int) ([]model.Feed, error) {
+	var feeds []model.Feed
 	err := r.db.
 		Where("user_id = ?", userID).
 		Order("created_at DESC").
 		Limit(limit).
-		Find(&activities).Error
-	return activities, err
+		Find(&feeds).Error
+	return feeds, err
 }
 
-func (r *activityRepository) FindLatestByUserID(userID string) (*model.Activity, error) {
-	var activity model.Activity
+func (r *feedRepository) FindLatestByUserID(userID string) (*model.Feed, error) {
+	var feed model.Feed
 
 	err := r.db.
 		Where("user_id = ?", userID).
 		Order("created_at DESC").
 		Limit(1).
-		First(&activity).Error
+		First(&feed).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
@@ -61,16 +61,16 @@ func (r *activityRepository) FindLatestByUserID(userID string) (*model.Activity,
 	if err != nil {
 		return nil, err
 	}
-	return &activity, nil
+	return &feed, nil
 }
 
-func (r *activityRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error) {
+func (r *feedRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error) {
 	var result []*dto.GetFeedResponse
 
 	err := r.db.
-		Table("activities a").
+		Table("feeds a").
 		Select(`
-            a.id           AS activity_id,
+            a.id           AS feed_id,
             a.user_id      AS actor_id,
             u.nickname     AS actor_nickname,
             a.type,
@@ -93,13 +93,13 @@ func (r *activityRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedR
 	return result, err
 }
 
-func (r *activityRepository) FindExploreFeed(limit int) ([]*dto.GetFeedResponse, error) {
+func (r *feedRepository) FindExploreFeed(limit int) ([]*dto.GetFeedResponse, error) {
 	var result []*dto.GetFeedResponse
 
 	err := r.db.
-		Table("activities a").
+		Table("feeds a").
 		Select(`
-            a.id           AS activity_id,
+            a.id           AS feed_id,
             a.user_id      AS actor_id,
             u.nickname     AS actor_nickname,
             a.type,

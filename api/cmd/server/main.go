@@ -38,7 +38,7 @@ func main() {
 		&model.User{},
 		&model.Task{},
 		&model.Follow{},
-		&model.Activity{},
+		&model.Feed{},
 		&model.Notification{},
 	); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
@@ -47,15 +47,15 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
 	followRepo := repository.NewFollowRepository(db)
-	activityRepo := repository.NewActivityRepository(db)
+	feedRepo := repository.NewFeedRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
 	reactionRepo := repository.NewReactionRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
-	taskSvc := service.NewTaskService(db, taskRepo, activityRepo)
-	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, activityRepo, notificationRepo)
+	taskSvc := service.NewTaskService(db, taskRepo, feedRepo)
+	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, feedRepo, notificationRepo)
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
-	feedSvc := service.NewFeedService(db, activityRepo)
+	feedSvc := service.NewFeedService(db, feedRepo)
 	notificationSvc := service.NewNotificationService(db, notificationRepo, userRepo)
 	reactionSvc := service.NewReactionService(db, reactionRepo, notificationRepo)
 

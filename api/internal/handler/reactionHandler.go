@@ -43,11 +43,14 @@ func (h *reactionHandler) AddReaction(c *gin.Context) {
 }
 
 func (h *reactionHandler) RemoveReaction(c *gin.Context) {
-	req := dto.RemoveReactionRequest{
-		TaskID: c.Param("task_id"),
-		UserID: c.GetString("userID"),
-		Type:   c.Param("type"),
+	var req dto.RemoveReactionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.Fail(c, 400, err.Error())
+		return
 	}
+
+	req.TaskID = c.Param("task_id")
+	req.UserID = c.GetString("userID")
 
 	if err := h.reactionSvc.RemoveReaction(&req); err != nil {
 		pkg.Fail(c, 500, err.Error())

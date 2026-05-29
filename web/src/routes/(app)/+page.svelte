@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types'
-    import ActivityCard from '$lib/components/ActivityCard.svelte'
+    import FeedCard from '$lib/components/FeedCard.svelte'
     import FeedTabs from '$lib/components/FeedTabs.svelte'
     import './page.css'
 
@@ -9,7 +9,7 @@
     const isLoggedIn = !!data.user
     let activeTab = $state<'feed' | 'explore'>(isLoggedIn ? 'feed' : 'explore')
 
-    const activities = $derived(activeTab === 'feed' ? data.feed : data.exploreFeed)
+    const feeds = $derived(activeTab === 'feed' ? data.feed : data.exploreFeed)
 </script>
 
 <div class="feed-container">
@@ -22,7 +22,7 @@
         />
     </div>
 
-    {#if activities.length === 0}
+    {#if feeds.length === 0}
         <div class="feed-empty">
             {#if activeTab === 'feed'}
                 <p>아직 활동이 없습니다</p>
@@ -32,10 +32,10 @@
             {/if}
         </div>
     {:else}
-        <ul class="activity-list">
-            {#each activities as activity (activity.activity_id)}
+        <ul class="feed-list">
+            {#each feeds as feed (feed.feeds_id)}
                 <li>
-                    <ActivityCard {activity} />
+                    <FeedCard {feed} />
                 </li>
             {/each}
         </ul>

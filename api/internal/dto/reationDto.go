@@ -17,5 +17,5 @@ type AddReactionResponse struct {
 type RemoveReactionRequest struct {
 	TaskID string `json:"-"`
 	UserID string `json:"-"`
-	Type   string `json:"-"`
+	Type   string `json:"type" binding:"required,oneof=like cheer"`
 }

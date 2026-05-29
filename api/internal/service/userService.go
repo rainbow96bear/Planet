@@ -14,7 +14,6 @@ type UserService interface {
 	Follow(*dto.FollowRequest) (*dto.FollowResponse, error)
 	Unfollow(*dto.UnfollowRequest) (*dto.UnfollowResponse, error)
 	UpdateProfile(*dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error)
-	GetActivity(*dto.GetActivityRequest) (*dto.GetActivityResponse, error)
 }
 
 type userService struct {
@@ -22,7 +21,7 @@ type userService struct {
 	userRepo         repository.UserRepository
 	followRepo       repository.FollowRepository
 	taskRepo         repository.TaskRepository
-	activityRepo     repository.ActivityRepository
+	feedRepo         repository.FeedRepository
 	notificationRepo repository.NotificationRepository
 }
 
@@ -31,7 +30,7 @@ func NewUserService(
 	userRepo repository.UserRepository,
 	followRepo repository.FollowRepository,
 	taskRepo repository.TaskRepository,
-	activityRepo repository.ActivityRepository,
+	feedRepo repository.FeedRepository,
 	notificationRepo repository.NotificationRepository,
 
 ) UserService {
@@ -40,7 +39,7 @@ func NewUserService(
 		userRepo:         userRepo,
 		followRepo:       followRepo,
 		taskRepo:         taskRepo,
-		activityRepo:     activityRepo,
+		feedRepo:         feedRepo,
 		notificationRepo: notificationRepo,
 	}
 }
@@ -97,18 +96,6 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 		tx.Rollback()
 		return nil, errors.New("이미 팔로우 중입니다")
 	}
-
-	// 추가
-	// targetType := model.TargetTypeUser
-	// if err := s.activityRepo.Create(tx, &model.Activity{
-	// 	UserID:     req.FollowerID,
-	// 	Type:       model.ActivityFollowed,
-	// 	TargetID:   req.FollowingID,
-	// 	TargetType: targetType,
-	// }); err != nil {
-	// 	tx.Rollback()
-	// 	return nil, err
-	// }
 
 	if err := s.notificationRepo.Upsert(tx, &model.Notification{
 		ReceiverID: req.FollowingID,
@@ -185,37 +172,4 @@ func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateP
 		Username: user.Username,
 		Nickname: user.Nickname,
 	}, nil
-}
-
-func (s *userService) GetActivity(req *dto.GetActivityRequest) (*dto.GetActivityResponse, error) {
-	isOwner := req.UserID == req.RequesterUserId
-
-	activity, err := s.activityRepo.FindLatestByUserID(req.UserID)
-	if err != nil || activity == nil {
-		return nil, err
-	}
-
-	switch activity.TargetType {
-	case model.TargetTypeTask:
-		task, err := s.taskRepo.GetTaskByID(activity.TargetID)
-		if err != nil {
-			return nil, err
-		}
-		if !isOwner && !task.IsPublic {
-			return nil, nil
-		}
-		return &dto.GetActivityResponse{
-			Type:      string(activity.Type),
-			TaskTitle: &task.Title,
-			CreatedAt: activity.CreatedAt,
-		}, nil
-
-	case model.TargetTypeUser:
-		return &dto.GetActivityResponse{
-			Type:      string(activity.Type),
-			CreatedAt: activity.CreatedAt,
-		}, nil
-	}
-
-	return nil, nil
 }

@@ -18,20 +18,20 @@ type TaskService interface {
 }
 
 type taskService struct {
-	db           *gorm.DB
-	taskRepo     repository.TaskRepository
-	activityRepo repository.ActivityRepository
+	db       *gorm.DB
+	taskRepo repository.TaskRepository
+	feedRepo repository.FeedRepository
 }
 
 func NewTaskService(
 	db *gorm.DB,
 	taskRepo repository.TaskRepository,
-	activityRepo repository.ActivityRepository,
+	feedRepo repository.FeedRepository,
 ) TaskService {
 	return &taskService{
-		db:           db,
-		taskRepo:     taskRepo,
-		activityRepo: activityRepo,
+		db:       db,
+		taskRepo: taskRepo,
+		feedRepo: feedRepo,
 	}
 }
 
@@ -57,9 +57,9 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 
 	// 추가
 	targetType := model.TargetTypeTask
-	if err := s.activityRepo.Create(tx, &model.Activity{
+	if err := s.feedRepo.Create(tx, &model.Feed{
 		UserID:     req.UserID,
-		Type:       model.ActivityTaskCreated,
+		Type:       model.TaskCreated,
 		TargetID:   task.ID,
 		TargetType: targetType,
 	}); err != nil {
@@ -148,9 +148,9 @@ func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskRes
 	// 완료 시에만 기록
 	if task.IsCompleted {
 		targetType := model.TargetTypeTask
-		if err := s.activityRepo.Create(tx, &model.Activity{
+		if err := s.feedRepo.Create(tx, &model.Feed{
 			UserID:     task.UserID,
-			Type:       model.ActivityTaskCompleted,
+			Type:       model.TaskCompleted,
 			TargetID:   task.ID,
 			TargetType: targetType,
 		}); err != nil {
