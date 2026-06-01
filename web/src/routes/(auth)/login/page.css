@@ -3,39 +3,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0a0a0f;
+  background-color: var(--bg);
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
   padding: 2.5rem 2rem;
-  background: #12121a;
-  border: 1px solid #a89fd430;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
 }
 
+/* 로고 */
 .login-logo {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: #b2ede6;
+  color: var(--planet-primary);
+  text-decoration: none;
   margin-bottom: 0.25rem;
   letter-spacing: -0.5px;
 }
 
 .login-tagline {
   font-size: 0.85rem;
-  color: #a89fd4;
+  color: var(--text-muted);
   margin-bottom: 2rem;
 }
 
 .login-title {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 
+/* 입력 필드 */
 .field {
   display: flex;
   flex-direction: column;
@@ -45,26 +51,28 @@
 
 .field label {
   font-size: 0.8rem;
-  color: #a89fd4;
+  color: var(--text-secondary);
 }
 
 .field input {
-  background: #1a1a26;
-  border: 1px solid #a89fd440;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.65rem 0.9rem;
-  color: #fff;
+  color: var(--text-primary);
   font-size: 0.95rem;
-  transition: border-color 0.2s;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
 }
 
 .field input:focus {
-  border-color: #b2ede6;
+  border-color: var(--planet-primary);
+  box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.15);
 }
 
 .field input::placeholder {
-  color: #3a3a50;
+  color: var(--text-muted);
 }
 
 .error-msg {
@@ -73,22 +81,24 @@
   margin-bottom: 1rem;
 }
 
+/* 버튼 */
 .btn-primary {
   width: 100%;
   padding: 0.75rem;
-  background: #b2ede6;
-  color: #0a0a0f;
+  background: var(--planet-primary);
+  color: #fff;
   border: none;
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   margin-top: 0.5rem;
-  transition: opacity 0.2s;
+  transition: background 0.2s, opacity 0.2s;
 }
 
 .btn-primary:hover {
-  opacity: 0.85;
+  background: var(--planet-primary-hover);
 }
 
 .btn-primary:disabled {
@@ -96,74 +106,77 @@
   cursor: not-allowed;
 }
 
-.login-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.login-footer a {
-  color: #a89fd4;
-  text-decoration: none;
-}
-
-.login-footer a:hover {
-  color: #b2ede6;
-}
-
-.btn-kakao {
-  width: 100%;
-  margin-top: 0.75rem;
-  background: #FEE500;
-  color: #000000bf;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  padding: 0;
+/* 구분선 */
+.divider {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 48px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: opacity 0.2s;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
 }
 
-.btn-kakao:hover {
-  opacity: 0.85;
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
-.btn-kakao:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
+/* 소셜 버튼 공통 */
+.btn-kakao,
 .btn-naver {
   width: 100%;
   margin-top: 0.75rem;
-  background: #03C75A;
-  color: #ffffff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   height: 48px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  font-family: inherit;
   transition: opacity 0.2s;
 }
 
+.btn-kakao:hover,
 .btn-naver:hover {
   opacity: 0.85;
 }
 
+.btn-kakao:disabled,
 .btn-naver:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.btn-kakao {
+  background: #FEE500;
+  color: #000000bf;
+}
+
+.btn-naver {
+  background: #03C75A;
+  color: #ffffff;
+}
+
+/* 하단 링크 */
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.login-footer a {
+  color: var(--planet-primary);
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  color: var(--planet-primary-hover);
 }

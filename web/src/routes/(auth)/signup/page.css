@@ -1,123 +1,141 @@
 .login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #0a0a0f;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 1rem;
 }
 
 .login-card {
-  width: 100%;
-  max-width: 400px;
-  padding: 2.5rem 2rem;
-  background: #12121a;
-  border: 1px solid #a89fd430;
-  border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
 .login-logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #b2ede6;
-  margin-bottom: 0.25rem;
-  letter-spacing: -0.5px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--planet-primary);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.5px;
 }
 
 .login-tagline {
-  font-size: 0.85rem;
-  color: #a89fd4;
-  margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
 }
 
 .login-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
 }
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1rem;
 }
 
 .field label {
-  font-size: 0.8rem;
-  color: #a89fd4;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
 .field input {
-  background: #1a1a26;
-  border: 1px solid #a89fd440;
-  border-radius: 8px;
-  padding: 0.65rem 0.9rem;
-  color: #fff;
-  font-size: 0.95rem;
-  transition: border-color 0.2s;
-  outline: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 0.9rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    outline: none;
 }
 
 .field input:focus {
-  border-color: #b2ede6;
-}
-
-.field-ok {
-  font-size: 0.75rem;
-  color: #b2ede6;
-}
-
-.field-error {
-  font-size: 0.75rem;
-  color: #e05c5c;
+    border-color: var(--planet-primary);
+    box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.15);
 }
 
 .field input::placeholder {
-  color: #3a3a50;
+    color: var(--text-muted);
+}
+
+.field-ok {
+    font-size: 0.75rem;
+    color: var(--success);
+}
+
+.field-error {
+    font-size: 0.75rem;
+    color: var(--danger);
 }
 
 .error-msg {
-  font-size: 0.8rem;
-  color: #e05c5c;
-  margin-bottom: 1rem;
+    font-size: 0.8rem;
+    color: var(--danger);
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 8px;
 }
 
 .btn-primary {
-  width: 100%;
-  padding: 0.75rem;
-  background: #b2ede6;
-  color: #0a0a0f;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: opacity 0.2s;
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--planet-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition:
+        background-color 0.2s,
+        transform 0.1s;
 }
 
-.btn-primary:hover {
-  opacity: 0.85;
+.btn-primary:hover:not(:disabled) {
+    background: var(--planet-primary-hover);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(1px);
 }
 
 .btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .login-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
-  color: #555;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 .login-footer a {
-  color: #a89fd4;
-  text-decoration: none;
+    color: var(--planet-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
 }
 
 .login-footer a:hover {
-  color: #b2ede6;
+    color: var(--planet-primary-hover);
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
   import favicon from '$lib/assets/favicon.png'
+  import logo from '$lib/assets/planet.png'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
   import { logout } from '$lib/api/auth'
@@ -28,7 +29,7 @@
 
 <div class="app-layout">
   <header class="header">
-    <a href="/" class="logo">🪐 Planet</a>
+    <a href="/" class="logo"><img src={logo} alt="Planet" height="32" />Planet</a>
 
     <form class="search-form" onsubmit={handleSearch}>
       <div class="search-wrapper">

@@ -3,6 +3,7 @@
   import { login } from '$lib/api/auth'
   import kakaoLoginBtn from '$lib/assets/kakaoLoginBtn.png'
   import naverLoginBtn from '$lib/assets/naverLoginBtn.png'
+  import logo from '$lib/assets/planet.png'
   import './page.css'
 
   let username = $state('')
@@ -30,7 +31,7 @@
     window.location.href = '/api/v1/auth/login/oauth/kakao'
   }
 
-  function handleNaverLogin(){
+  function handleNaverLogin() {
     loading = true
     window.location.href = '/api/v1/auth/login/oauth/naver'
   }
@@ -38,7 +39,10 @@
 
 <div class="login-container">
   <div class="login-card">
-    <div class="login-logo">🪐 Planet</div>
+    <a href="/" class="login-logo">
+      <img src={logo} alt="Planet" height="28" />
+      Planet
+    </a>
     <div class="login-tagline">우주처럼 넓은 이야기를 나눠요</div>
 
     <h1 class="login-title">로그인</h1>
@@ -73,12 +77,16 @@
       </button>
     </form>
 
+    <div class="divider"><span>또는</span></div>
+
     <button class="btn-kakao" onclick={handleKakaoLogin} disabled={loading}>
-    카카오로그인
+      <img src={kakaoLoginBtn} alt="카카오 로그인" height="20" />
+      카카오로 로그인
     </button>
 
     <button class="btn-naver" onclick={handleNaverLogin} disabled={loading}>
-    네이버로그인
+      <img src={naverLoginBtn} alt="네이버 로그인" height="20" />
+      네이버로 로그인
     </button>
 
     <div class="login-footer">
