@@ -123,7 +123,7 @@
     .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: #00000080;
+        background: rgba(31, 41, 55, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -131,12 +131,13 @@
     }
 
     .modal {
-        background: #12121a;
-        border: 1px solid #a89fd430;
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 16px;
         width: 100%;
         max-width: 380px;
         padding: 1.5rem;
+        box-shadow: 0 12px 32px rgba(31, 41, 55, 0.08);
     }
 
     .modal-header {
@@ -155,18 +156,18 @@
     .label {
         font-size: 1rem;
         font-weight: 700;
-        color: #ffffff;
+        color: var(--text-primary);
     }
 
     .sub {
         font-size: 0.78rem;
-        color: #a89fd4;
+        color: var(--text-secondary);
     }
 
     .modal-close {
         background: none;
         border: none;
-        color: #a89fd4;
+        color: var(--text-secondary);
         font-size: 1rem;
         cursor: pointer;
         transition: color 0.2s;
@@ -174,7 +175,7 @@
     }
 
     .modal-close:hover {
-        color: #ffffff;
+        color: var(--text-primary);
     }
 
     /* 입력 */
@@ -185,11 +186,11 @@
 
     .input-group input {
         width: 100%;
-        background: #1a1a26;
-        border: 1px solid #a89fd440;
+        background: var(--bg);
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 0.65rem 3rem 0.65rem 0.9rem;
-        color: #fff;
+        color: var(--text-primary);
         font-size: 0.9rem;
         outline: none;
         box-sizing: border-box;
@@ -197,11 +198,12 @@
     }
 
     .input-group input:focus {
-        border-color: #b2ede6;
+        border-color: var(--planet-primary);
+        box-shadow: 0 0 0 3px rgba(124, 199, 201, 0.15);
     }
 
     .input-group input::placeholder {
-        color: #3a3a50;
+        color: var(--text-secondary);
     }
 
     .input-group input:disabled {
@@ -214,7 +216,7 @@
         top: 50%;
         transform: translateY(-50%);
         font-size: 0.7rem;
-        color: #a89fd460;
+        color: var(--text-secondary);
         pointer-events: none;
     }
 
@@ -229,7 +231,7 @@
 
     .toggle-label {
         font-size: 0.85rem;
-        color: #a89fd4;
+        color: var(--text-secondary);
     }
 
     .toggle {
@@ -243,8 +245,13 @@
         padding: 0;
     }
 
-    .toggle.on  { background: #b2ede6; }
-    .toggle.off { background: #2a2a3a; }
+    .toggle.on {
+        background: var(--planet-primary);
+    }
+
+    .toggle.off {
+        background: #d1d5db;
+    }
 
     .toggle-thumb {
         position: absolute;
@@ -253,7 +260,7 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: #fff;
+        background: white;
         transition: transform 0.2s;
     }
 
@@ -270,19 +277,19 @@
     .btn-cancel {
         flex: 1;
         padding: 0.6rem;
-        background: #1a1a26;
-        border: 1px solid #a89fd440;
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 8px;
-        color: #a89fd4;
+        color: var(--text-secondary);
         font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
-        transition: border-color 0.2s, color 0.2s;
+        transition: all 0.2s;
     }
 
     .btn-cancel:hover:not(:disabled) {
-        border-color: #a89fd4;
-        color: #d0c8f0;
+        border-color: var(--planet-secondary);
+        color: var(--planet-secondary);
     }
 
     .btn-cancel:disabled {
@@ -293,25 +300,25 @@
     .btn-submit {
         flex: 2;
         padding: 0.6rem;
-        background: #b2ede6;
+        background: var(--planet-primary);
         border: none;
         border-radius: 8px;
-        color: #0a0a0f;
+        color: white;
         font-size: 0.875rem;
         font-weight: 700;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: opacity 0.2s;
+        transition: background 0.2s;
     }
 
     .btn-submit:hover:not(:disabled) {
-        opacity: 0.85;
+        background: var(--planet-primary-dark);
     }
 
     .btn-submit:disabled {
-        opacity: 0.35;
+        opacity: 0.4;
         cursor: not-allowed;
     }
 
@@ -319,19 +326,25 @@
         display: inline-block;
         width: 14px;
         height: 14px;
-        border: 2px solid #0a0a0f40;
-        border-top-color: #0a0a0f;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: white;
         border-radius: 50%;
         animation: spin 0.6s linear infinite;
     }
 
     @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .error-msg {
         font-size: 0.8rem;
-        color: #e05c5c;
+        color: var(--danger);
         margin-bottom: 0.75rem;
+        padding: 0.6rem 0.8rem;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        border-radius: 8px;
     }
 </style>

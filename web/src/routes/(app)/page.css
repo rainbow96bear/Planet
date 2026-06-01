@@ -15,7 +15,7 @@
 .feed-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -26,5 +26,5 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }

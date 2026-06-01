@@ -16,33 +16,33 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     text-decoration: none;
     padding: 0.4rem 0.7rem;
-    border: 1px solid #a89fd430;
+    border: 1px solid var(--border);
     border-radius: 8px;
-    background: #1a1a26;
-    transition: color 0.2s, border-color 0.2s;
+    background: var(--surface);
+    transition: all 0.2s;
     flex-shrink: 0;
 }
 
 .back-btn:hover {
-    color: #d0c8f0;
-    border-color: #a89fd4;
+    color: var(--planet-primary);
+    border-color: var(--planet-primary);
 }
 
 .settings-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0;
 }
 
 /* ── 카드 ── */
 .settings-card {
-    background: #12121a;
-    border: 1px solid #a89fd430;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.75rem;
 }
@@ -62,8 +62,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #1a1a26;
-    border: 1px solid #a89fd430;
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -77,18 +77,18 @@
 .avatar-name {
     font-size: 1rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .avatar-username {
     font-size: 0.85rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
 }
 
 /* ── 구분선 ── */
 .divider {
     height: 1px;
-    background: #a89fd420;
+    background: var(--border);
     margin-bottom: 1.5rem;
 }
 
@@ -108,26 +108,27 @@
 .form-label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: #a89fd4;
+    color: var(--text-secondary);
     letter-spacing: 0.03em;
 }
 
 .form-input {
-    background: #1a1a26;
-    border: 1px solid #a89fd430;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 0.65rem 0.85rem;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 0.9rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
     width: 100%;
     box-sizing: border-box;
     font-family: inherit;
 }
 
 .form-input:focus {
-    border-color: #a89fd4;
+    border-color: var(--planet-primary);
+    box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.12);
 }
 
 .form-input:disabled {
@@ -142,28 +143,28 @@
 
 .form-hint {
     font-size: 0.75rem;
-    color: #a89fd480;
+    color: var(--text-muted);
     text-align: right;
 }
 
 /* ── 메시지 ── */
 .form-error {
     font-size: 0.82rem;
-    color: #e05c5c;
+    color: var(--danger);
     margin: 0;
     padding: 0.6rem 0.85rem;
-    background: #e05c5c15;
-    border: 1px solid #e05c5c30;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     border-radius: 8px;
 }
 
 .form-success {
     font-size: 0.82rem;
-    color: #b2ede6;
+    color: var(--success);
     margin: 0;
     padding: 0.6rem 0.85rem;
-    background: #b2ede615;
-    border: 1px solid #b2ede630;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.2);
     border-radius: 8px;
 }
 
@@ -182,18 +183,17 @@
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #a89fd4;
-    background: #1a1a26;
-    border: 1px solid #a89fd440;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px solid var(--border);
     text-decoration: none;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    transition: all 0.2s;
     cursor: pointer;
 }
 
 .btn-cancel:hover {
-    background: #22223a;
-    border-color: #a89fd4;
-    color: #d0c8f0;
+    background: var(--surface-hover);
+    color: var(--text-primary);
 }
 
 .btn-submit {
@@ -204,17 +204,17 @@
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #b2ede6;
-    background: #b2ede620;
-    border: 1px solid #b2ede650;
+    color: white;
+    background: var(--planet-primary);
+    border: 1px solid var(--planet-primary);
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition: all 0.2s;
     min-width: 70px;
 }
 
 .btn-submit:hover:not(:disabled) {
-    background: #b2ede630;
-    border-color: #b2ede6;
+    background: var(--planet-primary-hover);
+    border-color: var(--planet-primary-hover);
 }
 
 .btn-submit:disabled {
@@ -234,7 +234,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ── 반응형 ── */

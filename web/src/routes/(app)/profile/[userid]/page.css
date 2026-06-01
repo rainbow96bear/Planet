@@ -19,8 +19,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #1a1a26;
-    border: 1px solid #a89fd430;
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -33,13 +33,13 @@
 .profile-nickname {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin: 0 0 2px;
 }
 
 .profile-username {
     font-size: 0.85rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
 }
 
 /* ── 프로필 액션 버튼 영역 ── */
@@ -61,7 +61,7 @@
     cursor: pointer;
     border: 1px solid transparent;
     text-decoration: none;
-    transition: background 0.18s, border-color 0.18s, color 0.18s, opacity 0.18s;
+    transition: all 0.18s;
     white-space: nowrap;
     line-height: 1;
 }
@@ -71,42 +71,41 @@
     cursor: not-allowed;
 }
 
-/* 기본 강조 (할 일 추가, 팔로우) */
+/* 기본 강조 */
 .action-btn.primary {
-    background: #b2ede620;
-    border-color: #b2ede650;
-    color: #b2ede6;
+    background: var(--planet-primary);
+    border-color: var(--planet-primary);
+    color: white;
 }
 
 .action-btn.primary:hover:not(:disabled) {
-    background: #b2ede630;
-    border-color: #b2ede6;
+    background: var(--planet-primary-hover);
+    border-color: var(--planet-primary-hover);
 }
 
-/* 서브 (프로필 수정) */
+/* 서브 */
 .action-btn.secondary {
-    background: #1a1a26;
-    border-color: #a89fd440;
-    color: #a89fd4;
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-secondary);
 }
 
 .action-btn.secondary:hover:not(:disabled) {
-    background: #22223a;
-    border-color: #a89fd4;
-    color: #d0c8f0;
+    background: var(--surface-hover);
+    color: var(--text-primary);
 }
 
 /* 팔로잉 상태 */
 .action-btn.following {
-    background: #a89fd420;
-    border-color: #a89fd450;
-    color: #a89fd4;
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-secondary);
 }
 
 .action-btn.following:hover:not(:disabled) {
-    background: #e05c5c20;
-    border-color: #e05c5c60;
-    color: #e05c5c;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: var(--danger);
+    color: var(--danger);
 }
 
 /* 로딩 스피너 */
@@ -121,13 +120,15 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ── 캘린더 카드 ── */
 .calendar-card {
-    background: #12121a;
-    border: 1px solid #a89fd430;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 1.5rem;
 }
@@ -142,22 +143,22 @@
 .calendar-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
 }
 
 .nav-btn {
-    background: #1a1a26;
-    border: 1px solid #a89fd440;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
-    color: #a89fd4;
+    color: var(--text-secondary);
     padding: 0.4rem 0.8rem;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .nav-btn:hover:not(:disabled) {
-    color: #b2ede6;
-    border-color: #b2ede6;
+    color: var(--planet-primary);
+    border-color: var(--planet-primary);
 }
 
 .nav-btn:disabled {
@@ -167,7 +168,7 @@
 
 .calendar-loading {
     text-align: center;
-    color: #a89fd4;
+    color: var(--text-secondary);
     padding: 3rem 0;
     font-size: 0.9rem;
 }
@@ -182,26 +183,26 @@
 .calendar-day-header {
     text-align: center;
     font-size: 0.75rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
     padding: 0.5rem 0;
     font-weight: 600;
 }
 
 .calendar-cell {
     min-height: 80px;
-    background: #1a1a26;
-    border: 1px solid #a89fd415;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 0.4rem;
     text-align: left;
     cursor: pointer;
     width: 100%;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
     position: relative;
 }
 
 .calendar-cell:hover:not(:disabled) {
-    border-color: #a89fd450;
+    border-color: var(--planet-primary);
 }
 
 .calendar-cell:hover .add-task-btn {
@@ -215,15 +216,15 @@
 }
 
 .calendar-cell.today {
-    border-color: #b2ede640;
-    background: #b2ede608;
+    border-color: var(--planet-primary);
+    background: rgba(79, 156, 249, 0.06);
 }
 
 .calendar-cell:disabled {
     cursor: default;
 }
 
-/* ── 셀 상단 (날짜 숫자 + + 버튼) ── */
+/* ── 셀 상단 ── */
 .cell-top {
     display: flex;
     align-items: center;
@@ -233,24 +234,24 @@
 
 .day-number {
     font-size: 0.75rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
     display: block;
 }
 
 .day-number.sunday {
-    color: #e05c5c;
+    color: var(--danger);
 }
 
 .day-number.saturday {
-    color: #5c8fe0;
+    color: var(--planet-primary);
 }
 
 .day-number.today-number {
-    color: #b2ede6;
+    color: var(--planet-primary);
     font-weight: 700;
 }
 
-/* ── 셀 내부 할 일 추가 버튼 ── */
+/* ── 추가 버튼 ── */
 .add-task-btn {
     opacity: 0;
     width: 18px;
@@ -260,23 +261,23 @@
     justify-content: center;
     font-size: 0.85rem;
     line-height: 1;
-    color: #b2ede6;
-    background: #b2ede618;
-    border: 1px solid #b2ede630;
+    color: var(--planet-primary);
+    background: rgba(79, 156, 249, 0.08);
+    border: 1px solid rgba(79, 156, 249, 0.2);
     border-radius: 4px;
     cursor: pointer;
     padding: 0;
     flex-shrink: 0;
-    transition: opacity 0.15s, background 0.15s;
+    transition: all 0.15s;
 }
 
 .add-task-btn:hover {
-    background: #b2ede630;
-    border-color: #b2ede6;
+    background: rgba(79, 156, 249, 0.15);
+    border-color: var(--planet-primary);
     opacity: 1 !important;
 }
 
-/* ── 할 일 칩 ── */
+/* ── 할 일 ── */
 .task-list {
     display: flex;
     flex-direction: column;
@@ -285,8 +286,8 @@
 
 .task-chip {
     font-size: 0.7rem;
-    color: #b2ede6;
-    background: #b2ede615;
+    color: var(--planet-primary);
+    background: rgba(79, 156, 249, 0.08);
     border-radius: 4px;
     padding: 2px 5px;
     white-space: nowrap;
@@ -297,12 +298,12 @@
 }
 
 .task-chip:hover {
-    background: #b2ede625;
+    background: rgba(79, 156, 249, 0.12);
 }
 
 .task-chip.completed {
-    color: #a89fd4;
-    background: #a89fd415;
+    color: var(--text-muted);
+    background: #f1f5f9;
     text-decoration: line-through;
 }
 

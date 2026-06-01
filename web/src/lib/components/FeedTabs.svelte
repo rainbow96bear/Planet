@@ -35,31 +35,33 @@
     .feed-tabs {
         display: flex;
         gap: 4px;
-        background: #1a1a26;
-        border: 1px solid #a89fd420;
+        background: var(--bg);
+        border: 1px solid var(--border);
         border-radius: 10px;
         padding: 3px;
     }
 
     .tab-btn {
-        padding: 0.35rem 0.9rem;
+        padding: 0.4rem 1rem;
         border-radius: 7px;
         font-size: 0.82rem;
         font-weight: 600;
         cursor: pointer;
         border: none;
-        background: none;
-        color: #a89fd4;
+        background: transparent;
+        color: var(--text-secondary);
         font-family: inherit;
-        transition: background 0.2s, color 0.2s;
+        transition: all 0.2s;
     }
 
     .tab-btn:hover:not(.active) {
-        color: #d0c8f0;
+        color: var(--planet-primary);
+        background: rgba(79, 156, 249, 0.05);
     }
 
     .tab-btn.active {
-        background: #a89fd425;
-        color: #ffffff;
+        background: var(--planet-primary);
+        color: white;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     }
 </style>

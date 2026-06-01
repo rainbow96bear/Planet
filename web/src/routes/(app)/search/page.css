@@ -22,41 +22,42 @@
 .search-icon {
     position: absolute;
     left: 0.85rem;
-    color: #a89fd4;
+    color: var(--text-muted);
     pointer-events: none;
 }
 
 .search-input {
     width: 100%;
-    background: #12121a;
-    border: 1px solid #a89fd430;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 10px;
     padding: 0.7rem 1rem 0.7rem 2.5rem;
-    color: #ffffff;
+    color: var(--text-primary);
     font-size: 0.95rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
     font-family: inherit;
     box-sizing: border-box;
 }
 
 .search-input::placeholder {
-    color: #a89fd460;
+    color: var(--text-muted);
 }
 
 .search-input:focus {
-    border-color: #a89fd4;
+    border-color: var(--planet-primary);
+    box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.12);
 }
 
 /* ── 결과 라벨 ── */
 .search-result-label {
     font-size: 0.82rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
     margin: 0 0 1rem 0;
 }
 
 .search-keyword {
-    color: #b2ede6;
+    color: var(--planet-primary);
     font-weight: 600;
 }
 
@@ -71,15 +72,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #12121a;
-    border: 1px solid #a89fd420;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 0.85rem 1rem;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
 }
 
 .user-card:hover {
-    border-color: #a89fd440;
+    border-color: var(--planet-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .user-info {
@@ -98,8 +100,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #1a1a26;
-    border: 1px solid #a89fd430;
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -114,7 +116,7 @@
 .user-nickname {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -122,7 +124,7 @@
 
 .user-username {
     font-size: 0.8rem;
-    color: #a89fd4;
+    color: var(--text-secondary);
 }
 
 /* ── 팔로우 버튼 ── */
@@ -135,29 +137,29 @@
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
-    border: 1px solid #b2ede650;
-    background: #b2ede620;
-    color: #b2ede6;
-    transition: background 0.2s, border-color 0.2s;
+    border: 1px solid var(--planet-primary);
+    background: var(--planet-primary);
+    color: white;
+    transition: all 0.2s;
     flex-shrink: 0;
     min-width: 72px;
 }
 
 .btn-follow:hover:not(:disabled) {
-    background: #b2ede630;
-    border-color: #b2ede6;
+    background: var(--planet-primary-hover);
+    border-color: var(--planet-primary-hover);
 }
 
 .btn-follow.following {
-    background: #a89fd420;
-    border-color: #a89fd450;
-    color: #a89fd4;
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-secondary);
 }
 
 .btn-follow.following:hover:not(:disabled) {
-    background: #e05c5c20;
-    border-color: #e05c5c60;
-    color: #e05c5c;
+    background: rgba(239, 68, 68, 0.08);
+    border-color: var(--danger);
+    color: var(--danger);
 }
 
 .btn-follow:disabled {
@@ -172,7 +174,7 @@
 }
 
 .empty-text {
-    color: #a89fd4;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -189,7 +191,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ── 반응형 ── */

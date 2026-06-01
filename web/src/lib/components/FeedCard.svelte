@@ -105,15 +105,16 @@
 
 <style>
     .feed-card {
-        background: #12121a;
-        border: 1px solid #a89fd420;
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 0.9rem 1rem;
-        transition: border-color 0.2s;
+        padding: 1rem;
+        transition: all 0.2s;
     }
 
     .feed-card:hover {
-        border-color: #a89fd440;
+        border-color: var(--planet-primary);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
     /* ── 메인 행 ── */
@@ -131,8 +132,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #1a1a26;
-        border: 1px solid #a89fd425;
+        background: rgba(79, 156, 249, 0.08);
+        border: 1px solid rgba(79, 156, 249, 0.15);
         border-radius: 50%;
         flex-shrink: 0;
     }
@@ -148,56 +149,55 @@
         align-items: baseline;
         gap: 0.4rem;
         flex-wrap: wrap;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.25rem;
     }
 
     .feed-actor {
         font-size: 0.88rem;
         font-weight: 700;
-        color: #b2ede6;
+        color: var(--planet-primary);
         text-decoration: none;
         white-space: nowrap;
         transition: color 0.2s;
     }
 
     .feed-actor:hover {
-        color: #d4f5f0;
+        color: var(--planet-primary-hover);
     }
 
     .type-label {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #a89fd4;
-        background: #a89fd415;
-        border: 1px solid #a89fd425;
-        border-radius: 20px;
-        padding: 1px 7px;
+        color: var(--planet-secondary);
+        background: rgba(175, 168, 230, 0.1);
+        border: 1px solid rgba(175, 168, 230, 0.2);
+        border-radius: 999px;
+        padding: 2px 8px;
     }
 
     .feed-text {
-        font-size: 0.85rem;
-        color: #a89fd4;
+        font-size: 0.88rem;
+        color: var(--text-primary);
         margin: 0;
         word-break: break-word;
     }
 
     .task-badge {
         display: inline-block;
-        margin-top: 0.35rem;
+        margin-top: 0.5rem;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #d0c8f0;
-        background: #1a1a26;
-        border: 1px solid #a89fd430;
-        border-radius: 6px;
-        padding: 2px 8px;
-        word-break: keep-all;
+        color: var(--text-primary);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 4px 8px;
     }
 
     /* ── 시간 ── */
     .feed-time {
         font-size: 0.75rem;
-        color: #a89fd460;
+        color: var(--text-secondary);
         flex-shrink: 0;
         white-space: nowrap;
         align-self: flex-start;
@@ -206,31 +206,31 @@
     /* ── 리액션 ── */
     .reactions {
         display: flex;
-        gap: 6px;
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid #a89fd418;
+        gap: 8px;
+        margin-top: 0.9rem;
+        padding-top: 0.9rem;
+        border-top: 1px solid var(--border);
     }
 
     .reaction-btn {
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        padding: 4px 12px;
-        border-radius: 20px;
-        border: 1px solid #a89fd425;
-        background: transparent;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
         cursor: pointer;
         font-size: 0.8rem;
         font-family: inherit;
-        color: #a89fd4;
+        color: var(--text-secondary);
         transition: all 0.15s;
     }
 
     .reaction-btn:hover {
-        background: #a89fd415;
-        border-color: #a89fd445;
-        color: #d0c8f0;
+        border-color: var(--planet-primary);
+        color: var(--planet-primary);
+        background: rgba(79, 156, 249, 0.05);
     }
 
     .reaction-icon {
@@ -240,29 +240,30 @@
 
     .reaction-count {
         font-weight: 700;
-        color: inherit;
+    }
+
+    /* 좋아요 */
+    .reaction-btn.liked {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.25);
+        color: #ef4444;
+    }
+
+    /* 응원 */
+    .reaction-btn.cheered {
+        background: rgba(245, 158, 11, 0.08);
+        border-color: rgba(245, 158, 11, 0.25);
+        color: #f59e0b;
     }
 
     .reaction-label {
         color: inherit;
     }
 
-    .reaction-btn.liked {
-        background: #3d1a1a;
-        border-color: #e2524a60;
-        color: #f09595;
-    }
-
-    .reaction-btn.cheered {
-        background: #2e2010;
-        border-color: #ef9f2760;
-        color: #fac775;
-    }
-
     /* ── 반응형 ── */
     @media (max-width: 520px) {
         .feed-card {
-            padding: 0.75rem;
+            padding: 0.85rem;
         }
 
         .card-main {

@@ -109,7 +109,8 @@
     .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: #00000080;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -117,12 +118,13 @@
     }
 
     .modal {
-        background: #12121a;
-        border: 1px solid #a89fd430;
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 16px;
         width: 100%;
         max-width: 420px;
         padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
 
     .modal-header {
@@ -135,20 +137,20 @@
     .modal-date {
         font-size: 1rem;
         font-weight: 600;
-        color: #ffffff;
+        color: var(--text-primary);
     }
 
     .modal-close {
         background: none;
         border: none;
-        color: #a89fd4;
+        color: var(--text-secondary);
         font-size: 1rem;
         cursor: pointer;
         transition: color 0.2s;
     }
 
     .modal-close:hover {
-        color: #ffffff;
+        color: var(--text-primary);
     }
 
     .task-list {
@@ -164,16 +166,21 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        background: #1a1a26;
-        border: 1px solid #a89fd420;
+        background: var(--bg);
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 0.6rem 0.8rem;
         font-size: 0.9rem;
-        color: #ffffff;
+        color: var(--text-primary);
+        transition: border-color 0.2s;
+    }
+
+    .task-item:hover {
+        border-color: var(--planet-primary);
     }
 
     .task-item.completed {
-        color: #a89fd4;
+        color: var(--text-muted);
     }
 
     .task-item.completed .task-title {
@@ -191,8 +198,8 @@
     .btn-toggle {
         background: none;
         border: none;
-        color: #a89fd4;
-        font-size: 0.85rem;
+        color: var(--planet-primary);
+        font-size: 0.9rem;
         cursor: pointer;
         width: 20px;
         flex-shrink: 0;
@@ -200,13 +207,13 @@
     }
 
     .btn-toggle:hover {
-        color: #b2ede6;
+        color: var(--planet-primary-hover);
     }
 
     .btn-delete {
         background: none;
         border: none;
-        color: #a89fd450;
+        color: var(--text-muted);
         font-size: 0.75rem;
         cursor: pointer;
         flex-shrink: 0;
@@ -214,12 +221,12 @@
     }
 
     .btn-delete:hover {
-        color: #e05c5c;
+        color: var(--danger);
     }
 
     .empty-msg {
         font-size: 0.85rem;
-        color: #a89fd4;
+        color: var(--text-secondary);
         text-align: center;
         padding: 1.5rem 0;
         margin: 0;
@@ -231,25 +238,29 @@
         justify-content: center;
         gap: 0.4rem;
         width: 100%;
-        padding: 0.6rem;
-        background: #b2ede610;
-        border: 1px dashed #b2ede640;
+        padding: 0.75rem;
+        background: rgba(79, 156, 249, 0.08);
+        border: 1px dashed rgba(79, 156, 249, 0.35);
         border-radius: 8px;
-        color: #b2ede6;
+        color: var(--planet-primary);
         font-size: 0.85rem;
         font-weight: 600;
         cursor: pointer;
-        transition: background 0.2s, border-color 0.2s;
+        transition: all 0.2s;
     }
 
     .btn-open-add:hover {
-        background: #b2ede620;
-        border-color: #b2ede6;
+        background: rgba(79, 156, 249, 0.12);
+        border-color: var(--planet-primary);
     }
 
     .error-msg {
         font-size: 0.8rem;
-        color: #e05c5c;
+        color: var(--danger);
         margin-bottom: 0.75rem;
+        padding: 0.65rem 0.8rem;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 8px;
     }
 </style>
