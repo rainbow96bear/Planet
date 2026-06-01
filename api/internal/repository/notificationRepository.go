@@ -47,7 +47,7 @@ func (r *notificationRepository) Upsert(tx *gorm.DB, n *model.Notification) erro
 
 func (r *notificationRepository) DeleteByActorAndTask(tx *gorm.DB, actorID, taskID string, nType model.NotificationType) error {
 	return r.getDB(tx).
-		Where("actor_id = ? AND task_id = ? AND type = ?", actorID, taskID, nType).
+		Where("actor_id = ? AND target_id = ? AND type = ?", actorID, taskID, nType).
 		Delete(&model.Notification{}).Error
 }
 

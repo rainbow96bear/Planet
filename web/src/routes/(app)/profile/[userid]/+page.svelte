@@ -62,12 +62,12 @@
     }
 
     // 삭제 콜백: 페이지 tasks에서 제거
-    function handleTaskDeleted(taskId: number) {
+    function handleTaskDeleted(taskId: string) {
         tasks = tasks.filter(t => t.id !== taskId)
     }
 
     // 토글 콜백: 페이지 tasks에서 완료 상태 반전
-    function handleTaskToggled(taskId: number) {
+    function handleTaskToggled(taskId: string) {
         tasks = tasks.map(t =>
             t.id === taskId ? { ...t, is_completed: !t.is_completed } : t
         )

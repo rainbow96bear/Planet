@@ -38,7 +38,13 @@ func (h *feedHandler) GetFeed(c *gin.Context) {
 }
 
 func (h *feedHandler) GetExploreFeed(c *gin.Context) {
-	feed, err := h.feedSvc.GetExploreFeed()
+	userID := c.GetString("userID")
+	if userID == "" {
+		// 비로그인이면 explore로
+		h.GetExploreFeed(c)
+		return
+	}
+	feed, err := h.feedSvc.GetExploreFeed(userID)
 	if err != nil {
 		pkg.Fail(c, 500, "피드를 불러오지 못했습니다")
 		return

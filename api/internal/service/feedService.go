@@ -9,7 +9,7 @@ import (
 
 type FeedService interface {
 	GetFeed(userID string) ([]*dto.GetFeedResponse, error)
-	GetExploreFeed() ([]*dto.GetFeedResponse, error)
+	GetExploreFeed(userID string) ([]*dto.GetFeedResponse, error)
 }
 
 type feedService struct {
@@ -31,6 +31,6 @@ func (s *feedService) GetFeed(userID string) ([]*dto.GetFeedResponse, error) {
 	return s.feedRepo.FindFeed(userID, 20)
 }
 
-func (s *feedService) GetExploreFeed() ([]*dto.GetFeedResponse, error) {
-	return s.feedRepo.FindExploreFeed(20)
+func (s *feedService) GetExploreFeed(userID string) ([]*dto.GetFeedResponse, error) {
+	return s.feedRepo.FindExploreFeed(userID, 20)
 }

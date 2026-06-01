@@ -2,20 +2,14 @@ package model
 
 type Feed struct {
 	BaseModel
-	UserID     string     `gorm:"type:char(36);not null;index"`
-	Type       FeedType   `gorm:"type:varchar(50);not null"`
-	TargetID   string     `gorm:"type:char(36);index"`
-	TargetType TargetType `gorm:"type:varchar(50)"`
+	ActorID string   `gorm:"type:char(36);not null;index"`
+	Actor   User     `gorm:"foreignKey:ActorID"`
+	TaskID  string   `gorm:"type:char(36);not null;index"`
+	Task    Task     `gorm:"foreignKey:TaskID"`
+	Type    FeedType `gorm:"type:varchar(50);not null"`
 }
 
-// UpdatedAt 불필요하므로 오버라이드
 func (Feed) UpdatedAt() {}
-
-type TargetType string
-
-const (
-	TargetTypeTask TargetType = "task"
-)
 
 type FeedType string
 

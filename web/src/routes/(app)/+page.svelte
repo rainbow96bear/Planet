@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types'
+    import type { Feed } from '$lib/types/feed'
     import FeedCard from '$lib/components/FeedCard.svelte'
     import FeedTabs from '$lib/components/FeedTabs.svelte'
     import './page.css'
@@ -9,7 +10,16 @@
     const isLoggedIn = !!data.user
     let activeTab = $state<'feed' | 'explore'>(isLoggedIn ? 'feed' : 'explore')
 
-    const feeds = $derived(activeTab === 'feed' ? data.feed : data.exploreFeed)
+    let feeds        = $state([...(data.feed       ?? [])])
+    let exploreFeeds = $state([...(data.exploreFeed ?? [])])
+
+    const currentFeeds = $derived(activeTab === 'feed' ? feeds : exploreFeeds)
+
+    function updateFeed(feedId: string, patch: Partial<Feed>) {
+        const list = activeTab === 'feed' ? feeds : exploreFeeds
+        const idx = list.findIndex(f => f.feed_id === feedId)
+        if (idx !== -1) list[idx] = { ...list[idx], ...patch }
+    }
 </script>
 
 <div class="feed-container">
@@ -22,7 +32,7 @@
         />
     </div>
 
-    {#if feeds.length === 0}
+    {#if currentFeeds.length === 0}
         <div class="feed-empty">
             {#if activeTab === 'feed'}
                 <p>아직 활동이 없습니다</p>
@@ -33,9 +43,9 @@
         </div>
     {:else}
         <ul class="feed-list">
-            {#each feeds as feed (feed.feeds_id)}
+            {#each currentFeeds as feed (feed.feed_id)}
                 <li>
-                    <FeedCard {feed} />
+                    <FeedCard {feed} onupdate={(patch) => updateFeed(feed.feed_id, patch)} />
                 </li>
             {/each}
         </ul>

@@ -65,6 +65,7 @@ func RegisterRoutes(
 		feed.Use(middleware.OptionalAuthMiddleware())
 		{
 			feed.GET("", feedHandler.GetFeed)
+			feed.GET("/explore", feedHandler.GetExploreFeed)
 		}
 
 		notifications := v1.Group("/notifications")

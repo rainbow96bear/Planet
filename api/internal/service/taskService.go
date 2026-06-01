@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/repository"
@@ -55,13 +54,11 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 		return nil, err
 	}
 
-	// 추가
-	targetType := model.TargetTypeTask
+	// TargetID/TargetType → TaskID, UserID → ActorID
 	if err := s.feedRepo.Create(tx, &model.Feed{
-		UserID:     req.UserID,
-		Type:       model.TaskCreated,
-		TargetID:   task.ID,
-		TargetType: targetType,
+		ActorID: req.UserID,
+		TaskID:  task.ID,
+		Type:    model.TaskCreated,
 	}); err != nil {
 		tx.Rollback()
 		return nil, err
@@ -80,32 +77,16 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 }
 
 func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
 	task, err := s.taskRepo.GetTaskByID(req.ID)
 	if err != nil {
 		return errors.New("존재하지 않는 할 일입니다")
 	}
-
 	if task.UserID != req.UserID {
 		return errors.New("권한이 없습니다")
 	}
 
-	if err := s.taskRepo.DeleteTask(tx, req.ID); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	return nil
+	// task 삭제 시 feed도 cascade로 삭제되므로 tx 불필요
+	return s.taskRepo.DeleteTask(nil, req.ID)
 }
 
 func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error) {
@@ -127,8 +108,7 @@ func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.G
 			IsPublic:    task.IsPublic,
 		}
 	}
-	fmt.Printf("tasks : %+v\n", result)
-	return result, nil
+	return result, nil // fmt.Printf 제거
 }
 
 func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error) {
@@ -145,15 +125,18 @@ func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskRes
 		return nil, err
 	}
 
-	// 완료 시에만 기록
 	if task.IsCompleted {
-		targetType := model.TargetTypeTask
 		if err := s.feedRepo.Create(tx, &model.Feed{
-			UserID:     task.UserID,
-			Type:       model.TaskCompleted,
-			TargetID:   task.ID,
-			TargetType: targetType,
+			ActorID: task.UserID,
+			TaskID:  task.ID,
+			Type:    model.TaskCompleted,
 		}); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	} else {
+		// 토글 해제 시 완료 피드 삭제
+		if err := s.feedRepo.DeleteByActorAndTask(tx, task.UserID, task.ID, model.TaskCompleted); err != nil {
 			tx.Rollback()
 			return nil, err
 		}

@@ -1,4 +1,4 @@
-import { ReactionType, ToggleReactionBody } from "$lib/types/reaction"
+import type { ReactionType, ToggleReactionBody } from "$lib/types/reaction"
 
 export const addTaskReaction = async (
     taskId: string,
@@ -15,11 +15,10 @@ export const addTaskReaction = async (
     })
 
     if (!res.ok) {
-        const err = await res.json()
+        const text = await res.text()
+        const err = text ? JSON.parse(text) : {}
         throw new Error(err.error ?? '서버 오류')
     }
-
-    return res.json()
 }
 
 export const removeTaskReaction = async (
@@ -37,9 +36,8 @@ export const removeTaskReaction = async (
     })
 
     if (!res.ok) {
-        const err = await res.json()
+        const text = await res.text()
+        const err = text ? JSON.parse(text) : {}
         throw new Error(err.error ?? '서버 오류')
     }
-
-    return res.json()
 }

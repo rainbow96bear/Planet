@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"errors"
-	"fmt"
 	"planet/internal/dto"
 	"planet/internal/model"
 
@@ -10,11 +8,10 @@ import (
 )
 
 type FeedRepository interface {
-	Create(tx *gorm.DB, a *model.Feed) error
-	FindByUserID(userID string, limit int) ([]model.Feed, error)
-	FindLatestByUserID(userID string) (*model.Feed, error)
+	Create(tx *gorm.DB, feed *model.Feed) error
+	DeleteByActorAndTask(tx *gorm.DB, actorID, taskID string, feedType model.FeedType) error
 	FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error)
-	FindExploreFeed(limit int) ([]*dto.GetFeedResponse, error)
+	FindExploreFeed(userID string, limit int) ([]*dto.GetFeedResponse, error)
 }
 
 type feedRepository struct {
@@ -32,86 +29,74 @@ func (r *feedRepository) getDB(tx *gorm.DB) *gorm.DB {
 	return r.db
 }
 
-func (r *feedRepository) Create(tx *gorm.DB, a *model.Feed) error {
-	return r.getDB(tx).Create(a).Error
+func (r *feedRepository) Create(tx *gorm.DB, feed *model.Feed) error {
+	return r.getDB(tx).Create(feed).Error
 }
 
-func (r *feedRepository) FindByUserID(userID string, limit int) ([]model.Feed, error) {
-	var feeds []model.Feed
-	err := r.db.
-		Where("user_id = ?", userID).
-		Order("created_at DESC").
-		Limit(limit).
-		Find(&feeds).Error
-	return feeds, err
-}
-
-func (r *feedRepository) FindLatestByUserID(userID string) (*model.Feed, error) {
-	var feed model.Feed
-
-	err := r.db.
-		Where("user_id = ?", userID).
-		Order("created_at DESC").
-		Limit(1).
-		First(&feed).Error
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	return &feed, nil
+func (r *feedRepository) DeleteByActorAndTask(tx *gorm.DB, actorID, taskID string, feedType model.FeedType) error {
+	return r.getDB(tx).
+		Where("actor_id = ? AND task_id = ? AND type = ?", actorID, taskID, feedType).
+		Delete(&model.Feed{}).Error
 }
 
 func (r *feedRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error) {
 	var result []*dto.GetFeedResponse
 
 	err := r.db.
-		Table("feeds a").
+		Table("feeds f").
 		Select(`
-            a.id           AS feed_id,
-            a.user_id      AS actor_id,
-            u.nickname     AS actor_nickname,
-            a.type,
-            a.target_id,
-            a.target_type,
-            t.title        AS task_title,
-            a.created_at
-        `).
-		Joins("JOIN users u ON u.id = a.user_id").
-		Joins("LEFT JOIN tasks t ON t.id = a.target_id AND a.target_type = 'task'").
-		Where("a.user_id IN (?)",
+			f.id                                                AS feed_id,
+			f.actor_id,
+			u.nickname                                          AS actor_nickname,
+			f.type,
+			f.task_id,
+			t.title                                             AS task_title,
+			COUNT(r.id) FILTER (WHERE r.type = 'like')          AS like_count,
+			COUNT(r.id) FILTER (WHERE r.type = 'cheer')         AS cheer_count,
+			BOOL_OR(r.type = 'like'  AND r.user_id = ?)         AS is_liked,
+			BOOL_OR(r.type = 'cheer' AND r.user_id = ?)         AS is_cheered,
+			f.created_at
+		`, userID, userID).
+		Joins("JOIN users u ON u.id = f.actor_id").
+		Joins("JOIN tasks t ON t.id = f.task_id").
+		Joins("LEFT JOIN reactions r ON r.task_id = f.task_id").
+		Where("f.actor_id IN (?)",
 			r.db.Table("follows").
 				Select("following_id").
 				Where("follower_id = ?", userID),
 		).
-		Order("a.created_at DESC").
+		Group("f.id, f.actor_id, u.nickname, f.type, f.task_id, t.title, f.created_at").
+		Order("f.created_at DESC").
 		Limit(limit).
 		Scan(&result).Error
-	fmt.Printf("result : %+v\n", result)
+
 	return result, err
 }
 
-func (r *feedRepository) FindExploreFeed(limit int) ([]*dto.GetFeedResponse, error) {
+func (r *feedRepository) FindExploreFeed(userID string, limit int) ([]*dto.GetFeedResponse, error) {
 	var result []*dto.GetFeedResponse
 
 	err := r.db.
-		Table("feeds a").
+		Table("feeds f").
 		Select(`
-            a.id           AS feed_id,
-            a.user_id      AS actor_id,
-            u.nickname     AS actor_nickname,
-            a.type,
-            a.target_id,
-            a.target_type,
-            t.title        AS task_title,
-            a.created_at
-        `).
-		Joins("JOIN users u ON u.id = a.user_id").
-		Joins("JOIN tasks t ON t.id = a.target_id").
+			f.id                                                AS feed_id,
+			f.actor_id,
+			u.nickname                                          AS actor_nickname,
+			f.type,
+			f.task_id,
+			t.title                                             AS task_title,
+			COUNT(r.id) FILTER (WHERE r.type = 'like')          AS like_count,
+			COUNT(r.id) FILTER (WHERE r.type = 'cheer')         AS cheer_count,
+			BOOL_OR(r.type = 'like'  AND r.user_id = ?)         AS is_liked,
+			BOOL_OR(r.type = 'cheer' AND r.user_id = ?)         AS is_cheered,
+			f.created_at
+		`, userID, userID).
+		Joins("JOIN users u ON u.id = f.actor_id").
+		Joins("JOIN tasks t ON t.id = f.task_id").
+		Joins("LEFT JOIN reactions r ON r.task_id = f.task_id").
 		Where("t.is_public = ?", true).
-		Order("a.created_at DESC").
+		Group("f.id, f.actor_id, u.nickname, f.type, f.task_id, t.title, f.created_at").
+		Order("f.created_at DESC").
 		Limit(limit).
 		Scan(&result).Error
 

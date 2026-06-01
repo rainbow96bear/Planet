@@ -1,21 +1,51 @@
 <script lang="ts">
-    import type { Feed } from '$lib/types'
+    import { addTaskReaction, removeTaskReaction } from '$lib/api/reaction'
+    import type { Feed } from '$lib/types/feed'
 
-    let { feed }: { feed: Feed } = $props()
+    let { feed, onupdate }: {
+        feed: Feed
+        onupdate: (patch: Partial<Feed>) => void
+    } = $props()
 
-    let liked   = $state(false)
-    let cheered = $state(false)
-    let likeCount  = $state(feed.reactions?.like ?? 0)
-    let cheerCount = $state(feed.reactions?.cheer ?? 0)
+    let liked      = $state(feed.is_liked ?? false)
+    let cheered    = $state(feed.is_cheered ?? false)
+    let likeCount  = $state(feed.like_count ?? 0)
+    let cheerCount = $state(feed.cheer_count ?? 0)
 
-    function toggleLike() {
-        liked = !liked
+    async function toggleLike() {
+        if (!feed.task_id) return
+        const prevLiked = liked
+        liked      = !liked
         likeCount += liked ? 1 : -1
+        try {
+            if (liked) {
+                await addTaskReaction(feed.task_id, 'like')
+            } else {
+                await removeTaskReaction(feed.task_id, 'like')
+            }
+        } catch (e) {
+            liked     = prevLiked
+            likeCount += liked ? 1 : -1
+        }
     }
 
-    function toggleCheer() {
-        cheered = !cheered
-        cheerCount += cheered ? 1 : -1
+    async function toggleCheer() {
+        if (!feed.task_id) return
+        const prevCheered = cheered
+        const prevCount   = cheerCount
+        cheered      = !cheered
+        cheerCount  += cheered ? 1 : -1
+        try {
+            if (cheered) {
+                await addTaskReaction(feed.task_id, 'cheer')
+            } else {
+                await removeTaskReaction(feed.task_id, 'cheer')
+            }
+            onupdate({ is_cheered: cheered, cheer_count: cheerCount })
+        } catch (e) {
+            cheered    = prevCheered
+            cheerCount = prevCount
+        }
     }
 
     function formatTime(dateStr: string) {
@@ -32,19 +62,16 @@
     const iconMap: Record<string, string> = {
         'task.created':   '📝',
         'task.completed': '✅',
-        'user.followed':  '➕',
     }
 
     const labelMap: Record<string, string> = {
         'task.created':   '추가',
         'task.completed': '완료',
-        'user.followed':  '팔로우',
     }
 
     const textMap: Record<string, string> = {
         'task.created':   '할 일을 추가했습니다',
         'task.completed': '할 일을 완료했습니다',
-        'user.followed':  '누군가를 팔로우했습니다',
     }
 </script>
 
@@ -117,14 +144,12 @@
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
-    /* ── 메인 행 ── */
     .card-main {
         display: flex;
         align-items: center;
         gap: 0.85rem;
     }
 
-    /* ── 아이콘 ── */
     .feed-icon {
         font-size: 1.25rem;
         width: 38px;
@@ -138,7 +163,6 @@
         flex-shrink: 0;
     }
 
-    /* ── 본문 ── */
     .feed-body {
         flex: 1;
         min-width: 0;
@@ -194,7 +218,6 @@
         padding: 4px 8px;
     }
 
-    /* ── 시간 ── */
     .feed-time {
         font-size: 0.75rem;
         color: var(--text-secondary);
@@ -203,7 +226,6 @@
         align-self: flex-start;
     }
 
-    /* ── 리액션 ── */
     .reactions {
         display: flex;
         gap: 8px;
@@ -259,8 +281,19 @@
     .reaction-label {
         color: inherit;
     }
+    
+    .reaction-btn.liked {
+        background: #3d1a1a;
+        border-color: #e2524a60;
+        color: #f09595;
+    }
 
-    /* ── 반응형 ── */
+    .reaction-btn.cheered {
+        background: #2e2010;
+        border-color: #ef9f2760;
+        color: #fac775;
+    }
+
     @media (max-width: 520px) {
         .feed-card {
             padding: 0.85rem;

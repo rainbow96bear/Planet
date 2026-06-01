@@ -40,6 +40,7 @@ func main() {
 		&model.Follow{},
 		&model.Feed{},
 		&model.Notification{},
+		&model.Reaction{},
 	); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
@@ -57,7 +58,7 @@ func main() {
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
 	feedSvc := service.NewFeedService(db, feedRepo)
 	notificationSvc := service.NewNotificationService(db, notificationRepo, userRepo)
-	reactionSvc := service.NewReactionService(db, reactionRepo, notificationRepo)
+	reactionSvc := service.NewReactionService(db, reactionRepo, taskRepo, notificationRepo)
 
 	authHandler := handler.NewAuthHandler(authSvc)
 	taskHandler := handler.NewTaskHandler(taskSvc)
