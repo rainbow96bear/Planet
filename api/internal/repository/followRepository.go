@@ -23,12 +23,19 @@ func NewFollowRepository(db *gorm.DB) FollowRepository {
 	return &followRepository{db: db}
 }
 
+func (r *followRepository) getDB(tx *gorm.DB) *gorm.DB {
+	if tx != nil {
+		return tx
+	}
+	return r.db
+}
+
 func (r *followRepository) Follow(tx *gorm.DB, f *model.Follow) error {
-	return tx.Create(f).Error
+	return r.getDB(tx).Create(f).Error
 }
 
 func (r *followRepository) Unfollow(tx *gorm.DB, followerID, followingID string) error {
-	return tx.Where("follower_id = ? AND following_id = ?", followerID, followingID).Delete(&model.Follow{}).Error
+	return r.getDB(tx).Where("follower_id = ? AND following_id = ?", followerID, followingID).Delete(&model.Follow{}).Error
 }
 
 func (r *followRepository) IsFollowing(followerID, followingID string) (bool, error) {

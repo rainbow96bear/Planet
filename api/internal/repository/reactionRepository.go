@@ -20,6 +20,13 @@ func NewReactionRepository(db *gorm.DB) ReactionRepository {
 	return &reactionRepository{db: db}
 }
 
+func (r *reactionRepository) getDB(tx *gorm.DB) *gorm.DB {
+	if tx != nil {
+		return tx
+	}
+	return r.db
+}
+
 func (r *reactionRepository) Upsert(reaction *model.Reaction) error {
 	return r.db.
 		Clauses(clause.OnConflict{DoNothing: true}).
