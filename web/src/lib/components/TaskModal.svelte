@@ -43,7 +43,8 @@
                 t.id === task.id ? { ...t, is_completed: !t.is_completed } : t
             )
             onToggled?.(task.id)
-        } catch {
+        } catch (err){
+            console.error(err)
             error = '변경에 실패했습니다.'
         }
     }

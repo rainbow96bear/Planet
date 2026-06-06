@@ -2,8 +2,8 @@ package model
 
 type Reaction struct {
 	BaseModel
-	TaskID string       `gorm:"type:char(36);not null;index:idx_reaction_unique,unique"`
-	UserID string       `gorm:"type:char(36);not null;index:idx_reaction_unique,unique"`
+	TaskID string       `gorm:"type:uuid;not null;index:idx_reaction_unique,unique"`
+	UserID string       `gorm:"type:uuid;not null;index:idx_reaction_unique,unique"`
 	Type   ReactionType `gorm:"type:varchar(20);not null;index:idx_reaction_unique,unique"`
 }
 

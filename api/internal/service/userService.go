@@ -131,7 +131,7 @@ func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse,
 	if err := s.notificationRepo.DeleteByActorAndTask(
 		tx,
 		req.FollowerID,
-		"", // 팔로우 알림은 TaskID 없으니 빈 문자열
+		req.FollowerID,
 		model.NotificationFollowed,
 	); err != nil {
 		tx.Rollback()

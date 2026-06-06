@@ -8,10 +8,12 @@
     let { data }: { data: PageData } = $props()
 
     const isLoggedIn = !!data.user
-    let activeTab = $state<'feed' | 'explore'>(isLoggedIn ? 'feed' : 'explore')
-
-    let feeds        = $state([...(data.feed       ?? [])])
-    let exploreFeeds = $state([...(data.exploreFeed ?? [])])
+    let activeTab = $state<'feed' | 'explore'>(
+        data.user ? 'feed' : 'explore'
+    )
+    
+    const feeds = $derived(data.feed ?? [])
+    const exploreFeeds = $derived(data.exploreFeed ?? [])
 
     const currentFeeds = $derived(activeTab === 'feed' ? feeds : exploreFeeds)
 

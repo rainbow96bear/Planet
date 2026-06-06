@@ -80,12 +80,10 @@
     <div class="divider"><span>또는</span></div>
 
     <button class="btn-kakao" onclick={handleKakaoLogin} disabled={loading}>
-      <img src={kakaoLoginBtn} alt="카카오 로그인" height="20" />
       카카오로 로그인
     </button>
 
     <button class="btn-naver" onclick={handleNaverLogin} disabled={loading}>
-      <img src={naverLoginBtn} alt="네이버 로그인" height="20" />
       네이버로 로그인
     </button>
 

@@ -8,10 +8,9 @@ import (
 )
 
 type BaseModel struct {
-	ID        string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	CreatedAt time.Time      `gorm:"type:timestamptz"`
-	UpdatedAt time.Time      `gorm:"type:timestamptz"`
-	DeletedAt gorm.DeletedAt `gorm:"index;type:timestamptz"`
+	ID        string    `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	CreatedAt time.Time `gorm:"type:timestamptz"`
+	UpdatedAt time.Time `gorm:"type:timestamptz"`
 }
 
 func (b *BaseModel) BeforeCreate(tx *gorm.DB) error {

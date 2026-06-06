@@ -41,12 +41,12 @@ export const deleteTask = async (taskId: string): Promise<void> => {
     }
 }
 
-export const toggleTask = async (taskId: string): Promise<ToggleTaskResponse> => {
+export const toggleTask = async (taskId: string): Promise<void> => {
     const res = await fetch(`/api/v1/tasks/${taskId}/toggle`, {
         method: 'POST',
     })
- 
-    if (!res.ok) throw new Error('Failed to toggle task')
- 
-    return res.json()
+
+    if (!res.ok) {
+        throw new Error('Failed to toggle task')
+    }
 }
