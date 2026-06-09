@@ -3,10 +3,12 @@ package service
 import (
 	"errors"
 	"fmt"
+	"planet/internal/constants"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/pkg"
 	"planet/internal/repository"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -34,41 +36,56 @@ func NewAuthService(db *gorm.DB, userRepo repository.UserRepository) AuthService
 }
 
 func (s *authService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
-	// 1. 비밀번호 해싱
+	if !req.AgreeTerms {
+		return nil, errors.New("terms agreement is required")
+	}
+
+	if !req.AgreePrivacy {
+		return nil, errors.New("privacy agreement is required")
+	}
+
 	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	// 2. tx 시작
 	tx := s.db.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
 
-	// panic 대비
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			panic(r)
 		}
 	}()
+
+	now := time.Now()
 
 	user := &model.User{
 		Username: req.Username,
 		Nickname: req.Nickname,
 		Password: string(hashed),
+
+		Provider: "local",
+
+		TermsVersion:   constants.CurrentTermsVersion,
+		PrivacyVersion: constants.CurrentPrivacyVersion,
+
+		TermsAgreedAt:   &now,
+		PrivacyAgreedAt: &now,
 	}
 
-	// 3. 저장
 	if err := s.userRepo.CreateUser(tx, user); err != nil {
 		tx.Rollback()
-
 		return nil, err
 	}
 
-	// 4. commit
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
-	// 5. DTO 반환
 	return &dto.CreateUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
@@ -78,41 +95,56 @@ func (s *authService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 }
 
 func (s *authService) CreateOAuthUser(req *dto.CreateOAuthUserRequest) (*dto.CreateOAuthUserResponse, error) {
-	// tx 시작
-	tx := s.db.Begin()
+	if !req.AgreeTerms {
+		return nil, errors.New("terms agreement is required")
+	}
 
-	// panic 대비
+	if !req.AgreePrivacy {
+		return nil, errors.New("privacy agreement is required")
+	}
+
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			panic(r)
 		}
 	}()
 
 	claims, err := pkg.ParseTempToken(req.TempToken)
 	if err != nil {
+		tx.Rollback()
 		return nil, errors.New("invalid temp token")
 	}
+
+	now := time.Now()
 
 	user := &model.User{
 		Username:   req.Username,
 		Nickname:   req.Nickname,
 		Provider:   claims.Provider,
 		ProviderID: claims.ProviderID,
+
+		TermsVersion:   constants.CurrentTermsVersion,
+		PrivacyVersion: constants.CurrentPrivacyVersion,
+
+		TermsAgreedAt:   &now,
+		PrivacyAgreedAt: &now,
 	}
 
-	// 저장
 	if err := s.userRepo.CreateUser(tx, user); err != nil {
 		tx.Rollback()
-
 		return nil, err
 	}
 
-	// commit
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
-	// DTO 반환
 	return &dto.CreateOAuthUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
