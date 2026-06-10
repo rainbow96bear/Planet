@@ -8,13 +8,23 @@ import (
 
 type User struct {
 	BaseModel
+
 	Username string `gorm:"uniqueIndex;not null"`
-	Nickname string `gorm:"not null"`
+	Nickname string `gorm:"uniqueIndex;not null"`
+
 	Password string
 
-	Provider   string         `gorm:"default:'local';not null"`
-	ProviderID string         `gorm:"index"`
-	DeletedAt  gorm.DeletedAt `gorm:"index;type:timestamptz"`
+	Email string `gorm:"index"`
+
+	Provider   string `gorm:"default:'local';not null"`
+	ProviderID string `gorm:"index"`
+
+	UserStatus string `gorm:"default:'active';not null"`
+
+	BanReason string
+	BannedAt  *time.Time
+
+	LastLoginAt *time.Time
 
 	ProfileImage string
 
@@ -23,4 +33,12 @@ type User struct {
 
 	TermsAgreedAt   *time.Time
 	PrivacyAgreedAt *time.Time
+
+	DeletedAt gorm.DeletedAt `gorm:"index;type:timestamptz"`
 }
+
+const (
+	UserStatusActive    = "active"
+	UserStatusSuspended = "suspended"
+	UserStatusBanned    = "banned"
+)

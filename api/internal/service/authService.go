@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"planet/internal/constants"
 	"planet/internal/dto"
 	"planet/internal/model"
@@ -171,10 +171,19 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 		return nil, errors.New("user not found")
 	}
 
-	fmt.Printf("user : %+v", user)
+	if user.UserStatus != model.UserStatusActive {
+		return nil, errors.New("account unavailable")
+	}
+
 	// 저장된 hash와 입력된 password 비교
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return nil, errors.New("invalid password")
+	}
+
+	now := time.Now()
+	if err := s.userRepo.UpdateLastLogin(user.ID, now); err != nil {
+		// 로그인을 실패시키진 않고 로그만 남기는 걸 추천
+		log.Printf("failed to update last login: %v", err)
 	}
 
 	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username)

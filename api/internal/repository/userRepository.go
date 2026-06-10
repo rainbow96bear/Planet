@@ -2,6 +2,7 @@ package repository
 
 import (
 	"planet/internal/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,7 @@ type UserRepository interface {
 	FindByUserId(userid string) (model.User, error)
 	UpdateProfile(tx *gorm.DB, u *model.User) error
 	SearchByKeyword(q string) ([]*model.User, error)
+	UpdateLastLogin(userID string, loginAt time.Time) error
 }
 
 type userRepository struct {
@@ -62,6 +64,14 @@ func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
 	return tx.Model(u).Updates(model.User{
 		Nickname: u.Nickname,
 	}).Error
+}
+
+func (r *userRepository) UpdateLastLogin(userID string, loginAt time.Time) error {
+	return r.db.
+		Model(&model.User{}).
+		Where("id = ?", userID).
+		Update("last_login_at", loginAt).
+		Error
 }
 
 func (r *userRepository) SearchByKeyword(q string) ([]*model.User, error) {
