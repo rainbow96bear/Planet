@@ -18,11 +18,21 @@
 }
 
 .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--planet-primary);
     margin-bottom: 0.25rem;
     letter-spacing: -0.5px;
+}
+ 
+.login-logo img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .login-tagline {

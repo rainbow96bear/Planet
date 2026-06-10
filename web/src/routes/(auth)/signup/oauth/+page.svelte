@@ -1,8 +1,10 @@
 <script lang="ts">
+  import logo from '$lib/assets/planet.png'
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
   import { createOAuthUser, checkUsername } from '$lib/api/auth'
   import { validateNickname } from '$lib/utils/validation'
+  import TermsAgreement from '$lib/components/auth/TermsAgreement.svelte'
   import './page.css'
 
   let username = $state('')
@@ -12,6 +14,8 @@
   let usernameMsg = $state('')
   let usernameOk = $state(false)
   let nicknameMsg = $state('')
+  let agreeTerms = $state(false)
+  let agreePrivacy = $state(false)
 
   let debounceTimer: ReturnType<typeof setTimeout>
 
@@ -52,6 +56,10 @@
       error = nicknameError
       return
     }
+    if (!agreeTerms || !agreePrivacy) {
+      error = '필수 약관에 모두 동의해주세요.'
+      return
+    }
     error = ''
     loading = true
     try {
@@ -67,7 +75,7 @@
 
 <div class="login-container">
   <div class="login-card">
-    <div class="login-logo">🪐 Planet</div>
+    <div class="login-logo"><img src={logo} alt="Planet"/> Planet</div>
     <div class="login-tagline">우주처럼 넓은 이야기를 나눠요</div>
 
     <h1 class="login-title">회원가입</h1>
@@ -105,7 +113,13 @@
         {/if}
       </div>
 
-      <button class="btn-primary" type="submit" disabled={loading || !usernameOk}>
+      <TermsAgreement bind:agreeTerms bind:agreePrivacy />
+
+      <button
+        class="btn-primary"
+        type="submit"
+        disabled={loading || !usernameOk || !agreeTerms || !agreePrivacy}
+      >
         {loading ? '가입 중...' : '가입하기'}
       </button>
     </form>

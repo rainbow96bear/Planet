@@ -1,18 +1,25 @@
 <script lang="ts">
+  import logo from '$lib/assets/planet.png'
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
   import { createUser, checkUsername } from '$lib/api/auth'
   import { validateNickname } from '$lib/utils/validation'
+  import TermsAgreement from '$lib/components/auth/TermsAgreement.svelte'
   import './page.css'
 
   let username = $state('')
   let nickname = $state('')
   let password = $state('')
+  let passwordConfirm = $state('')
   let error = $state('')
   let loading = $state(false)
   let usernameMsg = $state('')
   let usernameOk = $state(false)
   let nicknameMsg = $state('')
+  let passwordMsg = $state('')
+  let passwordConfirmMsg = $state('')
+  let agreeTerms = $state(false)
+  let agreePrivacy = $state(false)
 
   let debounceTimer: ReturnType<typeof setTimeout>
 
@@ -42,6 +49,28 @@
     nicknameMsg = validateNickname(nickname)
   }
 
+  function onPasswordInput() {
+    if (password.length > 0 && password.length < 8) {
+      passwordMsg = '최소 8자리 이상 입력해주세요.'
+    } else {
+      passwordMsg = ''
+    }
+    if (passwordConfirm.length > 0) {
+      onPasswordConfirmInput()
+    }
+  }
+
+  function onPasswordConfirmInput() {
+    if (passwordConfirm.length === 0) {
+      passwordConfirmMsg = ''
+      return
+    }
+    passwordConfirmMsg =
+      password === passwordConfirm ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'
+  }
+
+  const passwordConfirmOk = $derived(password.length >= 8 && password === passwordConfirm)
+
   async function handleSubmit(e: Event) {
     e.preventDefault()
     if (!usernameOk) {
@@ -55,6 +84,14 @@
     }
     if (password.length < 8) {
       error = '비밀번호는 최소 8자리입니다.'
+      return
+    }
+    if (!passwordConfirmOk) {
+      error = '비밀번호가 일치하지 않습니다.'
+      return
+    }
+    if (!agreeTerms || !agreePrivacy) {
+      error = '필수 약관에 모두 동의해주세요.'
       return
     }
     error = ''
@@ -72,7 +109,7 @@
 
 <div class="login-container">
   <div class="login-card">
-    <div class="login-logo">🪐 Planet</div>
+    <div class="login-logo"><img src={logo} alt="Planet" height="32" /> Planet</div>
     <div class="login-tagline">우주처럼 넓은 이야기를 나눠요</div>
 
     <h1 class="login-title">회원가입</h1>
@@ -116,11 +153,35 @@
           id="password"
           type="password"
           bind:value={password}
+          oninput={onPasswordInput}
           placeholder="최소 8자리"
         />
+        {#if passwordMsg}
+          <span class="field-error">{passwordMsg}</span>
+        {/if}
       </div>
 
-      <button class="btn-primary" type="submit" disabled={loading || !usernameOk}>
+      <div class="field">
+        <label for="password-confirm">비밀번호 확인</label>
+        <input
+          id="password-confirm"
+          type="password"
+          bind:value={passwordConfirm}
+          oninput={onPasswordConfirmInput}
+          placeholder="비밀번호를 다시 입력해주세요"
+        />
+        {#if passwordConfirmMsg}
+          <span class={passwordConfirmOk ? 'field-ok' : 'field-error'}>{passwordConfirmMsg}</span>
+        {/if}
+      </div>
+
+      <TermsAgreement bind:agreeTerms bind:agreePrivacy />
+
+      <button
+        class="btn-primary"
+        type="submit"
+        disabled={loading || !usernameOk || !passwordConfirmOk || !agreeTerms || !agreePrivacy}
+      >
         {loading ? '가입 중...' : '가입하기'}
       </button>
     </form>

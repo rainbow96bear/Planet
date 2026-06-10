@@ -4,7 +4,7 @@ import "time"
 
 type CreateUserRequest struct {
 	Username string `json:"username" binding:"required,min=4"`
-	Nickname string `json:"nickname" binding:"required,min=4"`
+	Nickname string `json:"nickname" binding:"required,min=2"`
 	Password string `json:"password" binding:"required,min=8"`
 
 	AgreeTerms   bool `json:"agreeTerms" binding:"required"`
@@ -20,7 +20,7 @@ type CreateUserResponse struct {
 
 type CreateOAuthUserRequest struct {
 	Username string `json:"username"   binding:"required,min=4"`
-	Nickname string `json:"nickname"   binding:"required,min=4"`
+	Nickname string `json:"nickname"   binding:"required,min=2"`
 
 	AgreeTerms   bool `json:"agreeTerms" binding:"required"`
 	AgreePrivacy bool `json:"agreePrivacy" binding:"required"`
