@@ -4,9 +4,9 @@
   import { onDestroy } from 'svelte'
   import { createUser, checkUsername } from '$lib/api/auth'
   import { validateNickname } from '$lib/utils/validation'
-  import TermsAgreement from '$lib/components/auth/TermsAgreement.svelte'
   import './page.css'
-
+	import TermsAgreement from '$lib/components/TermsAgreement.svelte';
+  
   let username = $state('')
   let nickname = $state('')
   let password = $state('')
