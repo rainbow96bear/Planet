@@ -15,7 +15,7 @@ RUN go mod download
 # 소스 복사 및 빌드
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-    go build -ldflags="-w -s" -o server ./cmd/main.go
+    go build -ldflags="-w -s" -o server ./cmd/server/main.go
 
 # ================================
 # Stage 2: Runtime
