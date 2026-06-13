@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -66,7 +67,9 @@ func Load() (*Config, error) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-
+	log.Printf("accessSecret : %+v", accessSecret)
+	log.Printf("refreshSecret : %+v", refreshSecret)
+	log.Printf("tempSecret : %+v", tempSecret)
 	if len(errs) > 0 {
 		return nil, errors.Join(errs...)
 	}
