@@ -9,6 +9,9 @@ RUN apk add --no-cache git
 WORKDIR /app
 
 # 의존성 캐시 레이어 분리 (소스 변경 시 재다운로드 방지)
+
+ENV GOTOOLCHAIN=local
+
 COPY go.mod go.sum ./
 RUN go mod download
 
