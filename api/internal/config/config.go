@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -40,12 +41,39 @@ func (d DBConfig) DSN() string {
 	)
 }
 
+// 로그 출력 시 패스워드 노출 방지
+func (d DBConfig) String() string {
+	return fmt.Sprintf(
+		"host=%s port=%s user=%s dbname=%s sslmode=%s",
+		d.Host, d.Port, d.User, d.Name, d.SSLMode,
+	)
+}
+
 func Load() (*Config, error) {
-	_ = godotenv.Load()
+	loadDotEnv()
+
+	var errs []error
+
+	accessSecret, err := requiredEnv("ACCESS_TOKEN_SECRET")
+	if err != nil {
+		errs = append(errs, err)
+	}
+	refreshSecret, err := requiredEnv("REFRESH_TOKEN_SECRET")
+	if err != nil {
+		errs = append(errs, err)
+	}
+	tempSecret, err := requiredEnv("TEMP_TOKEN_SECRET")
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	if len(errs) > 0 {
+		return nil, errors.Join(errs...)
+	}
 
 	cfg := &Config{
 		App: AppConfig{
-			Port: getEnv("APP_PORT", "8080"),
+			Port: getEnv("PORT", "8080"),
 			Env:  getEnv("APP_ENV", "development"),
 		},
 		DB: DBConfig{
@@ -57,13 +85,31 @@ func Load() (*Config, error) {
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
 		},
 		Token: TokenConfig{
-			AccessTokenSecret:  getEnv("ACCESS_TOKEN_SECRET", "accessTokenSecret"),
-			RefreshTokenSecret: getEnv("REFRESH_TOKEN_SECRET", "refreshTokenSecret"),
-			TempTokenSecret:    getEnv("TEMP_TOKEN_SECRET", "accessTokenSecret"),
+			AccessTokenSecret:  accessSecret,
+			RefreshTokenSecret: refreshSecret,
+			TempTokenSecret:    tempSecret,
 		},
 	}
 
 	return cfg, nil
+}
+
+// 환경별 .env 파일 로드 (.env.development, .env.production 등)
+// 파일이 없으면 무시하고, production은 실제 환경변수를 사용
+func loadDotEnv() {
+	env := os.Getenv("APP_ENV")
+	if env == "production" {
+		return
+	}
+	if env == "" {
+		env = "development"
+	}
+
+	// 환경별 파일 우선, 없으면 기본 .env로 폴백
+	envFile := fmt.Sprintf(".env.%s", env)
+	if err := godotenv.Load(envFile); err != nil {
+		_ = godotenv.Load(".env")
+	}
 }
 
 func getEnv(key, fallback string) string {
@@ -71,4 +117,12 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func requiredEnv(key string) (string, error) {
+	v := os.Getenv(key)
+	if v == "" {
+		return "", fmt.Errorf("required environment variable %q is not set", key)
+	}
+	return v, nil
 }
