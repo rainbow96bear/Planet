@@ -14,6 +14,7 @@ import (
 	"planet/internal/pkg"
 	"planet/internal/repository"
 	"planet/internal/service"
+	"strings"
 	"syscall"
 	"time"
 
@@ -42,7 +43,11 @@ func main() {
 		&model.Notification{},
 		&model.Reaction{},
 	); err != nil {
-		log.Fatalf("failed to migrate: %v", err)
+		if strings.Contains(err.Error(), "already exists") {
+			log.Println("migration skipped (already exists)")
+		} else {
+			log.Println("migration error:", err)
+		}
 	}
 
 	userRepo := repository.NewUserRepository(db)
