@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
     if (!tempToken) {
         return json({ error: '인증 정보가 없습니다' }, { status: 401 })
     }
-
+    console.log("oauth body : ", body)
     const res = await fetch(`${GO_API_URL}/api/v1/auth/signup/oauth`, {
         method: 'POST',
         headers: { 

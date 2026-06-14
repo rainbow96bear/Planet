@@ -2,13 +2,16 @@ export interface CreateUserBody{
     username:string
     nickname:string
     password:string
+    agreeTerms: boolean
+    agreePrivacy: boolean
 }
 
-export interface CreateOAuthUserBody{
-    username:string
-    nickname:string
+export interface CreateOAuthUserBody {
+    username: string
+    nickname: string
+    agreeTerms: boolean
+    agreePrivacy: boolean
 }
-
 
 export interface CheckUsernameResponse {
     username: string

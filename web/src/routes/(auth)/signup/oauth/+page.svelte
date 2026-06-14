@@ -63,7 +63,14 @@
     error = ''
     loading = true
     try {
-      await createOAuthUser({ username, nickname })
+      console.log("agreeTerms : ",agreeTerms)
+      console.log("agreePrivacy : ",agreePrivacy)
+      await createOAuthUser({
+        username,
+        nickname,
+        agreeTerms: agreeTerms,
+        agreePrivacy: agreePrivacy,
+      })
       goto('/login')
     } catch {
       error = '회원가입에 실패했습니다. 다시 시도해주세요.'

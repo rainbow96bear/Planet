@@ -6,7 +6,7 @@
   import { validateNickname } from '$lib/utils/validation'
   import './page.css'
 	import TermsAgreement from '$lib/components/TermsAgreement.svelte';
-  
+
   let username = $state('')
   let nickname = $state('')
   let password = $state('')
@@ -97,7 +97,13 @@
     error = ''
     loading = true
     try {
-      await createUser({ username, nickname, password })
+      await createUser({ 
+        username, 
+        nickname, 
+        password,
+        agreeTerms: agreeTerms,
+        agreePrivacy: agreePrivacy,
+      })
       goto('/login')
     } catch {
       error = '회원가입에 실패했습니다. 다시 시도해주세요.'

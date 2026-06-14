@@ -67,9 +67,6 @@ func Load() (*Config, error) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-	log.Printf("accessSecret : %+v", accessSecret)
-	log.Printf("refreshSecret : %+v", refreshSecret)
-	log.Printf("tempSecret : %+v", tempSecret)
 	if len(errs) > 0 {
 		return nil, errors.Join(errs...)
 	}
@@ -101,11 +98,14 @@ func Load() (*Config, error) {
 // 파일이 없으면 무시하고, production은 실제 환경변수를 사용
 func loadDotEnv() {
 	env := os.Getenv("APP_ENV")
+
+	log.Printf("env : %+v", env)
+
 	if env == "production" {
 		return
 	}
 	if env == "" {
-		env = "development"
+		env = "develop"
 	}
 
 	// 환경별 파일 우선, 없으면 기본 .env로 폴백
