@@ -53,9 +53,6 @@ func (d DBConfig) String() string {
 }
 
 func Load() (*Config, error) {
-	for _, env := range os.Environ() {
-		log.Printf("[ENV] %s", env)
-	}
 	loadDotEnv()
 
 	var errs []error
@@ -103,55 +100,21 @@ func Load() (*Config, error) {
 // 파일이 없으면 무시하고, production은 실제 환경변수를 사용
 func loadDotEnv() {
 	env := os.Getenv("APP_ENV")
-	log.Printf("APP_ENV=%s", env)
+
+	log.Printf("env : %+v", env)
 
 	if env == "production" {
-		debugSecretMounts()
+		loadSecretsFromVolume("projects/1027123043548/secrets/planet")
 		return
 	}
 
-	if err := godotenv.Load(".env"); err != nil {
-		log.Printf("failed to load .env: %v", err)
-	}
-}
-
-func debugSecretMounts() {
-	paths := []string{
-		"/var",
-		"/var/secret",
-		"/var/secret/planet",
-		"/secrets",
-		"/etc/secrets",
+	if env == "" {
+		env = "develop"
 	}
 
-	for _, p := range paths {
-		info, err := os.Stat(p)
-		if err != nil {
-			log.Printf("[DEBUG] %s -> %v", p, err)
-			continue
-		}
-
-		log.Printf("[DEBUG] %s exists (isDir=%v)", p, info.IsDir())
-
-		if info.IsDir() {
-			files, err := os.ReadDir(p)
-			if err != nil {
-				log.Printf("[DEBUG] ReadDir(%s) error: %v", p, err)
-				continue
-			}
-
-			for _, f := range files {
-				log.Printf("[DEBUG] %s/%s", p, f.Name())
-			}
-		} else {
-			data, err := os.ReadFile(p)
-			if err != nil {
-				log.Printf("[DEBUG] ReadFile(%s) error: %v", p, err)
-				continue
-			}
-
-			log.Printf("[DEBUG] file content:\n%s", string(data))
-		}
+	envFile := fmt.Sprintf(".env.%s", env)
+	if err := godotenv.Load(envFile); err != nil {
+		_ = godotenv.Load(".env")
 	}
 }
 
@@ -168,15 +131,14 @@ func loadSecretsFromVolume(secretDir string) {
 		}
 
 		path := filepath.Join(secretDir, entry.Name())
-		log.Printf("path %v", path)
+
 		data, err := os.ReadFile(path)
 		if err != nil {
 			log.Printf("failed to read secret %s: %v", entry.Name(), err)
 			continue
 		}
-		log.Printf("data %v", data)
+
 		value := strings.TrimSpace(string(data))
-		log.Printf("value %v", value)
 
 		if err := os.Setenv(entry.Name(), value); err != nil {
 			log.Printf("failed to set env %s: %v", entry.Name(), err)
