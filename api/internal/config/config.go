@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -102,16 +104,45 @@ func loadDotEnv() {
 	log.Printf("env : %+v", env)
 
 	if env == "production" {
+		loadSecretsFromVolume("/var/secrets")
 		return
 	}
+
 	if env == "" {
 		env = "develop"
 	}
 
-	// 환경별 파일 우선, 없으면 기본 .env로 폴백
 	envFile := fmt.Sprintf(".env.%s", env)
 	if err := godotenv.Load(envFile); err != nil {
 		_ = godotenv.Load(".env")
+	}
+}
+
+func loadSecretsFromVolume(secretDir string) {
+	entries, err := os.ReadDir(secretDir)
+	if err != nil {
+		log.Printf("failed to read secret directory: %v", err)
+		return
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		path := filepath.Join(secretDir, entry.Name())
+
+		data, err := os.ReadFile(path)
+		if err != nil {
+			log.Printf("failed to read secret %s: %v", entry.Name(), err)
+			continue
+		}
+
+		value := strings.TrimSpace(string(data))
+
+		if err := os.Setenv(entry.Name(), value); err != nil {
+			log.Printf("failed to set env %s: %v", entry.Name(), err)
+		}
 	}
 }
 
