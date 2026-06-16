@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -99,31 +97,6 @@ func Load() (*Config, error) {
 // 환경별 .env 파일 로드 (.env.development, .env.production 등)
 // 파일이 없으면 무시하고, production은 실제 환경변수를 사용
 func loadDotEnv() {
-	entries, err := os.ReadDir("/secrets")
-	if err != nil {
-		log.Printf("failed to read secret directory: %v", err)
-		return
-	}
-
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-		log.Printf("entry.Name: %v", entry.Name())
-		path := filepath.Join("/secrets", entry.Name())
-
-		data, err := os.ReadFile(path)
-		if err != nil {
-			log.Printf("failed to read secret %s: %v", entry.Name(), err)
-			continue
-		}
-
-		value := strings.TrimSpace(string(data))
-
-		if err := os.Setenv(entry.Name(), value); err != nil {
-			log.Printf("failed to set env %s: %v", entry.Name(), err)
-		}
-	}
 	env := os.Getenv("APP_ENV")
 
 	log.Printf("env : %+v", env)
