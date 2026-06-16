@@ -53,6 +53,21 @@ func (d DBConfig) String() string {
 }
 
 func Load() (*Config, error) {
+	files, _ := os.ReadDir("/")
+	for _, f := range files {
+		log.Println("/", f.Name())
+	}
+
+	files, _ = os.ReadDir("/var")
+	for _, f := range files {
+		log.Println("/var/", f.Name())
+	}
+
+	files, _ = os.ReadDir("/etc")
+	for _, f := range files {
+		log.Println("/etc/", f.Name())
+	}
+
 	loadDotEnv()
 
 	var errs []error
@@ -124,20 +139,7 @@ func loadSecretsFromVolume(secretDir string) {
 		log.Printf("failed to read secret directory: %v", err)
 		return
 	}
-	files, _ := os.ReadDir("/")
-	for _, f := range files {
-		log.Println("/", f.Name())
-	}
 
-	files, _ = os.ReadDir("/var")
-	for _, f := range files {
-		log.Println("/var/", f.Name())
-	}
-
-	files, _ = os.ReadDir("/etc")
-	for _, f := range files {
-		log.Println("/etc/", f.Name())
-	}
 	for _, entry := range entries {
 		if entry.IsDir() {
 			continue
