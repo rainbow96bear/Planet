@@ -104,7 +104,7 @@ func loadDotEnv() {
 	log.Printf("env : %+v", env)
 
 	if env == "production" {
-		loadSecretsFromVolume("projects")
+		loadSecretsFromVolume("/secrets/planet")
 		return
 	}
 
@@ -129,7 +129,7 @@ func loadSecretsFromVolume(secretDir string) {
 		if entry.IsDir() {
 			continue
 		}
-
+		log.Printf("entry.Name: %v", entry.Name())
 		path := filepath.Join(secretDir, entry.Name())
 
 		data, err := os.ReadFile(path)
