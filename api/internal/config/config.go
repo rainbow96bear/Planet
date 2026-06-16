@@ -104,7 +104,7 @@ func loadDotEnv() {
 	log.Printf("env : %+v", env)
 
 	if env == "production" {
-		loadSecretsFromVolume("projects/1027123043548/secrets/planet")
+		loadSecretsFromVolume("projects")
 		return
 	}
 
