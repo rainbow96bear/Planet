@@ -119,6 +119,7 @@ func loadDotEnv() {
 }
 
 func loadSecretsFromVolume(secretDir string) {
+	log.Printf("secretDir: %v", secretDir)
 	entries, err := os.ReadDir(secretDir)
 	if err != nil {
 		log.Printf("failed to read secret directory: %v", err)
