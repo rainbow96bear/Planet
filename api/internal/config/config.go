@@ -53,6 +53,9 @@ func (d DBConfig) String() string {
 }
 
 func Load() (*Config, error) {
+	for _, env := range os.Environ() {
+		log.Printf("[ENV] %s", env)
+	}
 	loadDotEnv()
 
 	var errs []error
@@ -100,22 +103,56 @@ func Load() (*Config, error) {
 // 파일이 없으면 무시하고, production은 실제 환경변수를 사용
 func loadDotEnv() {
 	env := os.Getenv("APP_ENV")
+	log.Printf("APP_ENV=%s", env)
 
 	if env == "production" {
-		files, err := os.ReadDir("/var/secret/planet")
-		if err != nil {
-			log.Printf("ReadDir error: %v", err)
-			return
-		}
-
-		for _, f := range files {
-			log.Printf("secret file: %s", f.Name())
-		}
-
+		debugSecretMounts()
 		return
 	}
 
-	_ = godotenv.Load(".env")
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("failed to load .env: %v", err)
+	}
+}
+
+func debugSecretMounts() {
+	paths := []string{
+		"/var",
+		"/var/secret",
+		"/var/secret/planet",
+		"/secrets",
+		"/etc/secrets",
+	}
+
+	for _, p := range paths {
+		info, err := os.Stat(p)
+		if err != nil {
+			log.Printf("[DEBUG] %s -> %v", p, err)
+			continue
+		}
+
+		log.Printf("[DEBUG] %s exists (isDir=%v)", p, info.IsDir())
+
+		if info.IsDir() {
+			files, err := os.ReadDir(p)
+			if err != nil {
+				log.Printf("[DEBUG] ReadDir(%s) error: %v", p, err)
+				continue
+			}
+
+			for _, f := range files {
+				log.Printf("[DEBUG] %s/%s", p, f.Name())
+			}
+		} else {
+			data, err := os.ReadFile(p)
+			if err != nil {
+				log.Printf("[DEBUG] ReadFile(%s) error: %v", p, err)
+				continue
+			}
+
+			log.Printf("[DEBUG] file content:\n%s", string(data))
+		}
+	}
 }
 
 func loadSecretsFromVolume(secretDir string) {
