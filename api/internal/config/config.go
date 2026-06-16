@@ -131,14 +131,15 @@ func loadSecretsFromVolume(secretDir string) {
 		}
 
 		path := filepath.Join(secretDir, entry.Name())
-
+		log.Printf("path %v", path)
 		data, err := os.ReadFile(path)
 		if err != nil {
 			log.Printf("failed to read secret %s: %v", entry.Name(), err)
 			continue
 		}
-
+		log.Printf("data %v", data)
 		value := strings.TrimSpace(string(data))
+		log.Printf("value %v", value)
 
 		if err := os.Setenv(entry.Name(), value); err != nil {
 			log.Printf("failed to set env %s: %v", entry.Name(), err)
