@@ -53,21 +53,6 @@ func (d DBConfig) String() string {
 }
 
 func Load() (*Config, error) {
-	files, _ := os.ReadDir("/")
-	for _, f := range files {
-		log.Println("/", f.Name())
-	}
-
-	files, _ = os.ReadDir("/var")
-	for _, f := range files {
-		log.Println("/var/", f.Name())
-	}
-
-	files, _ = os.ReadDir("/etc")
-	for _, f := range files {
-		log.Println("/etc/", f.Name())
-	}
-
 	loadDotEnv()
 
 	var errs []error
@@ -116,21 +101,21 @@ func Load() (*Config, error) {
 func loadDotEnv() {
 	env := os.Getenv("APP_ENV")
 
-	log.Printf("env : %+v", env)
-
 	if env == "production" {
-		loadSecretsFromVolume("/var/secrets/planet")
+		files, err := os.ReadDir("/var/secret/planet")
+		if err != nil {
+			log.Printf("ReadDir error: %v", err)
+			return
+		}
+
+		for _, f := range files {
+			log.Printf("secret file: %s", f.Name())
+		}
+
 		return
 	}
 
-	if env == "" {
-		env = "develop"
-	}
-
-	envFile := fmt.Sprintf(".env.%s", env)
-	if err := godotenv.Load(envFile); err != nil {
-		_ = godotenv.Load(".env")
-	}
+	_ = godotenv.Load(".env")
 }
 
 func loadSecretsFromVolume(secretDir string) {
