@@ -87,8 +87,8 @@
       네이버로 로그인
     </button>
 
-    <div class="login-footer">
+    <!-- <div class="login-footer">
       계정이 없으신가요? <a href="/signup">회원가입</a>
-    </div>
+    </div> -->
   </div>
 </div>
