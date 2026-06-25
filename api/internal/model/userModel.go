@@ -9,17 +9,17 @@ import (
 type User struct {
 	BaseModel
 
-	Username string `gorm:"uniqueIndex;not null"`
-	Nickname string `gorm:"uniqueIndex;not null"`
+	Username string `gorm:"uniqueIndex;not null;type:varchar(20)"`
+	Nickname string `gorm:"uniqueIndex;not null;type:varchar(20)"`
 
 	Password string
 
-	Email string `gorm:"index"`
+	Email string `gorm:"index;type:varchar(254)"`
 
-	Provider   string `gorm:"default:'local';not null"`
+	Provider   string `gorm:"default:'local';not null;type:varchar(20)"` // "local", "kakao", "naver"
 	ProviderID string `gorm:"index"`
 
-	UserStatus string `gorm:"default:'active';not null"`
+	UserStatus string `gorm:"default:'active';not null;type:varchar(20)"` // "active", "suspended", "banned"
 
 	BanReason string
 	BannedAt  *time.Time

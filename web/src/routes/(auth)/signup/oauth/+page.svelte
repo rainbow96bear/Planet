@@ -5,7 +5,7 @@
   import { createOAuthUser, checkUsername } from '$lib/api/auth'
   import { validateNickname } from '$lib/utils/validation'
   import './page.css'
-	import TermsAgreement from '$lib/components/TermsAgreement.svelte';
+  import TermsAgreement from '$lib/components/TermsAgreement.svelte';
 
   let username = $state('')
   let nickname = $state('')
@@ -63,14 +63,7 @@
     error = ''
     loading = true
     try {
-      console.log("agreeTerms : ",agreeTerms)
-      console.log("agreePrivacy : ",agreePrivacy)
-      await createOAuthUser({
-        username,
-        nickname,
-        agreeTerms: agreeTerms,
-        agreePrivacy: agreePrivacy,
-      })
+      await createOAuthUser({ username, nickname, agreeTerms, agreePrivacy })
       goto('/login')
     } catch {
       error = '회원가입에 실패했습니다. 다시 시도해주세요.'
@@ -99,7 +92,8 @@
           type="text"
           bind:value={username}
           oninput={onUsernameInput}
-          placeholder="영문, 숫자, 언더바만 사용 가능, 최소 4자리"
+          maxlength={20}
+          placeholder="영문, 숫자, 언더바만 사용 가능, 4~20자"
         />
         {#if usernameMsg}
           <span class={usernameOk ? 'field-ok' : 'field-error'}>{usernameMsg}</span>
@@ -113,7 +107,8 @@
           type="text"
           bind:value={nickname}
           oninput={onNicknameInput}
-          placeholder="한글, 영문, 숫자, 언더바 사용 가능, 최소 2자리"
+          maxlength={20}
+          placeholder="한글, 영문, 숫자, 언더바 사용 가능, 2~20자"
         />
         {#if nicknameMsg}
           <span class="field-error">{nicknameMsg}</span>

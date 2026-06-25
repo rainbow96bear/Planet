@@ -75,6 +75,10 @@ func (h *taskHandler) GetTasksByMonth(c *gin.Context) {
 		return
 	}
 
+	if tasks == nil {
+		tasks = []*dto.GetTasksByMonthResponse{} // null 대신 빈 배열
+	}
+
 	pkg.Success(c, 200, tasks)
 }
 
