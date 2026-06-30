@@ -203,7 +203,9 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 
 func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginResponse, error) {
 	user, err := s.userRepo.FindByProviderInfo(req.Provider, req.ProviderID)
+	log.Printf("provider : %+v, provider id: %+v\n", req.Provider, req.ProviderID)
 	if err != nil {
+		log.Printf("FindByProviderInfo err : %+v\n", err.Error())
 		// 유저 없으면 temp_token 발급
 		tempToken, err := pkg.GenerateTempToken(req.Provider, req.ProviderID)
 		if err != nil {
