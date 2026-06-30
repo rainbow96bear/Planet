@@ -37,7 +37,7 @@ type TokenConfig struct {
 
 func (d DBConfig) DSN() string {
 	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Seoul",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Seoul prefer_simple_protocol=true",
 		d.Host, d.Port, d.User, d.Password, d.Name, d.SSLMode,
 	)
 }
