@@ -11,7 +11,7 @@
     let { data }: { data: PageData } = $props()
     const userid = $derived($page.params.userid || "")
     const isOwner = $derived(userid === data.me?.userid)
-    let tasks = $state<Task[]>(data.tasks ?? [])
+    let tasks = $state<Task[]>(Array.isArray(data.tasks) ? data.tasks : [])
     let year = $state(data.year)
     let month = $state(data.month)
     let loading = $state(false)
@@ -21,6 +21,10 @@
     let selectedDay = $state<number | null>(null)
     let addDay = $state<number | null>(null)
 
+    $effect(() => {
+        tasks = Array.isArray(data.tasks) ? data.tasks : []
+    })
+    
     async function prevMonth() {
         if (month === 1) { year -= 1; month = 12 }
         else { month -= 1 }
