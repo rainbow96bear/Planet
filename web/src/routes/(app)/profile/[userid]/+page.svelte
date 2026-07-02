@@ -30,7 +30,6 @@
         else { month -= 1 }
         loading = true
         tasks = await getTasksByMonth(userid, year, month)
-        console.log("tasks s : ", tasks)
         loading = false
     }
 

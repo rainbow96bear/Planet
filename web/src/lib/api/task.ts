@@ -12,7 +12,6 @@ export const getTasksByMonth = async (
         throw new Error(err.error ?? '서버 오류')
     }
     const tasks = await res.json()
-    console.log("서버 : ", tasks)
 
     return tasks
 }

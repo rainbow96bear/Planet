@@ -35,22 +35,11 @@ type TokenConfig struct {
 	TempTokenSecret    string
 }
 
-func (d DBConfig) DSN(env string) string {
-	dsn := ""
-	if env == "production" {
-		dsn = fmt.Sprintf(
-			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Seoul prefer_simple_protocol=true",
-			d.Host, d.Port, d.User, d.Password, d.Name, d.SSLMode,
-		)
-	}
-
-	if env == "develop" {
-		dsn = fmt.Sprintf(
-			"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Seoul",
-			d.Host, d.Port, d.User, d.Password, d.Name, d.SSLMode,
-		)
-	}
-	return dsn
+func (d DBConfig) DSN() string {
+	return fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Seoul",
+		d.Host, d.Port, d.User, d.Password, d.Name, d.SSLMode,
+	)
 }
 
 // 로그 출력 시 패스워드 노출 방지
