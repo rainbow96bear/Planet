@@ -12,7 +12,7 @@ import (
 func Connect(cfg *config.Config) (*gorm.DB, error) {
 	log.Printf("DB: %s", cfg.DB)
 
-	db, err := gorm.Open(postgres.Open(cfg.DB.DSN()), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(cfg.DB.DSN(cfg.App.Env)), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

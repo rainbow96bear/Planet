@@ -24,12 +24,13 @@
     $effect(() => {
         tasks = Array.isArray(data.tasks) ? data.tasks : []
     })
-    
+
     async function prevMonth() {
         if (month === 1) { year -= 1; month = 12 }
         else { month -= 1 }
         loading = true
         tasks = await getTasksByMonth(userid, year, month)
+        console.log("tasks s : ", tasks)
         loading = false
     }
 

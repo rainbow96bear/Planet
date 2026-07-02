@@ -11,8 +11,10 @@ export const getTasksByMonth = async (
         const err = await res.json()
         throw new Error(err.error ?? '서버 오류')
     }
+    const tasks = await res.json()
+    console.log("서버 : ", tasks)
 
-    return res.json()
+    return tasks
 }
 
 export const createTask = async (body: CreateTaskBody): Promise<CreateTaskResponse> => {
