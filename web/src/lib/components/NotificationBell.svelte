@@ -36,7 +36,6 @@
     open = true
     loading = true
     notifications = await getNotifications()
-    console.log("notifications : ", notifications)
     unreadCount = 0
     loading = false
     await markAllRead()

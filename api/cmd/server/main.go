@@ -58,7 +58,7 @@ func main() {
 	reactionRepo := repository.NewReactionRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo)
-	taskSvc := service.NewTaskService(db, taskRepo, feedRepo)
+	taskSvc := service.NewTaskService(db, taskRepo, feedRepo, reactionRepo)
 	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, feedRepo, notificationRepo)
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
 	feedSvc := service.NewFeedService(db, feedRepo)

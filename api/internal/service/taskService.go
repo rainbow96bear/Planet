@@ -17,20 +17,23 @@ type TaskService interface {
 }
 
 type taskService struct {
-	db       *gorm.DB
-	taskRepo repository.TaskRepository
-	feedRepo repository.FeedRepository
+	db           *gorm.DB
+	taskRepo     repository.TaskRepository
+	feedRepo     repository.FeedRepository
+	reactionRepo repository.ReactionRepository
 }
 
 func NewTaskService(
 	db *gorm.DB,
 	taskRepo repository.TaskRepository,
 	feedRepo repository.FeedRepository,
+	reactionRepo repository.ReactionRepository,
 ) TaskService {
 	return &taskService{
-		db:       db,
-		taskRepo: taskRepo,
-		feedRepo: feedRepo,
+		db:           db,
+		taskRepo:     taskRepo,
+		feedRepo:     feedRepo,
+		reactionRepo: reactionRepo,
 	}
 }
 
@@ -85,8 +88,24 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 		return errors.New("권한이 없습니다")
 	}
 
-	// task 삭제 시 feed도 cascade로 삭제되므로 tx 불필요
-	return s.taskRepo.DeleteTask(nil, req.ID)
+	tx := s.db.Begin()
+
+	if err := s.taskRepo.DeleteTask(tx, req.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := s.feedRepo.DeleteByTaskID(tx, req.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := s.reactionRepo.DeleteByTaskID(tx, req.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }
 
 func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error) {

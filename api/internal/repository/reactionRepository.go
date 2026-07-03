@@ -10,6 +10,7 @@ import (
 type ReactionRepository interface {
 	Upsert(reaction *model.Reaction) error
 	Delete(taskID, userID string, reactionType model.ReactionType) error
+	DeleteByTaskID(tx *gorm.DB, taskID string) error
 }
 
 type reactionRepository struct {
@@ -36,5 +37,11 @@ func (r *reactionRepository) Upsert(reaction *model.Reaction) error {
 func (r *reactionRepository) Delete(taskID, userID string, reactionType model.ReactionType) error {
 	return r.db.
 		Where("task_id = ? AND user_id = ? AND type = ?", taskID, userID, reactionType).
+		Delete(&model.Reaction{}).Error
+}
+
+func (r *reactionRepository) DeleteByTaskID(tx *gorm.DB, taskID string) error {
+	return r.getDB(tx).
+		Where("task_id = ?", taskID).
 		Delete(&model.Reaction{}).Error
 }

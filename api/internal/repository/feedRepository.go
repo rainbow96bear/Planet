@@ -10,6 +10,7 @@ import (
 type FeedRepository interface {
 	Create(tx *gorm.DB, feed *model.Feed) error
 	DeleteByActorAndTask(tx *gorm.DB, actorID, taskID string, feedType model.FeedType) error
+	DeleteByTaskID(tx *gorm.DB, taskID string) error
 	FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error)
 	FindExploreFeed(userID string, limit int) ([]*dto.GetFeedResponse, error)
 }
@@ -39,6 +40,12 @@ func (r *feedRepository) DeleteByActorAndTask(tx *gorm.DB, actorID, taskID strin
 		Delete(&model.Feed{}).Error
 }
 
+func (r *feedRepository) DeleteByTaskID(tx *gorm.DB, taskID string) error {
+	return r.getDB(tx).
+		Where("task_id = ?", taskID).
+		Delete(&model.Feed{}).Error
+}
+
 func (r *feedRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedResponse, error) {
 	var result []*dto.GetFeedResponse
 
@@ -57,14 +64,15 @@ func (r *feedRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedRespo
 			BOOL_OR(r.type = 'cheer' AND r.user_id = ?)         AS is_cheered,
 			f.created_at
 		`, userID, userID).
-		Joins("JOIN users u ON u.id = f.actor_id").
-		Joins("JOIN tasks t ON t.id = f.task_id").
+		Joins("JOIN users u ON u.id = f.actor_id AND u.deleted_at IS NULL").
+		Joins("JOIN tasks t ON t.id = f.task_id AND t.deleted_at IS NULL").
 		Joins("LEFT JOIN reactions r ON r.task_id = f.task_id").
 		Where("f.actor_id IN (?)",
 			r.db.Table("follows").
 				Select("following_id").
 				Where("follower_id = ?", userID),
 		).
+		Where("(t.is_public = true OR f.actor_id = ?)", userID).
 		Group("f.id, f.actor_id, u.nickname, f.type, f.task_id, t.title, f.created_at").
 		Order("f.created_at DESC").
 		Limit(limit).
@@ -91,8 +99,8 @@ func (r *feedRepository) FindExploreFeed(userID string, limit int) ([]*dto.GetFe
 			BOOL_OR(r.type = 'cheer' AND r.user_id = ?)         AS is_cheered,
 			f.created_at
 		`, userID, userID).
-		Joins("JOIN users u ON u.id = f.actor_id").
-		Joins("JOIN tasks t ON t.id = f.task_id").
+		Joins("JOIN users u ON u.id = f.actor_id AND u.deleted_at IS NULL").
+		Joins("JOIN tasks t ON t.id = f.task_id AND t.deleted_at IS NULL").
 		Joins("LEFT JOIN reactions r ON r.task_id = f.task_id").
 		Where("t.is_public = ?", true).
 		Group("f.id, f.actor_id, u.nickname, f.type, f.task_id, t.title, f.created_at").
