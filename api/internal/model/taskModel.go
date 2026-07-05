@@ -14,7 +14,7 @@ type Task struct {
 	Description string         `gorm:"size:1000"`
 	Date        time.Time      `gorm:"not null;index"`
 	IsCompleted bool           `gorm:"not null;default:false"`
-	IsPublic    bool           `gorm:"not null;default:true"`
+	IsPublic    bool           `gorm:"not null;default:false"`
 	Reactions   []Reaction     `gorm:"foreignKey:TaskID"`
 	Feeds       []Feed         `gorm:"foreignKey:TaskID"`
 	DeletedAt   gorm.DeletedAt `gorm:"index;type:timestamptz"`
