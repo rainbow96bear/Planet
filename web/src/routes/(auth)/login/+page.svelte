@@ -51,7 +51,7 @@
       <p class="error-msg">{error}</p>
     {/if}
 
-    <form onsubmit={handleSubmit}>
+    <!-- <form onsubmit={handleSubmit}>
       <div class="field">
         <label for="username">아이디</label>
         <input
@@ -70,7 +70,7 @@
           bind:value={password}
           placeholder="최소 8자리"
         />
-      </div>
+      </div> -->
 
       <button class="btn-primary" type="submit" disabled={loading}>
         {loading ? '로그인 중...' : '로그인'}
