@@ -33,35 +33,69 @@
 
 <style>
     .feed-tabs {
-        display: flex;
+        display: inline-flex;
+        align-items: center;
         gap: 4px;
-        background: var(--bg);
+
+        padding: 4px;
+
+        background: var(--surface-hover);
+
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 3px;
+        border-radius: var(--radius-md);
     }
 
     .tab-btn {
-        padding: 0.4rem 1rem;
-        border-radius: 7px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-width: 72px;
+        height: 36px;
+
+        padding: 0 1rem;
+
         border: none;
+        border-radius: calc(var(--radius-md) - 4px);
+
         background: transparent;
+
         color: var(--text-secondary);
-        font-family: inherit;
-        transition: all 0.2s;
+
+        font: inherit;
+        font-size: 0.85rem;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+            background var(--transition-fast),
+            color var(--transition-fast);
     }
 
     .tab-btn:hover:not(.active) {
+        background: rgba(78, 199, 188, 0.08);
         color: var(--planet-primary);
-        background: rgba(79, 156, 249, 0.05);
     }
 
     .tab-btn.active {
         background: var(--planet-primary);
-        color: white;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        color: #fff;
+    }
+
+    .tab-btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(78, 199, 188, 0.18);
+    }
+
+    @media (max-width: 520px) {
+        .feed-tabs {
+            width: 100%;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 0;
+        }
     }
 </style>

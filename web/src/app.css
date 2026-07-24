@@ -1,38 +1,67 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
 :root {
-    /* 브랜드 */
-    --planet-primary: #4F9CF9;
-    --planet-primary-hover: #3B82F6;
+  /* ==========================
+     Brand
+  ========================== */
 
-    /* 친구/소셜 */
-    --planet-secondary: #8B8CF8;
+  --planet-primary: #4EC7BC;
+  --planet-primary-hover: #3EB5AA;
 
-    /* 배경 */
-    --bg: #F8FAFC;
-    --surface: #FFFFFF;
-    --surface-hover: #F1F5F9;
+  --planet-secondary: #E96A5A;
+  --planet-highlight: #F5C84B;
 
-    /* 텍스트 */
-    --text-primary: #0F172A;
-    --text-secondary: #64748B;
-    --text-muted: #94A3B8;
+  /* ==========================
+     Surface
+  ========================== */
 
-    /* 테두리 */
-    --border: #E2E8F0;
+  --bg: #FAFBFC;
+  --surface: #FFFFFF;
+  --surface-alt: #F6F8FA;
+  --surface-hover: #F2F5F8;
 
-    /* 상태 */
-    --success: #22C55E;
-    --danger: #EF4444;
-    --warning: #F59E0B;
-}
+  /* ==========================
+     Typography
+  ========================== */
 
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text-primary);
-  font-family: Inter, Pretendard, sans-serif;
+  --text-primary: #223A5E;
+  --text-secondary: #5E718D;
+  --text-muted: #90A0B7;
+
+  /* ==========================
+     Border
+  ========================== */
+
+  --border: #E6EBF0;
+  --border-subtle: #EEF2F6;
+
+  /* ==========================
+     Semantic
+  ========================== */
+
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  /* ==========================
+     Radius
+  ========================== */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* ==========================
+     Shadow
+  ========================== */
+
+  --shadow-sm: 0 1px 3px rgba(34, 58, 94, 0.04);
+  --shadow-md: 0 2px 8px rgba(34, 58, 94, 0.06);
+
+  /* ==========================
+     Motion
+  ========================== */
+
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 220ms ease-out;
+  --transition-page: 500ms ease-out;
 }

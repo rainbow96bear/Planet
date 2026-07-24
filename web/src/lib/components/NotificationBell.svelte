@@ -2,7 +2,6 @@
   import { page } from '$app/stores'
   import { getUnreadCount, getNotifications, markAllRead } from '$lib/api/notification'
   import type { Notification } from '$lib/types/notification'
-
   let unreadCount = $state(0)
   let notifications = $state<Notification[]>([])
   let open = $state(false)
@@ -15,7 +14,6 @@
     : filter === 'follow' ? notifications.filter(n => n.type === 'followed')
     : notifications.filter(n => n.type !== 'followed')
   )
-
   $effect(() => {
     if ($page.data.user) {
       fetchCount()
@@ -26,11 +24,9 @@
     }
     return () => { if (pollingTimer) clearInterval(pollingTimer) }
   })
-
   async function fetchCount() {
     unreadCount = await getUnreadCount()
   }
-
   async function toggle() {
     if (open) { open = false; return }
     open = true
@@ -40,11 +36,9 @@
     loading = false
     await markAllRead()
   }
-
   function handleMarkAll() {
     notifications = notifications.map(n => ({ ...n, is_read: true }))
   }
-
   function timeAgo(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime()
     const min = Math.floor(diff / 60000)
@@ -54,20 +48,16 @@
     if (h < 24) return `${h}시간 전`
     return `${Math.floor(h / 24)}일 전`
   }
-
   const TYPE_ICON: Record<string, string> = {
     follow: '👤', comment: '💬', reaction: '❤️'
   }
-
   const TAB_LABEL: Record<string, string> = {
     all: '전체', follow: '팔로우', reaction: '댓글·반응'
   }
 </script>
-
 <svelte:window onclick={(e) => {
   if (open && !(e.target as Element).closest('.notif-wrap')) open = false
 }} />
-
 <div class="notif-wrap">
   <button class="bell-btn" onclick={toggle} aria-label="알림 {unreadCount}개">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -79,14 +69,12 @@
       <span class="badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
     {/if}
   </button>
-
   {#if open}
     <div class="dropdown" role="dialog" aria-label="알림 목록">
       <div class="drop-header">
         <span class="drop-title">알림</span>
         <button class="mark-all-btn" onclick={handleMarkAll}>모두 읽음</button>
       </div>
-
       <div class="tabs">
         {#each (['all', 'follow', 'reaction'] as const) as t}
           <button
@@ -98,7 +86,6 @@
           </button>
         {/each}
       </div>
-
       <ul class="notif-list">
         {#if loading}
           <li class="notif-empty">불러오는 중...</li>
@@ -126,232 +113,254 @@
 
 <style>
   .notif-wrap {
-    position: relative;
+      position: relative;
   }
-
-  /* ── 벨 버튼 ── */
+  /* ==========================
+    Bell
+  ========================== */
   .bell-btn {
-    position: relative;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    transition: all 0.2s;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition:
+          background var(--transition-fast),
+          border-color var(--transition-fast),
+          color var(--transition-fast);
   }
-
   .bell-btn:hover {
-    border-color: var(--planet-primary);
-    color: var(--planet-primary);
+      background: var(--surface-hover);
+      border-color: var(--planet-primary);
+      color: var(--planet-primary);
   }
-
-  /* ── 뱃지 ── */
+  /* ==========================
+    Badge
+  ========================== */
   .badge {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    background: var(--danger);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 3px;
-    border: 2px solid var(--surface);
-    line-height: 1;
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--danger);
+      color: #fff;
+      border: 2px solid var(--surface);
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 700;
+      line-height: 1;
   }
-
-  /* ── 드롭다운 ── */
+  /* ==========================
+    Dropdown
+  ========================== */
   .dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: -8px;
-    width: 340px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-    z-index: 200;
-    overflow: hidden;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 340px;
+      max-width: calc(100vw - 2rem);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      z-index: 200;
   }
-
-  /* ── 헤더 ── */
+  /* ==========================
+    Header
+  ========================== */
   .drop-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px 10px;
-    border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
   }
-
   .drop-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
+      color: var(--text-primary);
+      font-size: .95rem;
+      font-weight: 700;
   }
-
   .mark-all-btn {
-    background: none;
-    border: none;
-    font-size: 12px;
-    color: var(--planet-primary);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background 0.15s;
+      padding: .4rem .7rem;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      color: var(--planet-primary);
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition:
+          background var(--transition-fast),
+          color var(--transition-fast);
   }
-
   .mark-all-btn:hover {
-    background: rgba(79, 156, 249, 0.08);
+      background: rgba(78,199,188,.08);
   }
-
-  /* ── 탭 ── */
+  /* ==========================
+    Tabs
+  ========================== */
   .tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    padding: 0 6px;
+      display: flex;
+      gap: 4px;
+      padding: .5rem;
+      background: var(--surface-hover);
+      border-bottom: 1px solid var(--border);
   }
-
   .tab {
-    background: none;
-    border: none;
-    border-bottom: 2px solid transparent;
-    font-size: 13px;
-    color: var(--text-secondary);
-    padding: 8px 10px;
-    cursor: pointer;
-    transition: color 0.15s;
-    margin-bottom: -1px;
+      flex: 1;
+      height: 34px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition:
+          background var(--transition-fast),
+          color var(--transition-fast);
   }
-
-  .tab:hover {
-    color: var(--planet-primary);
+  .tab:hover:not(.active) {
+      background: rgba(78,199,188,.08);
+      color: var(--planet-primary);
   }
-
   .tab.active {
-    color: var(--planet-primary);
-    font-weight: 600;
-    border-bottom-color: var(--planet-primary);
+      background: var(--planet-primary);
+      color: #fff;
   }
-
-  /* ── 알림 목록 ── */
+  /* ==========================
+    List
+  ========================== */
   .notif-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 360px;
-    overflow-y: auto;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      max-height: 360px;
+      overflow-y: auto;
   }
-
   .notif-list::-webkit-scrollbar {
-    width: 4px;
+      width: 5px;
   }
-
   .notif-list::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 999px;
+      background: var(--border);
+      border-radius: 999px;
   }
-
   .notif-empty {
-    padding: 32px 16px;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 13px;
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: .85rem;
   }
-
-  /* ── 알림 아이템 ── */
+  /* ==========================
+    Item
+  ========================== */
   .notif-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: background 0.12s;
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background var(--transition-fast);
   }
-
   .notif-item:last-child {
-    border-bottom: none;
+      border-bottom: none;
   }
-
   .notif-item:hover {
-    background: var(--surface-hover);
+      background: var(--surface-hover);
   }
-
   .notif-item.unread {
-    background: rgba(79, 156, 249, 0.05);
+      background: rgba(78,199,188,.05);
   }
-
   .notif-item.unread:hover {
-    background: rgba(79, 156, 249, 0.08);
+      background: rgba(78,199,188,.08);
   }
-
-  /* ── 아바타 ── */
+  /* ==========================
+    Avatar
+  ========================== */
   .notif-avatar {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--planet-primary);
-    flex-shrink: 0;
+      position: relative;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--planet-primary);
+      font-size: .9rem;
+      font-weight: 700;
   }
-
   .type-badge {
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    font-size: 11px;
-    background: var(--surface);
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: .7rem;
   }
-
-  /* ── 본문 ── */
+  /* ==========================
+    Body
+  ========================== */
   .notif-body {
-    flex: 1;
-    min-width: 0;
+      flex: 1;
+      min-width: 0;
   }
-
   .notif-msg {
-    margin: 0 0 3px;
-    font-size: 13px;
-    color: var(--text-primary);
-    line-height: 1.45;
+      margin: 0 0 .25rem;
+      color: var(--text-primary);
+      font-size: .85rem;
+      line-height: 1.5;
+      word-break: break-word;
   }
-
   .notif-time {
-    font-size: 11px;
-    color: var(--text-secondary);
+      color: var(--text-muted);
+      font-size: .75rem;
   }
-
-  /* ── 읽지 않음 점 ── */
+  /* ==========================
+    Unread Dot
+  ========================== */
   .unread-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--planet-primary);
-    flex-shrink: 0;
-    margin-top: 6px;
+      width: 8px;
+      height: 8px;
+      margin-top: .45rem;
+      border-radius: 50%;
+      background: var(--planet-primary);
+      flex-shrink: 0;
+  }
+  /* ==========================
+    Responsive
+  ========================== */
+  @media (max-width:520px){
+      .dropdown{
+          width:min(340px,calc(100vw - 1rem));
+          right:-8px;
+      }
+      .drop-header{
+          padding:.9rem 1rem;
+      }
+      .notif-item{
+          padding:.85rem 1rem;
+      }
   }
 </style>

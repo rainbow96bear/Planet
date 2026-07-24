@@ -1,30 +1,64 @@
 .feed-container {
     max-width: 640px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2.5rem 1.25rem;
 }
-
-/* ── 헤더 ── */
+/* ==========================
+   Header
+========================== */
 .feed-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
-
 .feed-title {
-    font-size: 1.1rem;
-    font-weight: 700;
+    margin: 0;
     color: var(--text-primary);
-    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
 }
-
-/* ── 활동 리스트 ── */
+/* ==========================
+   Feed
+========================== */
 .feed-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+/* ==========================
+   Empty State
+========================== */
+.feed-empty {
+    padding: 4rem 1rem;
+    text-align: center;
+}
+.feed-empty p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: .95rem;
+}
+.feed-empty-sub {
+    margin-top: .5rem !important;
+    color: var(--text-muted);
+    font-size: .875rem;
+    line-height: 1.6;
+}
+/* ==========================
+   Responsive
+========================== */
+@media (max-width: 640px) {
+    .feed-container {
+        padding: 2rem 1rem;
+    }
+    .feed-header {
+        margin-bottom: 1.5rem;
+    }
+    .feed-title {
+        font-size: 1.125rem;
+    }
 }

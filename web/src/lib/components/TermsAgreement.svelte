@@ -169,169 +169,206 @@
 
 <style>
   .terms-wrapper {
-    margin: 1.25rem 0 0.25rem;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
+      margin: 1.25rem 0 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
   }
 
-  /* 전체 동의 */
+  /* ---------- 전체 동의 ---------- */
+
   .terms-all {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 13px 14px;
-    background: color-mix(in srgb, var(--planet-primary) 6%, var(--surface));
-    border-bottom: 1px solid color-mix(in srgb, var(--planet-primary) 20%, transparent);
-    cursor: pointer;
-    user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      background: rgba(79, 156, 249, 0.05);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
   }
 
   .terms-all input[type='checkbox'] {
-    width: 17px;
-    height: 17px;
-    accent-color: var(--planet-primary);
-    cursor: pointer;
-    flex-shrink: 0;
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+      accent-color: var(--planet-primary);
+      cursor: pointer;
   }
 
   .terms-all-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
   }
 
   .terms-all-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
   }
 
   .terms-all-desc {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
   }
 
   .terms-divider {
-    height: 1px;
-    background: var(--border);
+      height: 1px;
+      background: var(--border);
   }
 
-  /* 개별 항목 */
+  /* ---------- 개별 항목 ---------- */
+
   .terms-item {
-    border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
   }
 
   .terms-item:last-child {
-    border-bottom: none;
+      border-bottom: none;
   }
 
   .terms-item-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 11px 14px;
-    background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: var(--surface);
   }
 
   .terms-check {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
   }
 
   .terms-check input[type='checkbox'] {
-    width: 15px;
-    height: 15px;
-    accent-color: var(--planet-primary);
-    cursor: pointer;
-    flex-shrink: 0;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      accent-color: var(--planet-primary);
+      cursor: pointer;
   }
 
   .terms-toggle {
-    font-size: 0.72rem;
-    color: var(--planet-primary);
-    background: none;
-    border: 1px solid color-mix(in srgb, var(--planet-primary) 35%, transparent);
-    border-radius: 4px;
-    padding: 3px 10px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition:
-      background-color 0.15s,
-      color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      padding: 0 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+          background-color .2s,
+          border-color .2s,
+          color .2s;
   }
 
-  .terms-toggle:hover,
+  .terms-toggle:hover {
+      border-color: var(--planet-primary);
+      color: var(--planet-primary);
+  }
+
   .terms-toggle.open {
-    background: var(--planet-primary);
-    color: #fff;
+      background: var(--planet-primary);
+      border-color: var(--planet-primary);
+      color: #fff;
   }
 
-  /* 약관 본문 */
+  /* ---------- 약관 ---------- */
+
   .terms-box {
-    margin: 0 14px 12px;
-    padding: 12px 14px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 0.78rem;
-    line-height: 1.75;
-    color: var(--text-secondary);
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+      margin: 0 1rem 1rem;
+      padding: 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      max-height: 240px;
+      overflow-y: auto;
+
+      font-size: 0.8rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
   }
 
   .terms-box::-webkit-scrollbar {
-    width: 4px;
+      width: 6px;
   }
 
   .terms-box::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
+      background: var(--border);
+      border-radius: 999px;
   }
 
   .terms-box h3 {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 2px;
+      margin: 0 0 0.25rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
   }
 
-  .terms-box .terms-date {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    margin: 0 0 10px;
+  .terms-date {
+      margin: 0 0 1rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
   }
 
   .terms-box h4 {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 12px 0 3px;
+      margin: 1rem 0 0.35rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
   }
 
   .terms-box p {
-    margin: 0 0 4px;
+      margin: 0 0 0.45rem;
   }
 
   .terms-box ul {
-    margin: 3px 0 4px;
-    padding-left: 16px;
+      margin: 0.35rem 0 0.6rem;
+      padding-left: 1.2rem;
   }
 
-  .terms-box ul li {
-    margin-bottom: 2px;
+  .terms-box li {
+      margin-bottom: 0.25rem;
   }
 
   .terms-box strong {
-    color: var(--text-primary);
-    font-weight: 600;
+      color: var(--text-primary);
+      font-weight: 600;
+  }
+
+  /* ---------- Mobile ---------- */
+
+  @media (max-width: 520px) {
+      .terms-item-row {
+          padding: 0.8rem;
+      }
+
+      .terms-box {
+          margin: 0 0.8rem 0.8rem;
+          padding: 0.9rem;
+          max-height: 220px;
+      }
+
+      .terms-toggle {
+          padding: 0 0.7rem;
+          font-size: 0.72rem;
+      }
   }
 </style>

@@ -3,149 +3,178 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 2rem 1rem;
     background: var(--bg);
-    padding: 1rem;
 }
-
+/* ==========================
+   Card
+========================== */
 .login-card {
     width: 100%;
-    max-width: 400px;
-    padding: 2.5rem 2rem;
+    max-width: 420px;
+    padding: 2.5rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    border-radius: var(--radius-lg);
 }
-
+/* ==========================
+   Brand
+========================== */
 .login-logo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: .6rem;
+    margin-bottom: .4rem;
+    color: var(--planet-primary);
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--planet-primary);
-    margin-bottom: 0.25rem;
-    letter-spacing: -0.5px;
+    letter-spacing: -.02em;
 }
- 
 .login-logo img {
     width: 36px;
     height: 36px;
     object-fit: contain;
     flex-shrink: 0;
 }
-
 .login-tagline {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
+    margin: 0 0 2.25rem;
+    color: var(--text-muted);
+    font-size: .875rem;
+    line-height: 1.6;
 }
-
+/* ==========================
+   Title
+========================== */
 .login-title {
-    font-size: 1.25rem;
-    font-weight: 700;
+    margin: 0 0 1.75rem;
     color: var(--text-primary);
-    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
 }
-
+/* ==========================
+   Form
+========================== */
 .field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 1rem;
+    gap: .5rem;
+    margin-bottom: 1.25rem;
 }
-
 .field label {
-    font-size: 0.8rem;
-    font-weight: 600;
     color: var(--text-secondary);
+    font-size: .875rem;
+    font-weight: 600;
 }
-
 .field input {
-    background: var(--bg);
+    width: 100%;
+    height: 42px;
+    padding: 0 14px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.75rem 0.9rem;
+    border-radius: var(--radius-md);
     color: var(--text-primary);
-    font-size: 0.95rem;
+    font: inherit;
     transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
-    outline: none;
+        border-color var(--transition-fast),
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+    box-sizing: border-box;
 }
-
-.field input:focus {
-    border-color: var(--planet-primary);
-    box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.15);
-}
-
 .field input::placeholder {
     color: var(--text-muted);
 }
-
+.field input:focus {
+    outline: none;
+    border-color: var(--planet-primary);
+    box-shadow: 0 0 0 3px rgba(78,199,188,.12);
+}
+/* ==========================
+   Validation
+========================== */
+.field-ok,
+.field-error {
+    font-size: .75rem;
+    margin-top: .15rem;
+}
 .field-ok {
-    font-size: 0.75rem;
     color: var(--success);
 }
-
 .field-error {
-    font-size: 0.75rem;
     color: var(--danger);
 }
-
+/* ==========================
+   Error Message
+========================== */
 .error-msg {
-    font-size: 0.8rem;
+    margin: 0 0 1.25rem;
+    padding: .8rem 1rem;
+    background: rgba(239,68,68,.06);
+    border: 1px solid rgba(239,68,68,.12);
+    border-radius: var(--radius-md);
     color: var(--danger);
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: rgba(239, 68, 68, 0.08);
-    border: 1px solid rgba(239, 68, 68, 0.15);
-    border-radius: 8px;
+    font-size: .875rem;
 }
-
+/* ==========================
+   Primary Button
+========================== */
 .btn-primary {
     width: 100%;
-    padding: 0.8rem;
+    height: 42px;
+    margin-top: .75rem;
     background: var(--planet-primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    border: 1px solid var(--planet-primary);
+    border-radius: var(--radius-md);
+    color: #fff;
+    font: inherit;
+    font-size: .9rem;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 0.5rem;
     transition:
-        background-color 0.2s,
-        transform 0.1s;
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        opacity var(--transition-fast);
 }
-
 .btn-primary:hover:not(:disabled) {
     background: var(--planet-primary-hover);
+    border-color: var(--planet-primary-hover);
 }
-
 .btn-primary:active:not(:disabled) {
     transform: translateY(1px);
 }
-
 .btn-primary:disabled {
-    opacity: 0.5;
+    opacity: .5;
     cursor: not-allowed;
 }
-
+/* ==========================
+   Footer
+========================== */
 .login-footer {
+    margin-top: 2rem;
     text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: var(--text-muted);
+    font-size: .875rem;
 }
-
 .login-footer a {
     color: var(--planet-primary);
     text-decoration: none;
     font-weight: 600;
-    transition: color 0.2s;
+    transition: color var(--transition-fast);
 }
-
 .login-footer a:hover {
     color: var(--planet-primary-hover);
+}
+/* ==========================
+   Responsive
+========================== */
+@media (max-width: 520px) {
+    .login-container {
+        padding: 1.5rem 1rem;
+    }
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+    .login-title {
+        font-size: 1.25rem;
+    }
 }

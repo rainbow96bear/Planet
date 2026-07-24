@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { Task } from '$lib/types/task'
     import { createTask } from '$lib/api/task'
-
     let {
         day,
         year,
@@ -15,18 +14,14 @@
         onClose: () => void
         onCreated: (task: Task) => void
     } = $props()
-
     let title = $state('')
     let isPublic = $state(true)
     let loading = $state(false)
     let error = $state('')
-
     let inputEl = $state<HTMLInputElement | null>(null)
-
     $effect(() => {
         inputEl?.focus()
     })
-
     async function handleCreate() {
         if (!title.trim()) return
         loading = true
@@ -45,17 +40,14 @@
             loading = false
         }
     }
-
     function handleBackdropClick(e: MouseEvent) {
         if (e.target === e.currentTarget) onClose()
     }
-
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === 'Enter') handleCreate()
         if (e.key === 'Escape') onClose()
     }
 </script>
-
 <div
     class="modal-backdrop"
     role="presentation"
@@ -70,12 +62,10 @@
             </span>
             <button class="modal-close" onclick={onClose}>✕</button>
         </div>
-
         <div class="modal-body">
             {#if error}
                 <p class="error-msg">{error}</p>
             {/if}
-
             <div class="input-group">
                 <input
                     bind:this={inputEl}
@@ -88,7 +78,6 @@
                 />
                 <span class="char-count">{title.length}/100</span>
             </div>
-
             <label class="toggle-row">
                 <span class="toggle-label">공개</span>
                 <button
@@ -100,7 +89,6 @@
                     <span class="toggle-thumb"></span>
                 </button>
             </label>
-
             <div class="modal-actions">
                 <button class="btn-cancel" onclick={onClose} disabled={loading}>취소</button>
                 <button
@@ -123,228 +111,240 @@
     .modal-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(31, 41, 55, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 1rem;
+        background: rgba(34,58,94,.32);
         z-index: 110;
     }
-
     .modal {
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 16px;
-        width: 100%;
-        max-width: 380px;
-        padding: 1.5rem;
-        box-shadow: 0 12px 32px rgba(31, 41, 55, 0.08);
+        border-radius: var(--radius-lg);
+        box-sizing: border-box;
     }
-
+    /* ==========================
+    Header
+    ========================== */
     .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
     }
-
     .modal-date {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: .25rem;
     }
-
     .label {
-        font-size: 1rem;
+        color: var(--text-primary);
+        font-size: 1.1rem;
         font-weight: 700;
-        color: var(--text-primary);
     }
-
     .sub {
-        font-size: 0.78rem;
         color: var(--text-secondary);
+        font-size: .8rem;
     }
-
     .modal-close {
-        background: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        background: transparent;
         border: none;
+        border-radius: var(--radius-md);
         color: var(--text-secondary);
-        font-size: 1rem;
         cursor: pointer;
-        transition: color 0.2s;
-        flex-shrink: 0;
+        transition:
+            background var(--transition-fast),
+            color var(--transition-fast);
     }
-
     .modal-close:hover {
+        background: var(--surface-hover);
         color: var(--text-primary);
     }
-
-    /* 입력 */
+    /* ==========================
+    Input
+    ========================== */
     .input-group {
         position: relative;
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
     }
-
     .input-group input {
         width: 100%;
-        background: var(--bg);
+        height: 42px;
+        padding: 0 54px 0 14px;
+        background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 0.65rem 3rem 0.65rem 0.9rem;
+        border-radius: var(--radius-md);
         color: var(--text-primary);
-        font-size: 0.9rem;
-        outline: none;
+        font: inherit;
         box-sizing: border-box;
-        transition: border-color 0.2s;
+        transition:
+            border-color var(--transition-fast),
+            background var(--transition-fast),
+            box-shadow var(--transition-fast);
     }
-
-    .input-group input:focus {
-        border-color: var(--planet-primary);
-        box-shadow: 0 0 0 3px rgba(124, 199, 201, 0.15);
-    }
-
     .input-group input::placeholder {
-        color: var(--text-secondary);
+        color: var(--text-muted);
     }
-
+    .input-group input:focus {
+        outline: none;
+        border-color: var(--planet-primary);
+        box-shadow: 0 0 0 3px rgba(78,199,188,.12);
+    }
     .input-group input:disabled {
-        opacity: 0.5;
+        background: var(--surface-hover);
+        color: var(--text-muted);
     }
-
     .char-count {
         position: absolute;
-        right: 0.75rem;
         top: 50%;
+        right: 14px;
         transform: translateY(-50%);
-        font-size: 0.7rem;
-        color: var(--text-secondary);
+        color: var(--text-muted);
+        font-size: .75rem;
         pointer-events: none;
     }
-
-    /* 공개 토글 */
+    /* ==========================
+    Toggle
+    ========================== */
     .toggle-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1.25rem;
-        cursor: pointer;
+        margin-bottom: 1.5rem;
     }
-
     .toggle-label {
-        font-size: 0.85rem;
         color: var(--text-secondary);
+        font-size: .875rem;
+        font-weight: 500;
     }
-
     .toggle {
         position: relative;
-        width: 36px;
-        height: 20px;
-        border-radius: 999px;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s;
+        width: 40px;
+        height: 22px;
         padding: 0;
+        background: var(--border);
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: background var(--transition-fast);
     }
-
     .toggle.on {
         background: var(--planet-primary);
     }
-
-    .toggle.off {
-        background: #d1d5db;
-    }
-
     .toggle-thumb {
         position: absolute;
-        top: 3px;
-        left: 3px;
-        width: 14px;
-        height: 14px;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        background: #fff;
         border-radius: 50%;
-        background: white;
-        transition: transform 0.2s;
+        transition: transform var(--transition-fast);
     }
-
     .toggle.on .toggle-thumb {
-        transform: translateX(16px);
+        transform: translateX(18px);
     }
-
-    /* 버튼 영역 */
+    /* ==========================
+    Error
+    ========================== */
+    .error-msg {
+        margin: 0 0 1rem;
+        padding: .8rem 1rem;
+        background: rgba(233,106,90,.06);
+        border: 1px solid rgba(233,106,90,.12);
+        border-radius: var(--radius-md);
+        color: var(--danger);
+        font-size: .875rem;
+    }
+    /* ==========================
+    Actions
+    ========================== */
     .modal-actions {
         display: flex;
-        gap: 8px;
+        gap: .75rem;
     }
-
+    .btn-cancel,
+    .btn-submit {
+        height: 40px;
+        border-radius: var(--radius-md);
+        font: inherit;
+        font-size: .875rem;
+        font-weight: 600;
+        transition:
+            background var(--transition-fast),
+            border-color var(--transition-fast),
+            color var(--transition-fast),
+            opacity var(--transition-fast);
+        cursor: pointer;
+    }
     .btn-cancel {
         flex: 1;
-        padding: 0.6rem;
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 8px;
         color: var(--text-secondary);
-        font-size: 0.875rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
     }
-
     .btn-cancel:hover:not(:disabled) {
-        border-color: var(--planet-secondary);
-        color: var(--planet-secondary);
+        background: var(--surface-hover);
+        color: var(--text-primary);
     }
-
-    .btn-cancel:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
-
     .btn-submit {
         flex: 2;
-        padding: 0.6rem;
-        background: var(--planet-primary);
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-size: 0.875rem;
-        font-weight: 700;
-        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background 0.2s;
+        background: var(--planet-primary);
+        border: 1px solid var(--planet-primary);
+        color: #fff;
     }
-
     .btn-submit:hover:not(:disabled) {
-        background: var(--planet-primary-dark);
+        background: var(--planet-primary-hover);
+        border-color: var(--planet-primary-hover);
     }
-
+    .btn-cancel:disabled,
     .btn-submit:disabled {
-        opacity: 0.4;
+        opacity: .5;
         cursor: not-allowed;
     }
-
+    /* ==========================
+    Spinner
+    ========================== */
     .spinner {
-        display: inline-block;
         width: 14px;
         height: 14px;
-        border: 2px solid rgba(255, 255, 255, 0.35);
-        border-top-color: white;
+        border: 2px solid rgba(255,255,255,.35);
+        border-top-color: #fff;
         border-radius: 50%;
-        animation: spin 0.6s linear infinite;
+        animation: spin .6s linear infinite;
     }
-
     @keyframes spin {
         to {
             transform: rotate(360deg);
         }
     }
-
-    .error-msg {
-        font-size: 0.8rem;
-        color: var(--danger);
-        margin-bottom: 0.75rem;
-        padding: 0.6rem 0.8rem;
-        background: rgba(239, 68, 68, 0.08);
-        border: 1px solid rgba(239, 68, 68, 0.15);
-        border-radius: 8px;
+    /* ==========================
+    Responsive
+    ========================== */
+    @media (max-width:520px){
+        .modal{
+            padding:1.5rem;
+        }
+        .modal-actions{
+            flex-direction:column-reverse;
+        }
+        .btn-cancel,
+        .btn-submit{
+            width:100%;
+            flex:none;
+        }
     }
 </style>
