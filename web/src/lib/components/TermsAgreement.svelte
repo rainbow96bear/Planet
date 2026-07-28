@@ -169,10 +169,10 @@
 
 <style>
   .terms-wrapper {
-      margin: 1.25rem 0 0.5rem;
+      margin: var(--space-lg) 0 var(--space-xs);
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
   }
 
@@ -181,9 +181,9 @@
   .terms-all {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: var(--space-sm);
       padding: 0.9rem 1rem;
-      background: rgba(79, 156, 249, 0.05);
+      background: rgba(var(--planet-primary-rgb), 0.05);
       border-bottom: 1px solid var(--border);
       cursor: pointer;
       user-select: none;
@@ -233,7 +233,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: var(--space-sm);
       padding: 0.85rem 1rem;
       background: var(--surface);
   }
@@ -263,7 +263,7 @@
       height: 28px;
       padding: 0 0.8rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       background: var(--surface);
       color: var(--text-secondary);
       font-size: 0.75rem;
@@ -271,9 +271,9 @@
       cursor: pointer;
       white-space: nowrap;
       transition:
-          background-color .2s,
-          border-color .2s,
-          color .2s;
+          background-color var(--transition-normal),
+          border-color var(--transition-normal),
+          color var(--transition-normal);
   }
 
   .terms-toggle:hover {
@@ -284,17 +284,17 @@
   .terms-toggle.open {
       background: var(--planet-primary);
       border-color: var(--planet-primary);
-      color: #fff;
+      color: var(--text-on-dark);
   }
 
   /* ---------- 약관 ---------- */
 
   .terms-box {
-      margin: 0 1rem 1rem;
-      padding: 1rem;
+      margin: 0 1rem var(--space-md);
+      padding: var(--space-md);
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: var(--radius-md);
       max-height: 240px;
       overflow-y: auto;
 
@@ -323,13 +323,13 @@
   }
 
   .terms-date {
-      margin: 0 0 1rem;
+      margin: 0 0 var(--space-md);
       font-size: 0.72rem;
       color: var(--text-muted);
   }
 
   .terms-box h4 {
-      margin: 1rem 0 0.35rem;
+      margin: var(--space-md) 0 0.35rem;
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-primary);
@@ -345,7 +345,7 @@
   }
 
   .terms-box li {
-      margin-bottom: 0.25rem;
+      margin-bottom: var(--space-2xs);
   }
 
   .terms-box strong {

@@ -4,10 +4,14 @@
   ========================== */
 
   --planet-primary: #4EC7BC;
+  --planet-primary-rgb: 78, 199, 188;
   --planet-primary-hover: #3EB5AA;
 
   --planet-secondary: #E96A5A;
+  --planet-secondary-rgb: 233, 106, 90;
   --planet-highlight: #F5C84B;
+  --planet-highlight-rgb: 245, 200, 75;
+  --planet-highlight-text: #B88708;
 
   /* ==========================
      Surface
@@ -23,39 +27,60 @@
   ========================== */
 
   --text-primary: #223A5E;
-  --text-secondary: #5E718D;
-  --text-muted: #90A0B7;
+  --text-secondary: #55688A;
+  --text-muted: #8B98AB;
+  --text-on-dark: #FAFBFC;
 
   /* ==========================
      Border
   ========================== */
 
-  --border: #E6EBF0;
+  --border: #E3E7EC;
   --border-subtle: #EEF2F6;
+  --border-strong: #C7CED8;
+
+  /* ==========================
+     Spacing
+  ========================== */
+
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 20px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 40px;
+  --space-4xl: 48px;
+  --space-5xl: 64px;
 
   /* ==========================
      Semantic
   ========================== */
 
   --success: #22C55E;
+  --success-rgb: 34, 197, 94;
   --warning: #F59E0B;
   --danger: #EF4444;
+  --danger-rgb: 239, 68, 68;
 
   /* ==========================
      Radius
   ========================== */
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
   --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-xl: 24px;
 
   /* ==========================
      Shadow
   ========================== */
 
-  --shadow-sm: 0 1px 3px rgba(34, 58, 94, 0.04);
-  --shadow-md: 0 2px 8px rgba(34, 58, 94, 0.06);
+  --shadow-sm: 0 1px 2px rgba(34, 58, 94, 0.06);
+  --shadow-md: 0 2px 8px rgba(34, 58, 94, 0.08);
+  --shadow-lg: 0 8px 24px rgba(34, 58, 94, 0.1);
+  --shadow-xl: 0 12px 32px rgba(34, 58, 94, 0.16);
 
   /* ==========================
      Motion
@@ -64,4 +89,11 @@
   --transition-fast: 150ms ease-out;
   --transition-normal: 220ms ease-out;
   --transition-page: 500ms ease-out;
+
+  /* ==========================
+     Z-Index
+  ========================== */
+
+  --z-dropdown: 100;
+  --z-modal: 200;
 }

@@ -120,7 +120,7 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        padding: 1.25rem;
+        padding: var(--space-lg);
         transition:
             border-color var(--transition-fast),
             background var(--transition-fast);
@@ -134,7 +134,7 @@
     .card-main {
         display: flex;
         align-items: flex-start;
-        gap: 1rem;
+        gap: var(--space-md);
     }
     .feed-icon {
         width: 40px;
@@ -145,8 +145,8 @@
         flex-shrink: 0;
         font-size: 1.15rem;
         color: var(--planet-primary);
-        background: rgba(78,199,188,.08);
-        border: 1px solid rgba(78,199,188,.15);
+        background: rgba(var(--planet-primary-rgb), .08);
+        border: 1px solid rgba(var(--planet-primary-rgb), .15);
         border-radius: 50%;
     }
     .feed-body {
@@ -160,7 +160,7 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: .5rem;
+        gap: var(--space-xs);
         margin-bottom: .35rem;
     }
     .feed-actor {
@@ -176,7 +176,7 @@
     .type-label {
         padding: 3px 10px;
         border-radius: 999px;
-        background: rgba(233,106,90,.08);
+        background: rgba(var(--planet-secondary-rgb), .08);
         color: var(--planet-secondary);
         font-size: .72rem;
         font-weight: 600;
@@ -200,7 +200,7 @@
         font-weight: 600;
     }
     .feed-time {
-        margin-left: .75rem;
+        margin-left: var(--space-sm);
         color: var(--text-muted);
         font-size: .75rem;
         white-space: nowrap;
@@ -211,9 +211,9 @@
     ========================= */
     .reactions {
         display: flex;
-        gap: .75rem;
-        margin-top: 1rem;
-        padding-top: 1rem;
+        gap: var(--space-sm);
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
         border-top: 1px solid var(--border);
     }
     .reaction-btn {
@@ -250,24 +250,25 @@
         color: inherit;
     }
     /* =========================
-    Active
+    Active — 좋아요/응원은 브랜드 색을 빌려온 "따뜻한 반응" 표현이라
+    에러 메시지와는 다른 의도적인 배색이다. RGB만 토큰화했다.
     ========================= */
     .reaction-btn.liked {
-        background: rgba(233,106,90,.08);
-        border-color: rgba(233,106,90,.18);
+        background: rgba(var(--planet-secondary-rgb), .08);
+        border-color: rgba(var(--planet-secondary-rgb), .18);
         color: var(--danger);
     }
     .reaction-btn.cheered {
-        background: rgba(245,200,75,.12);
-        border-color: rgba(245,200,75,.22);
-        color: #b88708;
+        background: rgba(var(--planet-highlight-rgb), .12);
+        border-color: rgba(var(--planet-highlight-rgb), .22);
+        color: var(--planet-highlight-text);
     }
     /* =========================
     Responsive
     ========================= */
     @media (max-width:520px){
         .feed-card{
-            padding:1rem;
+            padding: var(--space-md);
         }
         .card-main{
             gap:.75rem;
@@ -281,7 +282,7 @@
             display:none;
         }
         .reactions{
-            gap:.5rem;
+            gap: var(--space-xs);
             flex-wrap:wrap;
         }
     }

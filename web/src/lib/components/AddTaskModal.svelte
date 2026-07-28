@@ -115,13 +115,14 @@
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        background: rgba(34,58,94,.32);
-        z-index: 110;
+        background: rgba(34, 58, 94, .32);
+        backdrop-filter: blur(2px);
+        z-index: var(--z-modal);
     }
     .modal {
         width: 100%;
         max-width: 400px;
-        padding: 2rem;
+        padding: var(--space-2xl);
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
@@ -134,12 +135,12 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1.5rem;
+        margin-bottom: var(--space-xl);
     }
     .modal-date {
         display: flex;
         flex-direction: column;
-        gap: .25rem;
+        gap: var(--space-2xs);
     }
     .label {
         color: var(--text-primary);
@@ -175,7 +176,7 @@
     ========================== */
     .input-group {
         position: relative;
-        margin-bottom: 1.25rem;
+        margin-bottom: var(--space-lg);
     }
     .input-group input {
         width: 100%;
@@ -198,7 +199,7 @@
     .input-group input:focus {
         outline: none;
         border-color: var(--planet-primary);
-        box-shadow: 0 0 0 3px rgba(78,199,188,.12);
+        box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), .12);
     }
     .input-group input:disabled {
         background: var(--surface-hover);
@@ -220,7 +221,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1.5rem;
+        margin-bottom: var(--space-xl);
     }
     .toggle-label {
         color: var(--text-secondary);
@@ -247,7 +248,7 @@
         left: 2px;
         width: 18px;
         height: 18px;
-        background: #fff;
+        background: var(--text-on-dark);
         border-radius: 50%;
         transition: transform var(--transition-fast);
     }
@@ -258,10 +259,10 @@
     Error
     ========================== */
     .error-msg {
-        margin: 0 0 1rem;
-        padding: .8rem 1rem;
-        background: rgba(233,106,90,.06);
-        border: 1px solid rgba(233,106,90,.12);
+        margin: 0 0 var(--space-md);
+        padding: var(--space-sm) var(--space-md);
+        background: rgba(var(--danger-rgb), .06);
+        border: 1px solid rgba(var(--danger-rgb), .12);
         border-radius: var(--radius-md);
         color: var(--danger);
         font-size: .875rem;
@@ -271,7 +272,7 @@
     ========================== */
     .modal-actions {
         display: flex;
-        gap: .75rem;
+        gap: var(--space-sm);
     }
     .btn-cancel,
     .btn-submit {
@@ -304,7 +305,7 @@
         justify-content: center;
         background: var(--planet-primary);
         border: 1px solid var(--planet-primary);
-        color: #fff;
+        color: var(--text-on-dark);
     }
     .btn-submit:hover:not(:disabled) {
         background: var(--planet-primary-hover);
@@ -321,8 +322,8 @@
     .spinner {
         width: 14px;
         height: 14px;
-        border: 2px solid rgba(255,255,255,.35);
-        border-top-color: #fff;
+        border: 2px solid currentColor;
+        border-top-color: transparent;
         border-radius: 50%;
         animation: spin .6s linear infinite;
     }
@@ -336,7 +337,7 @@
     ========================== */
     @media (max-width:520px){
         .modal{
-            padding:1.5rem;
+            padding: var(--space-xl);
         }
         .modal-actions{
             flex-direction:column-reverse;

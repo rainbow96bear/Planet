@@ -1,7 +1,7 @@
 .profile-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 2.5rem 1.25rem;
+    padding: var(--space-3xl) var(--space-lg);
 }
 /* ==========================
    Profile Header
@@ -9,8 +9,8 @@
 .profile-header {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-3xl);
 }
 .profile-avatar {
     width: 68px;
@@ -36,7 +36,7 @@
     letter-spacing: -.02em;
 }
 .profile-username {
-    margin-top: .25rem;
+    margin-top: var(--space-2xs);
     color: var(--text-secondary);
     font-size: .9rem;
 }
@@ -46,14 +46,14 @@
 .profile-actions {
     display: flex;
     align-items: center;
-    gap: .75rem;
+    gap: var(--space-sm);
     flex-shrink: 0;
 }
 .action-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: .45rem;
+    gap: var(--space-xs);
     height: 40px;
     padding: 0 18px;
     border-radius: var(--radius-md);
@@ -76,7 +76,7 @@
 .action-btn.primary {
     background: var(--planet-primary);
     border-color: var(--planet-primary);
-    color: #fff;
+    color: var(--text-on-dark);
 }
 .action-btn.primary:hover:not(:disabled) {
     background: var(--planet-primary-hover);
@@ -112,7 +112,7 @@
    Calendar
 ========================== */
 .calendar-card {
-    padding: 2rem;
+    padding: var(--space-2xl);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -121,7 +121,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
 }
 .calendar-title {
     font-size: 1.05rem;
@@ -153,7 +153,7 @@
     cursor: not-allowed;
 }
 .calendar-loading {
-    padding: 3rem 0;
+    padding: var(--space-4xl) 0;
     text-align: center;
     color: var(--text-secondary);
 }
@@ -163,10 +163,10 @@
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: var(--space-xs);
 }
 .calendar-day-header {
-    padding: .75rem 0;
+    padding: var(--space-sm) 0;
     text-align: center;
     color: var(--text-secondary);
     font-size: .75rem;
@@ -176,7 +176,7 @@
     position: relative;
     width: 100%;
     min-height: 92px;
-    padding: .6rem;
+    padding: var(--space-xs);
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
@@ -198,7 +198,7 @@
     cursor: default;
 }
 .calendar-cell.today {
-    background: rgba(78, 199, 188, .05);
+    background: rgba(var(--planet-primary-rgb), .05);
     border-color: var(--planet-primary);
 }
 .calendar-cell:disabled {
@@ -256,7 +256,7 @@
 .task-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-2xs);
 }
 .task-chip {
     display: block;
@@ -287,11 +287,11 @@
 ========================== */
 @media (max-width: 520px) {
     .profile-container {
-        padding: 2rem 1rem;
+        padding: var(--space-2xl) var(--space-md);
     }
     .profile-header {
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: var(--space-md);
     }
     .profile-actions {
         width: 100%;
@@ -300,7 +300,7 @@
         flex: 1;
     }
     .calendar-card {
-        padding: 1.25rem;
+        padding: var(--space-lg);
     }
     .calendar-grid {
         gap: 6px;

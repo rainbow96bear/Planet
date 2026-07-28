@@ -35,9 +35,9 @@
     .feed-tabs {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--space-2xs);
 
-        padding: 4px;
+        padding: var(--space-2xs);
 
         background: var(--surface-hover);
 
@@ -56,7 +56,7 @@
         padding: 0 1rem;
 
         border: none;
-        border-radius: calc(var(--radius-md) - 4px);
+        border-radius: var(--radius-sm);
 
         background: transparent;
 
@@ -74,18 +74,18 @@
     }
 
     .tab-btn:hover:not(.active) {
-        background: rgba(78, 199, 188, 0.08);
+        background: rgba(var(--planet-primary-rgb), 0.08);
         color: var(--planet-primary);
     }
 
     .tab-btn.active {
         background: var(--planet-primary);
-        color: #fff;
+        color: var(--text-on-dark);
     }
 
     .tab-btn:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(78, 199, 188, 0.18);
+        box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.18);
     }
 
     @media (max-width: 520px) {

@@ -1,7 +1,7 @@
 .feed-container {
     max-width: 640px;
     margin: 0 auto;
-    padding: 2.5rem 1.25rem;
+    padding: var(--space-3xl) var(--space-lg);
 }
 /* ==========================
    Header
@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
 }
 .feed-title {
     margin: 0;
@@ -25,7 +25,7 @@
 .feed-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-md);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -34,7 +34,7 @@
    Empty State
 ========================== */
 .feed-empty {
-    padding: 4rem 1rem;
+    padding: var(--space-5xl) var(--space-md);
     text-align: center;
 }
 .feed-empty p {
@@ -42,8 +42,8 @@
     color: var(--text-secondary);
     font-size: .95rem;
 }
-.feed-empty-sub {
-    margin-top: .5rem !important;
+.feed-empty p.feed-empty-sub {
+    margin-top: var(--space-xs);
     color: var(--text-muted);
     font-size: .875rem;
     line-height: 1.6;
@@ -53,10 +53,10 @@
 ========================== */
 @media (max-width: 640px) {
     .feed-container {
-        padding: 2rem 1rem;
+        padding: var(--space-2xl) var(--space-md);
     }
     .feed-header {
-        margin-bottom: 1.5rem;
+        margin-bottom: var(--space-xl);
     }
     .feed-title {
         font-size: 1.125rem;

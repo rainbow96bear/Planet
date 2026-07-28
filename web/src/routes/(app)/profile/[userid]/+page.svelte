@@ -144,14 +144,14 @@
                     </button>
                 {:else if isFollowing}
                     <button class="action-btn following" onclick={handleUnfollow}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
                         팔로잉
                     </button>
                 {:else}
                     <button class="action-btn primary" onclick={handleFollow}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <line x1="19" y1="8" x2="19" y2="14"/>
@@ -184,6 +184,7 @@
                     <button
                         class="calendar-cell {day === null ? 'empty' : ''} {isToday ? 'today' : ''}"
                         onclick={() => day && openTaskModal(day)}
+                        disabled={day === null}
                     >
                         {#if day !== null}
                             <div class="cell-top">

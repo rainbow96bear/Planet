@@ -105,24 +105,24 @@
         align-items: center;
         justify-content: center;
         padding: 1rem;
-        background: rgba(15, 23, 42, 0.45);
+        background: rgba(34, 58, 94, 0.45);
         backdrop-filter: blur(2px);
-        z-index: 100;
+        z-index: var(--z-modal);
     }
     .modal {
         width: 100%;
         max-width: 420px;
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-xl);
     }
     .modal-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1.25rem;
+        margin-bottom: var(--space-lg);
     }
     .modal-date {
         font-size: 1rem;
@@ -136,11 +136,11 @@
         width: 32px;
         height: 32px;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         background: transparent;
         color: var(--text-secondary);
         cursor: pointer;
-        transition: all .2s;
+        transition: background var(--transition-normal), color var(--transition-normal);
     }
     .modal-close:hover {
         background: var(--surface-hover);
@@ -148,21 +148,21 @@
     }
     /* ---------- Error ---------- */
     .error-msg {
-        margin: 0 0 1rem;
+        margin: 0 0 var(--space-md);
         padding: 0.65rem 0.85rem;
         font-size: .8rem;
         color: var(--danger);
-        background: rgba(239,68,68,.08);
-        border: 1px solid rgba(239,68,68,.18);
-        border-radius: 8px;
+        background: rgba(var(--danger-rgb), .08);
+        border: 1px solid rgba(var(--danger-rgb), .18);
+        border-radius: var(--radius-md);
     }
     /* ---------- List ---------- */
     .task-list {
         display: flex;
         flex-direction: column;
-        gap: .75rem;
+        gap: var(--space-sm);
         list-style: none;
-        margin: 0 0 1.25rem;
+        margin: 0 0 var(--space-lg);
         padding: 0;
     }
     .task-item {
@@ -172,10 +172,10 @@
         padding: .75rem .9rem;
         background: var(--bg);
         border: 1px solid var(--border);
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         transition:
-            border-color .2s,
-            background .2s;
+            border-color var(--transition-normal),
+            background var(--transition-normal);
     }
     .task-item:hover {
         border-color: var(--planet-primary);
@@ -204,14 +204,14 @@
         color: var(--planet-primary);
         font-size: .95rem;
         cursor: pointer;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         flex-shrink: 0;
         transition:
-            color .2s,
-            background .2s;
+            color var(--transition-normal),
+            background var(--transition-normal);
     }
     .btn-toggle:hover {
-        background: rgba(79,156,249,.08);
+        background: rgba(var(--planet-primary-rgb), .08);
         color: var(--planet-primary-hover);
     }
     /* ---------- Delete ---------- */
@@ -221,21 +221,21 @@
         border: none;
         background: transparent;
         color: var(--text-muted);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
         flex-shrink: 0;
         transition:
-            color .2s,
-            background .2s;
+            color var(--transition-normal),
+            background var(--transition-normal);
     }
     .btn-delete:hover {
-        background: rgba(239,68,68,.08);
+        background: rgba(var(--danger-rgb), .08);
         color: var(--danger);
     }
     /* ---------- Empty ---------- */
     .empty-msg {
         margin: 0;
-        padding: 2rem 1rem;
+        padding: var(--space-2xl) var(--space-md);
         text-align: center;
         font-size: .85rem;
         color: var(--text-secondary);
@@ -248,7 +248,7 @@
         gap: .45rem;
         width: 100%;
         height: 42px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         border: 1px dashed var(--border);
         background: var(--surface);
         color: var(--planet-primary);
@@ -257,13 +257,13 @@
         font-family: inherit;
         cursor: pointer;
         transition:
-            border-color .2s,
-            background .2s,
-            color .2s;
+            border-color var(--transition-normal),
+            background var(--transition-normal),
+            color var(--transition-normal);
     }
     .btn-open-add:hover {
         border-color: var(--planet-primary);
-        background: rgba(79,156,249,.05);
+        background: rgba(var(--planet-primary-rgb), .05);
     }
     .btn-open-add span {
         font-size: 1rem;
@@ -272,7 +272,7 @@
     /* ---------- Responsive ---------- */
     @media (max-width:520px) {
         .modal {
-            padding: 1.25rem;
+            padding: var(--space-lg);
         }
         .task-item {
             padding: .7rem .8rem;

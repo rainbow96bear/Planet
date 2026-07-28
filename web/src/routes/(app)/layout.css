@@ -11,15 +11,15 @@
     align-items: center;
     justify-content: space-between;
     height: 64px;
-    padding: 0 2rem;
-    gap: 1.5rem;
+    padding: 0 var(--space-2xl);
+    gap: var(--space-xl);
     background: var(--surface);
     border-bottom: 1px solid var(--border);
 }
 .logo {
     display: flex;
     align-items: center;
-    gap: .6rem;
+    gap: var(--space-xs);
     flex-shrink: 0;
     color: var(--planet-primary);
     font-size: 1.1rem;
@@ -52,7 +52,7 @@
 .search-input {
     width: 100%;
     height: 40px;
-    padding: 0 14px 0 42px;
+    padding: 0 var(--space-sm) 0 42px;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: var(--surface-alt);
@@ -70,7 +70,7 @@
     outline: none;
     background: var(--surface);
     border-color: var(--planet-primary);
-    box-shadow: 0 0 0 3px rgba(78,199,188,.12);
+    box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), .12);
 }
 /* ==========================
    Navigation
@@ -78,7 +78,7 @@
 .nav {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-md);
     flex-shrink: 0;
 }
 .profile-icon {
@@ -92,11 +92,15 @@
     text-decoration: none;
     transition:
         color var(--transition-fast),
-        background var(--transition-fast);
+        background var(--transition-fast),
+        transform var(--transition-fast);
 }
 .profile-icon:hover {
     color: var(--planet-primary);
     background: var(--surface-alt);
+}
+.profile-icon:active {
+    transform: translateY(1px);
 }
 .btn-login {
     display: inline-flex;
@@ -106,7 +110,7 @@
     padding: 0 18px;
     border-radius: var(--radius-md);
     background: var(--planet-primary);
-    color: white;
+    color: var(--text-on-dark);
     font-size: .875rem;
     font-weight: 600;
     text-decoration: none;
@@ -121,31 +125,42 @@
     transform: translateY(1px);
 }
 .btn-logout {
-    padding: .35rem 0;
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 var(--space-sm);
     border: none;
+    border-radius: var(--radius-md);
     background: transparent;
     color: var(--text-secondary);
     font: inherit;
     font-size: .875rem;
     cursor: pointer;
-    transition: color var(--transition-fast);
+    transition:
+        color var(--transition-fast),
+        background var(--transition-fast),
+        transform var(--transition-fast);
 }
 .btn-logout:hover {
     color: var(--planet-primary);
+    background: var(--surface-alt);
+}
+.btn-logout:active {
+    transform: translateY(1px);
 }
 /* ==========================
    Main
 ========================== */
 .main {
-    padding: 2rem;
+    padding: var(--space-2xl);
 }
 /* ==========================
    Responsive
 ========================== */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
     .header {
-        padding: 0 1rem;
-        gap: 1rem;
+        padding: 0 var(--space-md);
+        gap: var(--space-md);
     }
     .search-form {
         max-width: none;

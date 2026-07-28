@@ -154,7 +154,7 @@
       align-items: center;
       justify-content: center;
       background: var(--danger);
-      color: #fff;
+      color: var(--text-on-dark);
       border: 2px solid var(--surface);
       border-radius: 999px;
       font-size: .68rem;
@@ -174,7 +174,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       overflow: hidden;
-      z-index: 200;
+      z-index: var(--z-dropdown);
   }
   /* ==========================
     Header
@@ -183,7 +183,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.25rem;
+      padding: var(--space-md) var(--space-lg);
       border-bottom: 1px solid var(--border);
   }
   .drop-title {
@@ -205,15 +205,15 @@
           color var(--transition-fast);
   }
   .mark-all-btn:hover {
-      background: rgba(78,199,188,.08);
+      background: rgba(var(--planet-primary-rgb), .08);
   }
   /* ==========================
     Tabs
   ========================== */
   .tabs {
       display: flex;
-      gap: 4px;
-      padding: .5rem;
+      gap: var(--space-2xs);
+      padding: var(--space-xs);
       background: var(--surface-hover);
       border-bottom: 1px solid var(--border);
   }
@@ -233,12 +233,12 @@
           color var(--transition-fast);
   }
   .tab:hover:not(.active) {
-      background: rgba(78,199,188,.08);
+      background: rgba(var(--planet-primary-rgb), .08);
       color: var(--planet-primary);
   }
   .tab.active {
       background: var(--planet-primary);
-      color: #fff;
+      color: var(--text-on-dark);
   }
   /* ==========================
     List
@@ -258,7 +258,7 @@
       border-radius: 999px;
   }
   .notif-empty {
-      padding: 2rem;
+      padding: var(--space-2xl);
       text-align: center;
       color: var(--text-muted);
       font-size: .85rem;
@@ -270,7 +270,7 @@
       display: flex;
       align-items: flex-start;
       gap: .75rem;
-      padding: .9rem 1rem;
+      padding: .9rem var(--space-md);
       border-bottom: 1px solid var(--border);
       cursor: pointer;
       transition: background var(--transition-fast);
@@ -282,10 +282,10 @@
       background: var(--surface-hover);
   }
   .notif-item.unread {
-      background: rgba(78,199,188,.05);
+      background: rgba(var(--planet-primary-rgb), .05);
   }
   .notif-item.unread:hover {
-      background: rgba(78,199,188,.08);
+      background: rgba(var(--planet-primary-rgb), .08);
   }
   /* ==========================
     Avatar
@@ -327,7 +327,7 @@
       min-width: 0;
   }
   .notif-msg {
-      margin: 0 0 .25rem;
+      margin: 0 0 var(--space-2xs);
       color: var(--text-primary);
       font-size: .85rem;
       line-height: 1.5;
