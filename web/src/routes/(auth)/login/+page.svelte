@@ -51,7 +51,8 @@
       <p class="error-msg">{error}</p>
     {/if}
 
-    <!-- <form onsubmit={handleSubmit}>
+    <!-- 
+    <form onsubmit={handleSubmit}>
       <div class="field">
         <label for="username">아이디</label>
         <input
@@ -77,7 +78,8 @@
       </button>
     </form>
 
-    <div class="divider"><span>또는</span></div> -->
+    <div class="divider"><span>또는</span></div>
+    -->
 
     <button class="btn-kakao" onclick={handleKakaoLogin} disabled={loading}>
       카카오로 로그인
