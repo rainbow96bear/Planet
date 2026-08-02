@@ -70,14 +70,14 @@
           bind:value={password}
           placeholder="최소 8자리"
         />
-      </div> -->
+      </div>
 
       <button class="btn-primary" type="submit" disabled={loading}>
         {loading ? '로그인 중...' : '로그인'}
       </button>
     </form>
 
-    <div class="divider"><span>또는</span></div>
+    <div class="divider"><span>또는</span></div> -->
 
     <button class="btn-kakao" onclick={handleKakaoLogin} disabled={loading}>
       카카오로 로그인
