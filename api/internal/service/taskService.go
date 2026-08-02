@@ -54,6 +54,7 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 	}
 	if err := s.taskRepo.CreateTask(tx, task); err != nil {
 		tx.Rollback()
+
 		return nil, err
 	}
 
