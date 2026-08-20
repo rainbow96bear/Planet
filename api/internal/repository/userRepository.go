@@ -2,6 +2,7 @@ package repository
 
 import (
 	"planet/internal/model"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,6 +15,7 @@ type UserRepository interface {
 	FindByProviderInfo(provider, providerID string) (*model.User, error)
 	FindByUserId(userid string) (model.User, error)
 	UpdateProfile(tx *gorm.DB, u *model.User) error
+	UpdateProfileImage(tx *gorm.DB, userID string, avatarURL string) error
 	SearchByKeyword(q string) ([]*model.User, error)
 	UpdateLastLogin(userID string, loginAt time.Time) error
 }
@@ -66,6 +68,16 @@ func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
 	}).Error
 }
 
+// UpdateAvatar는 map을 사용해 명시적으로 필드를 지정한다.
+// 구조체 기반 Updates는 zero value(빈 문자열 등)를 무시하므로,
+// 아바타 삭제(빈 문자열로 되돌리기) 시 반드시 map 또는 Select를 써야 한다.
+func (r *userRepository) UpdateProfileImage(tx *gorm.DB, userID string, avatarURL string) error {
+	return tx.Model(&model.User{}).
+		Where("id = ?", userID).
+		Update("avatar_url", avatarURL).
+		Error
+}
+
 func (r *userRepository) UpdateLastLogin(userID string, loginAt time.Time) error {
 	return r.db.
 		Model(&model.User{}).
@@ -76,7 +88,7 @@ func (r *userRepository) UpdateLastLogin(userID string, loginAt time.Time) error
 
 func (r *userRepository) SearchByKeyword(q string) ([]*model.User, error) {
 	var users []*model.User
-	keyword := "%" + q + "%"
+	keyword := "%" + escapeLikeWildcards(q) + "%"
 	if err := r.db.
 		Where("username LIKE ? OR nickname LIKE ?", keyword, keyword).
 		Limit(20).
@@ -85,4 +97,11 @@ func (r *userRepository) SearchByKeyword(q string) ([]*model.User, error) {
 	}
 
 	return users, nil
+}
+
+// escapeLikeWildcards는 LIKE 패턴에서 특수 취급되는 %, _ 문자를 이스케이프한다.
+// 사용자가 검색어에 %나 _를 입력했을 때 의도치 않은 와일드카드로 해석되는 것을 방지한다.
+func escapeLikeWildcards(s string) string {
+	replacer := strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
+	return replacer.Replace(s)
 }

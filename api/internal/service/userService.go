@@ -2,9 +2,11 @@ package service
 
 import (
 	"errors"
+	"log/slog"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/repository"
+	"planet/internal/storage"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +16,8 @@ type UserService interface {
 	Follow(*dto.FollowRequest) (*dto.FollowResponse, error)
 	Unfollow(*dto.UnfollowRequest) (*dto.UnfollowResponse, error)
 	UpdateProfile(*dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error)
+	UploadProfileImage(*dto.UploadProfileImageRequest) (*dto.UploadProfileImageResponse, error)
+	DeleteProfileImage(userID string) error
 }
 
 type userService struct {
@@ -23,6 +27,7 @@ type userService struct {
 	taskRepo         repository.TaskRepository
 	feedRepo         repository.FeedRepository
 	notificationRepo repository.NotificationRepository
+	fileStorage      storage.FileStorage
 }
 
 func NewUserService(
@@ -32,6 +37,7 @@ func NewUserService(
 	taskRepo repository.TaskRepository,
 	feedRepo repository.FeedRepository,
 	notificationRepo repository.NotificationRepository,
+	fileStorage storage.FileStorage,
 
 ) UserService {
 	return &userService{
@@ -41,6 +47,7 @@ func NewUserService(
 		taskRepo:         taskRepo,
 		feedRepo:         feedRepo,
 		notificationRepo: notificationRepo,
+		fileStorage:      fileStorage,
 	}
 }
 
@@ -72,12 +79,13 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 	}
 
 	return &dto.GetProfileResponse{
-		Username:    user.Username,
-		Nickname:    user.Nickname,
-		IsOwner:     req.UserId == req.RequesterUserId,
-		IsFollowing: isFollowing,
-		Followers:   followers,
-		Following:   following,
+		Username:     user.Username,
+		Nickname:     user.Nickname,
+		ProfileImage: user.ProfileImage,
+		IsOwner:      isOwner,
+		IsFollowing:  isFollowing,
+		Followers:    followers,
+		Following:    following,
 	}, nil
 }
 
@@ -86,6 +94,7 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			panic(r) // 롤백 후 패닉을 다시 던져서 상위(recovery 미들웨어)가 처리하도록 함
 		}
 	}()
 
@@ -120,6 +129,7 @@ func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse,
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			panic(r)
 		}
 	}()
 
@@ -150,6 +160,7 @@ func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateP
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			panic(r)
 		}
 	}()
 
@@ -172,4 +183,91 @@ func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateP
 		Username: user.Username,
 		Nickname: user.Nickname,
 	}, nil
+}
+
+func (s *userService) UploadProfileImage(req *dto.UploadProfileImageRequest) (*dto.UploadProfileImageResponse, error) {
+	// 기존 이미지 URL을 먼저 조회 (업로드 성공 후 이전 파일 정리용)
+	existing, err := s.userRepo.FindByUserId(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+	previousImageURL := existing.ProfileImage
+
+	// 1) 스토리지 업로드는 트랜잭션 밖에서 먼저 수행 (DB 트랜잭션 안에서 외부 I/O를 잡아두지 않기 위함)
+	newURL, err := s.fileStorage.Upload(storage.UploadInput{
+		Key:         storage.ProfileImageKey(req.UserID, req.Filename),
+		Reader:      req.File,
+		ContentType: req.ContentType,
+		Size:        req.Size,
+	})
+	if err != nil {
+		return nil, errors.New("이미지 업로드에 실패했습니다")
+	}
+
+	// 2) DB 반영은 트랜잭션으로 처리. UpdateProfileImage는 map 기반이라 빈 문자열도 정확히 반영된다.
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+
+	if err := s.userRepo.UpdateProfileImage(tx, req.UserID, newURL); err != nil {
+		tx.Rollback()
+		// DB 반영 실패 시 방금 업로드한 파일을 정리 (베스트 에포트)
+		if delErr := s.fileStorage.Delete(newURL); delErr != nil {
+			slog.Error("failed to cleanup orphaned profile image after db failure", "url", newURL, "err", delErr)
+		}
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		if delErr := s.fileStorage.Delete(newURL); delErr != nil {
+			slog.Error("failed to cleanup orphaned profile image after commit failure", "url", newURL, "err", delErr)
+		}
+		return nil, err
+	}
+
+	// 3) 이전 이미지가 있었다면 커밋 성공 후 정리 (실패해도 응답에는 영향 없음 — 베스트 에포트)
+	if previousImageURL != "" && previousImageURL != newURL {
+		if delErr := s.fileStorage.Delete(previousImageURL); delErr != nil {
+			slog.Error("failed to delete previous profile image", "url", previousImageURL, "err", delErr)
+		}
+	}
+
+	return &dto.UploadProfileImageResponse{ProfileImage: newURL}, nil
+}
+
+func (s *userService) DeleteProfileImage(userID string) error {
+	existing, err := s.userRepo.FindByUserId(userID)
+	if err != nil {
+		return err
+	}
+	if existing.ProfileImage == "" {
+		return nil // 이미 기본 이미지 상태 — 별도 처리 불필요
+	}
+
+	tx := s.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+
+	if err := s.userRepo.UpdateProfileImage(tx, userID, ""); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	if delErr := s.fileStorage.Delete(existing.ProfileImage); delErr != nil {
+		slog.Error("failed to delete profile image file", "url", existing.ProfileImage, "err", delErr)
+	}
+
+	return nil
 }

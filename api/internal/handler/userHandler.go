@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"planet/internal/dto"
 	"planet/internal/pkg"
 	"planet/internal/service"
@@ -14,6 +13,8 @@ type UserHandler interface {
 	Follow(c *gin.Context)
 	Unfollow(c *gin.Context)
 	UpdateProfile(c *gin.Context)
+	UploadProfileImage(c *gin.Context)
+	DeleteProfileImage(c *gin.Context)
 }
 
 type userHandler struct {
@@ -33,7 +34,6 @@ func (h *userHandler) GetProfile(c *gin.Context) {
 		UserId:          userID,
 		RequesterUserId: c.GetString("userID"),
 	}
-	fmt.Printf("user id : %+v, requester user id : %+v\n", req.UserId, req.RequesterUserId)
 	profile, err := h.userSvc.GetProfile(&req)
 	if err != nil {
 		pkg.Fail(c, 500, err.Error())
@@ -100,4 +100,82 @@ func (h *userHandler) UpdateProfile(c *gin.Context) {
 		return
 	}
 	pkg.Success(c, 200, result)
+}
+
+func (h *userHandler) UploadProfileImage(c *gin.Context) {
+	userid := c.Param("userid")
+	requesterID := c.GetString("userID")
+
+	if userid != requesterID {
+		pkg.Fail(c, 403, "권한이 없습니다")
+		return
+	}
+
+	fileHeader, err := c.FormFile("profile_image")
+	if err != nil {
+		pkg.Fail(c, 400, "profile_image 파일이 필요합니다")
+		return
+	}
+
+	// 크기/타입은 클라이언트에서도 검증하지만, 서버에서 재검증 (우회 가능하므로 필수)
+	const maxProfileImageSize = 5 * 1024 * 1024 // 5MB
+	if fileHeader.Size > maxProfileImageSize {
+		pkg.Fail(c, 400, "이미지 크기는 5MB 이하여야 합니다")
+		return
+	}
+
+	file, err := fileHeader.Open()
+	if err != nil {
+		pkg.Fail(c, 400, "파일을 열 수 없습니다")
+		return
+	}
+	defer file.Close()
+
+	contentType := fileHeader.Header.Get("Content-Type")
+	if !isAllowedImageType(contentType) {
+		pkg.Fail(c, 400, "지원하지 않는 이미지 형식입니다")
+		return
+	}
+
+	req := dto.UploadProfileImageRequest{
+		UserID:      userid,
+		File:        file,
+		Filename:    fileHeader.Filename,
+		ContentType: contentType,
+		Size:        fileHeader.Size,
+	}
+
+	result, err := h.userSvc.UploadProfileImage(&req)
+	if err != nil {
+		pkg.Fail(c, 500, "이미지 업로드에 실패했습니다")
+		return
+	}
+
+	pkg.Success(c, 200, result)
+}
+
+func (h *userHandler) DeleteProfileImage(c *gin.Context) {
+	userid := c.Param("userid")
+	requesterID := c.GetString("userID")
+
+	if userid != requesterID {
+		pkg.Fail(c, 403, "권한이 없습니다")
+		return
+	}
+
+	if err := h.userSvc.DeleteProfileImage(userid); err != nil {
+		pkg.Fail(c, 500, "이미지 삭제에 실패했습니다")
+		return
+	}
+
+	pkg.Success(c, 200, nil)
+}
+
+func isAllowedImageType(contentType string) bool {
+	switch contentType {
+	case "image/jpeg", "image/png", "image/webp", "image/gif":
+		return true
+	default:
+		return false
+	}
 }
