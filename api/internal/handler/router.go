@@ -47,12 +47,14 @@ func RegisterRoutes(
 			users.GET("/:userid/tasks", taskHandler.GetTasksByMonth)
 		}
 
-		usersAuth := v1.Group("/users")
-		usersAuth.Use(middleware.AuthMiddleware())
+		usersProtected := v1.Group("/users")
+		usersProtected.Use(middleware.AuthMiddleware())
 		{
-			usersAuth.PATCH("/:userid", userHandler.UpdateProfile)
-			usersAuth.POST("/:userid/follow", userHandler.Follow)
-			usersAuth.DELETE("/:userid/follow", userHandler.Unfollow)
+			usersProtected.PATCH("/:userid", userHandler.UpdateProfile)
+			usersProtected.POST("/:userid/profile-image", userHandler.UploadProfileImage)
+			usersProtected.DELETE("/:userid/profile-image", userHandler.DeleteProfileImage)
+			usersProtected.POST("/:userid/follow", userHandler.Follow)
+			usersProtected.DELETE("/:userid/follow", userHandler.Unfollow)
 		}
 
 		search := v1.Group("/search")

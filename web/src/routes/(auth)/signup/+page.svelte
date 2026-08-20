@@ -3,9 +3,10 @@
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
   import { createUser, checkUsername } from '$lib/api/auth'
+  import { uploadProfileImage } from '$lib/api/user'
   import { validateNickname } from '$lib/utils/validation'
   import './page.css'
-	import TermsAgreement from '$lib/components/TermsAgreement.svelte';
+  import TermsAgreement from '$lib/components/TermsAgreement.svelte';
 
   let username = $state('')
   let nickname = $state('')
@@ -21,9 +22,19 @@
   let agreeTerms = $state(false)
   let agreePrivacy = $state(false)
 
-  let debounceTimer: ReturnType<typeof setTimeout>
+  let profileImageFile = $state<File | null>(null)
+  let profileImagePreview = $state<string | null>(null)
+  let profileImageError = $state('')
 
-  onDestroy(() => clearTimeout(debounceTimer))
+  const MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
+
+  let debounceTimer: ReturnType<typeof setTimeout>
+  let usernameCheckId = 0 // 레이스 컨디션 방지용 토큰
+
+  onDestroy(() => {
+    clearTimeout(debounceTimer)
+    if (profileImagePreview) URL.revokeObjectURL(profileImagePreview)
+  })
 
   function onUsernameInput() {
     username = username.replace(/[^a-zA-Z0-9_]/g, '')
@@ -34,12 +45,15 @@
       usernameMsg = '최소 4자리 이상 입력해주세요.'
       return
     }
+    const myCheckId = ++usernameCheckId
     debounceTimer = setTimeout(async () => {
       try {
         const res = await checkUsername(username)
+        if (myCheckId !== usernameCheckId) return // 더 최신 입력이 있으면 이 결과는 버림
         usernameOk = res.available
         usernameMsg = res.available ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.'
       } catch {
+        if (myCheckId !== usernameCheckId) return
         usernameMsg = '확인 중 오류가 발생했습니다.'
       }
     }, 500)
@@ -65,11 +79,44 @@
       passwordConfirmMsg = ''
       return
     }
+    if (password.length < 8) {
+      passwordConfirmMsg = '먼저 비밀번호를 8자리 이상 입력해주세요.'
+      return
+    }
     passwordConfirmMsg =
       password === passwordConfirm ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.'
   }
 
   const passwordConfirmOk = $derived(password.length >= 8 && password === passwordConfirm)
+
+  function onProfileImageChange(e: Event) {
+    const input = e.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = '' // 같은 파일 재선택 가능하도록 초기화
+    if (!file) return
+
+    profileImageError = ''
+
+    if (!file.type.startsWith('image/')) {
+      profileImageError = '이미지 파일만 업로드 가능합니다.'
+      return
+    }
+    if (file.size > MAX_PROFILE_IMAGE_SIZE) {
+      profileImageError = '이미지 크기는 5MB 이하여야 합니다.'
+      return
+    }
+
+    if (profileImagePreview) URL.revokeObjectURL(profileImagePreview)
+    profileImageFile = file
+    profileImagePreview = URL.createObjectURL(file)
+  }
+
+  function removeProfileImage() {
+    if (profileImagePreview) URL.revokeObjectURL(profileImagePreview)
+    profileImageFile = null
+    profileImagePreview = null
+    profileImageError = ''
+  }
 
   async function handleSubmit(e: Event) {
     e.preventDefault()
@@ -97,15 +144,27 @@
     error = ''
     loading = true
     try {
-      await createUser({ 
-        username, 
-        nickname, 
+      // 1) 회원가입은 이미지 없이 먼저 처리 — 가입 성공 여부와 이미지 업로드 성공 여부를 분리
+      const user = await createUser({
+        username,
+        nickname,
         password,
         agreeTerms: agreeTerms,
         agreePrivacy: agreePrivacy,
       })
+
+      // 2) 이미지가 선택된 경우에만 추가 업로드 시도. 실패해도 가입 자체는 성공 처리.
+      if (profileImageFile) {
+        try {
+          await uploadProfileImage(user.userid, profileImageFile)
+        } catch (uploadErr) {
+          console.error('profile image upload failed', uploadErr)
+        }
+      }
+
       goto('/login')
-    } catch {
+    } catch (e) {
+      console.error('signup failed', e)
       error = '회원가입에 실패했습니다. 다시 시도해주세요.'
     } finally {
       loading = false
@@ -125,11 +184,42 @@
     {/if}
 
     <form onsubmit={handleSubmit}>
+      <div class="field profile-image-field">
+        <label for="profile-image">프로필 이미지 <span class="field-optional">(선택)</span></label>
+        <div class="profile-image-picker">
+          {#if profileImagePreview}
+            <img src={profileImagePreview} alt="프로필 미리보기" class="profile-image-preview" />
+            <button type="button" class="profile-image-remove" onclick={removeProfileImage} aria-label="이미지 제거">
+              ✕
+            </button>
+          {:else}
+            <label for="profile-image" class="profile-image-placeholder" aria-label="프로필 이미지 선택">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/>
+              </svg>
+              <span>＋</span>
+            </label>
+          {/if}
+          <input
+            id="profile-image"
+            type="file"
+            accept="image/*"
+            onchange={onProfileImageChange}
+            hidden
+          />
+        </div>
+        {#if profileImageError}
+          <span class="field-error">{profileImageError}</span>
+        {/if}
+      </div>
+
       <div class="field">
         <label for="username">아이디</label>
         <input
           id="username"
           type="text"
+          autocomplete="username"
           bind:value={username}
           oninput={onUsernameInput}
           placeholder="영문, 숫자, 언더바만 사용 가능, 최소 4자리"
@@ -144,6 +234,7 @@
         <input
           id="nickname"
           type="text"
+          autocomplete="nickname"
           bind:value={nickname}
           oninput={onNicknameInput}
           placeholder="한글, 영문, 숫자, 언더바 사용 가능, 최소 2자리"
@@ -158,6 +249,8 @@
         <input
           id="password"
           type="password"
+          autocomplete="new-password"
+          minlength="8"
           bind:value={password}
           oninput={onPasswordInput}
           placeholder="최소 8자리"
@@ -172,6 +265,8 @@
         <input
           id="password-confirm"
           type="password"
+          autocomplete="new-password"
+          minlength="8"
           bind:value={passwordConfirm}
           oninput={onPasswordConfirmInput}
           placeholder="비밀번호를 다시 입력해주세요"

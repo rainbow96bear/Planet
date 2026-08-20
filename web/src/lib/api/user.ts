@@ -41,3 +41,15 @@ export const updateProfile = async (userid: string, body: UpdateProfileRequest):
 
     return res.json()
 }
+
+export async function uploadAvatar(userid: string, file: File): Promise<{ avatar_url: string }> {
+  const formData = new FormData()
+  formData.append('avatar', file)
+
+  const res = await fetch(`/api/users/${userid}/avatar`, {
+    method: 'POST',
+    body: formData,
+  })
+  if (!res.ok) throw new Error('avatar upload failed')
+  return res.json()
+}
