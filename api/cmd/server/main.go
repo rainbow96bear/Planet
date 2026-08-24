@@ -14,6 +14,7 @@ import (
 	"planet/internal/pkg"
 	"planet/internal/repository"
 	"planet/internal/service"
+	"planet/internal/storage"
 	"strings"
 	"syscall"
 	"time"
@@ -50,6 +51,13 @@ func main() {
 		}
 	}
 
+	uploadDir := "./uploads"
+	baseURL := fmt.Sprintf("http://localhost:%s/uploads", cfg.App.Port)
+	if err := os.MkdirAll(uploadDir, 0o755); err != nil {
+		log.Fatalf("failed to create upload dir: %v", err)
+	}
+	fileStorage := storage.NewLocalFileStorage(uploadDir, baseURL)
+
 	userRepo := repository.NewUserRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
 	followRepo := repository.NewFollowRepository(db)
@@ -59,7 +67,7 @@ func main() {
 
 	authSvc := service.NewAuthService(db, userRepo)
 	taskSvc := service.NewTaskService(db, taskRepo, feedRepo, reactionRepo)
-	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, feedRepo, notificationRepo)
+	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, feedRepo, notificationRepo, fileStorage)
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)
 	feedSvc := service.NewFeedService(db, feedRepo)
 	notificationSvc := service.NewNotificationService(db, notificationRepo, userRepo)
@@ -74,6 +82,9 @@ func main() {
 	reactionHandler := handler.NewReactionHandler(reactionSvc)
 
 	r := gin.Default()
+
+	r.Static("/uploads", uploadDir)
+
 	handler.RegisterRoutes(
 		r,
 		authHandler,
@@ -91,7 +102,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("server runnig on : %s\n", cfg.App.Port)
+		log.Printf("server running on : %s\n", cfg.App.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("server error: %v", err)
 		}
