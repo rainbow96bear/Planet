@@ -42,14 +42,21 @@ export const updateProfile = async (userid: string, body: UpdateProfileRequest):
     return res.json()
 }
 
-export async function uploadAvatar(userid: string, file: File): Promise<{ avatar_url: string }> {
+export async function uploadProfileImage(userid: string, file: File): Promise<{ profile_image: string }> {
   const formData = new FormData()
-  formData.append('avatar', file)
+  formData.append('profile_image', file)
 
-  const res = await fetch(`/api/users/${userid}/avatar`, {
+  const res = await fetch(`/api/users/${userid}/profile-image`, {
     method: 'POST',
     body: formData,
   })
-  if (!res.ok) throw new Error('avatar upload failed')
+  if (!res.ok) throw new Error('profile image upload failed')
   return res.json()
+}
+
+export async function deleteProfileImage(userid: string): Promise<void> {
+  const res = await fetch(`/api/users/${userid}/profile-image`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) throw new Error('profile image delete failed')
 }
