@@ -179,20 +179,20 @@
     }
 }
 
-.avatar-field {
+.profile-image-field {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-.avatar-picker {
+.profile-image-picker {
   position: relative;
   width: 84px;
   height: 84px;
 }
 
-.avatar-preview {
+.profile-image-preview {
   width: 84px;
   height: 84px;
   border-radius: 50%;
@@ -200,7 +200,7 @@
   border: 1px solid rgba(178, 237, 230, 0.2);
 }
 
-.avatar-placeholder {
+.profile-image-placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -215,12 +215,12 @@
   gap: 2px;
 }
 
-.avatar-placeholder:hover {
+.profile-image-placeholder:hover {
   border-color: #b2ede6;
   color: #b2ede6;
 }
 
-.avatar-remove {
+.profile-image-remove {
   position: absolute;
   top: -4px;
   right: -4px;
