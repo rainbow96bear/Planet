@@ -3,7 +3,6 @@
   import { goto } from '$app/navigation'
   import { onDestroy } from 'svelte'
   import { createUser, checkUsername } from '$lib/api/auth'
-  import { uploadProfileImage } from '$lib/api/user'
   import { validateNickname } from '$lib/utils/validation'
   import './page.css'
   import TermsAgreement from '$lib/components/TermsAgreement.svelte';
@@ -144,24 +143,17 @@
     error = ''
     loading = true
     try {
-      // 1) 회원가입은 이미지 없이 먼저 처리 — 가입 성공 여부와 이미지 업로드 성공 여부를 분리
-      const user = await createUser({
-        username,
-        nickname,
-        password,
-        agreeTerms: agreeTerms,
-        agreePrivacy: agreePrivacy,
-      })
-
-      // 2) 이미지가 선택된 경우에만 추가 업로드 시도. 실패해도 가입 자체는 성공 처리.
-      if (profileImageFile) {
-        try {
-          await uploadProfileImage(user.userid, profileImageFile)
-        } catch (uploadErr) {
-          console.error('profile image upload failed', uploadErr)
-        }
-      }
-
+      // 회원가입 요청 하나에 이미지까지 함께 전송 (multipart/form-data)
+      await createUser(
+        {
+          username,
+          nickname,
+          password,
+          agreeTerms: agreeTerms,
+          agreePrivacy: agreePrivacy,
+        },
+        profileImageFile
+      )
       goto('/login')
     } catch (e) {
       console.error('signup failed', e)

@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 type CreateUserRequest struct {
 	Username string `json:"username" binding:"required,min=4,max=20"`
@@ -9,6 +12,10 @@ type CreateUserRequest struct {
 
 	AgreeTerms   bool `json:"agreeTerms" binding:"required"`
 	AgreePrivacy bool `json:"agreePrivacy" binding:"required"`
+
+	// multipart/form-data의 profile_image 파일에서 채워짐 (JSON 바인딩 대상 아님)
+	ProfileImage         io.Reader `json:"-"`
+	ProfileImageFilename string    `json:"-"`
 }
 
 type CreateUserResponse struct {
@@ -26,6 +33,10 @@ type CreateOAuthUserRequest struct {
 	AgreePrivacy bool `json:"agreePrivacy" binding:"required"`
 
 	TempToken string `json:"-"`
+
+	// multipart/form-data의 profile_image 파일에서 채워짐 (JSON 바인딩 대상 아님)
+	ProfileImage         io.Reader `json:"-"`
+	ProfileImageFilename string    `json:"-"`
 }
 
 type CreateOAuthUserResponse struct {

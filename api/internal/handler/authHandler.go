@@ -27,10 +27,37 @@ func NewAuthHandler(authSvc service.AuthService) AuthHandler {
 }
 
 func (h *authHandler) CreateUser(c *gin.Context) {
-	var req dto.CreateUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		pkg.Fail(c, 400, err.Error())
+	req := dto.CreateUserRequest{
+		Username:     c.PostForm("username"),
+		Nickname:     c.PostForm("nickname"),
+		Password:     c.PostForm("password"),
+		AgreeTerms:   c.PostForm("agreeTerms") == "true",
+		AgreePrivacy: c.PostForm("agreePrivacy") == "true",
+	}
+
+	if len(req.Username) < 4 || len(req.Username) > 20 {
+		pkg.Fail(c, 400, "username은 4~20자여야 합니다")
 		return
+	}
+	if len(req.Nickname) < 2 || len(req.Nickname) > 20 {
+		pkg.Fail(c, 400, "nickname은 2~20자여야 합니다")
+		return
+	}
+	if len(req.Password) < 8 || len(req.Password) > 72 {
+		pkg.Fail(c, 400, "password는 8~72자여야 합니다")
+		return
+	}
+
+	// 이미지는 선택 사항 — 없으면 http.ErrMissingFile이 반환되며 정상 케이스로 처리한다.
+	if fileHeader, err := c.FormFile("profile_image"); err == nil {
+		f, openErr := fileHeader.Open()
+		if openErr != nil {
+			pkg.Fail(c, 400, "이미지 파일을 읽을 수 없습니다")
+			return
+		}
+		defer f.Close()
+		req.ProfileImage = f
+		req.ProfileImageFilename = fileHeader.Filename
 	}
 
 	user, err := h.authSvc.CreateUser(&req)
@@ -43,9 +70,19 @@ func (h *authHandler) CreateUser(c *gin.Context) {
 }
 
 func (h *authHandler) CreateOAuthUser(c *gin.Context) {
-	var req dto.CreateOAuthUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		pkg.Fail(c, 400, err.Error())
+	req := dto.CreateOAuthUserRequest{
+		Username:     c.PostForm("username"),
+		Nickname:     c.PostForm("nickname"),
+		AgreeTerms:   c.PostForm("agreeTerms") == "true",
+		AgreePrivacy: c.PostForm("agreePrivacy") == "true",
+	}
+
+	if len(req.Username) < 4 || len(req.Username) > 20 {
+		pkg.Fail(c, 400, "username은 4~20자여야 합니다")
+		return
+	}
+	if len(req.Nickname) < 2 || len(req.Nickname) > 20 {
+		pkg.Fail(c, 400, "nickname은 2~20자여야 합니다")
 		return
 	}
 
@@ -55,6 +92,18 @@ func (h *authHandler) CreateOAuthUser(c *gin.Context) {
 		return
 	}
 	req.TempToken = strings.TrimPrefix(tempToken, "Bearer ")
+
+	// 이미지는 선택 사항 — 없으면 http.ErrMissingFile이 반환되며 정상 케이스로 처리한다.
+	if fileHeader, err := c.FormFile("profile_image"); err == nil {
+		f, openErr := fileHeader.Open()
+		if openErr != nil {
+			pkg.Fail(c, 400, "이미지 파일을 읽을 수 없습니다")
+			return
+		}
+		defer f.Close()
+		req.ProfileImage = f
+		req.ProfileImageFilename = fileHeader.Filename
+	}
 
 	user, err := h.authSvc.CreateOAuthUser(&req)
 	if err != nil {

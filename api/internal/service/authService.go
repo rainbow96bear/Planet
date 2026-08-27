@@ -2,12 +2,14 @@ package service
 
 import (
 	"errors"
+	"io"
 	"log"
 	"planet/internal/constants"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/pkg"
 	"planet/internal/repository"
+	"planet/internal/storage"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -24,14 +26,16 @@ type AuthService interface {
 }
 
 type authService struct {
-	db       *gorm.DB
-	userRepo repository.UserRepository
+	db          *gorm.DB
+	userRepo    repository.UserRepository
+	fileStorage storage.FileStorage
 }
 
-func NewAuthService(db *gorm.DB, userRepo repository.UserRepository) AuthService {
+func NewAuthService(db *gorm.DB, userRepo repository.UserRepository, fileStorage storage.FileStorage) AuthService {
 	return &authService{
-		db:       db,
-		userRepo: userRepo,
+		db:          db,
+		userRepo:    userRepo,
+		fileStorage: fileStorage,
 	}
 }
 
@@ -85,6 +89,9 @@ func (s *authService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
+
+	// 이미지 업로드는 DB 트랜잭션 밖에서 best-effort로 처리 (실패해도 가입은 유지)
+	s.attachProfileImageBestEffort(user, req.ProfileImage, req.ProfileImageFilename)
 
 	return &dto.CreateUserResponse{
 		ID:        user.ID,
@@ -145,12 +152,41 @@ func (s *authService) CreateOAuthUser(req *dto.CreateOAuthUserRequest) (*dto.Cre
 		return nil, err
 	}
 
+	// 이미지 업로드는 DB 트랜잭션 밖에서 best-effort로 처리 (실패해도 가입은 유지)
+	s.attachProfileImageBestEffort(user, req.ProfileImage, req.ProfileImageFilename)
+
 	return &dto.CreateOAuthUserResponse{
 		ID:        user.ID,
 		Username:  user.Username,
 		Nickname:  user.Nickname,
 		CreatedAt: user.CreatedAt,
 	}, nil
+}
+
+// attachProfileImageBestEffort는 이미지가 있으면 업로드해서 유저의 ProfileImage를 갱신한다.
+// 이미지 업로드는 회원가입의 필수 조건이 아니므로, 실패해도 에러를 반환하지 않고
+// 로그만 남긴다 (가입 자체를 막지 않기 위한 best-effort 정책).
+func (s *authService) attachProfileImageBestEffort(user *model.User, image io.Reader, filename string) {
+	if image == nil {
+		return
+	}
+
+	key := storage.ProfileImageKey(user.ID, filename)
+	url, err := s.fileStorage.Upload(storage.UploadInput{
+		Key:    key,
+		Reader: image,
+	})
+	if err != nil {
+		log.Printf("profile image upload failed for user %v: %v", user.ID, err)
+		return
+	}
+
+	if err := s.userRepo.UpdateProfileImage(s.db, user.ID, url); err != nil {
+		log.Printf("failed to save profile image url for user %v: %v", user.ID, err)
+		return
+	}
+
+	user.ProfileImage = url
 }
 
 func (s *authService) IsUsernameAvailable(req *dto.CheckUsernameRequest) (*dto.CheckUsernameResponse, error) {

@@ -4,14 +4,16 @@ import { GO_API_URL } from '$env/static/private'
 import { fetchWithRefresh } from '$lib/server/fetchWithRefresh'
 
 export const POST: RequestHandler = async ({ request, fetch, cookies }) => {
-    const body = await request.json()
+    // multipart/form-data로 들어오므로 JSON 파싱 대신 formData로 그대로 전달
+    const formData = await request.formData()
 
     const res = await fetchWithRefresh(
         `${GO_API_URL}/api/v1/auth/signup`,
         {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
+            body: formData
+            // Content-Type 헤더는 지정하지 않음 — fetch가 FormData를 보고
+            // boundary 포함된 multipart Content-Type을 자동으로 설정함
         },
         cookies,
         fetch

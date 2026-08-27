@@ -65,7 +65,7 @@ func main() {
 	notificationRepo := repository.NewNotificationRepository(db)
 	reactionRepo := repository.NewReactionRepository(db)
 
-	authSvc := service.NewAuthService(db, userRepo)
+	authSvc := service.NewAuthService(db, userRepo, fileStorage)
 	taskSvc := service.NewTaskService(db, taskRepo, feedRepo, reactionRepo)
 	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, feedRepo, notificationRepo, fileStorage)
 	searchSvc := service.NewSearchService(db, userRepo, followRepo)

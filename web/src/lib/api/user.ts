@@ -46,7 +46,7 @@ export async function uploadProfileImage(userid: string, file: File): Promise<{ 
   const formData = new FormData()
   formData.append('profile_image', file)
 
-  const res = await fetch(`/api/users/${userid}/profile-image`, {
+  const res = await fetch(`/api/v1/users/${userid}/profile-image`, {
     method: 'POST',
     body: formData,
   })
@@ -55,7 +55,7 @@ export async function uploadProfileImage(userid: string, file: File): Promise<{ 
 }
 
 export async function deleteProfileImage(userid: string): Promise<void> {
-  const res = await fetch(`/api/users/${userid}/profile-image`, {
+  const res = await fetch(`/api/v1/users/${userid}/profile-image`, {
     method: 'DELETE',
   })
   if (!res.ok) throw new Error('profile image delete failed')
