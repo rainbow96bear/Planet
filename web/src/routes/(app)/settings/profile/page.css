@@ -53,13 +53,13 @@
 /* ==========================
    Avatar
 ========================== */
-.avatar-section {
+.profile-image-section {
     display: flex;
     align-items: center;
     gap: var(--space-md);
     margin-bottom: var(--space-2xl);
 }
-.avatar {
+.profile-image-placeholder-circle {
     width: 68px;
     height: 68px;
     display: flex;
@@ -71,17 +71,17 @@
     border: 1px solid var(--border);
     border-radius: 50%;
 }
-.avatar-info {
+.profile-image-info {
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
 }
-.avatar-name {
+.profile-image-name {
     color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 700;
 }
-.avatar-username {
+.profile-image-username {
     color: var(--text-secondary);
     font-size: .875rem;
 }
@@ -242,7 +242,7 @@
     .settings-card {
         padding: var(--space-xl);
     }
-    .avatar-section {
+    .profile-image-section {
         margin-bottom: var(--space-xl);
     }
     .form-actions {

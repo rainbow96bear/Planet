@@ -1,10 +1,20 @@
 import type { CreateUserBody, CreateOAuthUserBody, CheckUsernameResponse, LoginBody, LoginResponse } from "$lib/types/auth";
 
-export const createUser = async (body: CreateUserBody) => {
+export const createUser = async (
+    body: CreateUserBody,
+    profileImage?: File | null
+) => {
+    const formData = new FormData()
+    Object.entries(body).forEach(([key, value]) => {
+        formData.append(key, String(value))
+    })
+    if (profileImage) {
+        formData.append('profile_image', profileImage)
+    }
+
     const res = await fetch('/api/v1/auth/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: formData
     })
 
     if (!res.ok) {
@@ -15,11 +25,21 @@ export const createUser = async (body: CreateUserBody) => {
     return res.json()
 }
 
-export const createOAuthUser = async (body: CreateOAuthUserBody) => {
+export const createOAuthUser = async (
+    body: CreateOAuthUserBody,
+    profileImage?: File | null
+) => {
+    const formData = new FormData()
+    Object.entries(body).forEach(([key, value]) => {
+        formData.append(key, String(value))
+    })
+    if (profileImage) {
+        formData.append('profile_image', profileImage)
+    }
+
     const res = await fetch('/api/v1/auth/signup/oauth', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: formData
     })
 
     if (!res.ok) {

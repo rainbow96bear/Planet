@@ -68,13 +68,13 @@ func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
 	}).Error
 }
 
-// UpdateAvatar는 map을 사용해 명시적으로 필드를 지정한다.
+// UpdateProfileImage는 map을 사용해 명시적으로 필드를 지정한다.
 // 구조체 기반 Updates는 zero value(빈 문자열 등)를 무시하므로,
-// 아바타 삭제(빈 문자열로 되돌리기) 시 반드시 map 또는 Select를 써야 한다.
-func (r *userRepository) UpdateProfileImage(tx *gorm.DB, userID string, avatarURL string) error {
+// 프로필 이미지 삭제(빈 문자열로 되돌리기) 시 반드시 map 또는 Select를 써야 한다.
+func (r *userRepository) UpdateProfileImage(tx *gorm.DB, userID string, profileImageURL string) error {
 	return tx.Model(&model.User{}).
 		Where("id = ?", userID).
-		Update("avatar_url", avatarURL).
+		Update("profile_image", profileImageURL).
 		Error
 }
 
