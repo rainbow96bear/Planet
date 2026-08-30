@@ -59,6 +59,20 @@
     gap: var(--space-md);
     margin-bottom: var(--space-2xl);
 }
+.profile-image-picker {
+    position: relative;
+    flex-shrink: 0;
+    width: 68px;
+    height: 68px;
+}
+.profile-image-image {
+    display: block;
+    width: 68px;
+    height: 68px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+}
 .profile-image-placeholder-circle {
     width: 68px;
     height: 68px;
@@ -70,6 +84,29 @@
     background: var(--surface-alt);
     border: 1px solid var(--border);
     border-radius: 50%;
+}
+.profile-image-edit-btn {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: var(--planet-primary);
+    border: 2px solid var(--surface);
+    border-radius: 50%;
+    color: var(--text-on-dark);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+    transition:
+        background var(--transition-fast),
+        transform var(--transition-fast);
+}
+.profile-image-edit-btn:hover {
+    background: var(--planet-primary-hover);
+    transform: scale(1.08);
 }
 .profile-image-info {
     display: flex;
@@ -84,6 +121,25 @@
 .profile-image-username {
     color: var(--text-secondary);
     font-size: .875rem;
+}
+.profile-image-remove-link {
+    align-self: flex-start;
+    padding: 0;
+    margin-top: 2px;
+    background: none;
+    border: none;
+    color: var(--danger);
+    font-size: .8125rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.profile-image-remove-link:hover {
+    text-decoration: underline;
+}
+.profile-image-remove-link:disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+    text-decoration: none;
 }
 /* ==========================
    Divider

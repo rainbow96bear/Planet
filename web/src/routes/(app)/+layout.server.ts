@@ -1,6 +1,17 @@
 import type { LayoutServerLoad } from './$types'
 import { GO_API_URL } from '$env/static/private'
 
+async function safeFetchJson(fetch: typeof globalThis.fetch, url: string, headers: Record<string, string>) {
+    try {
+        const res = await fetch(url, { headers, signal: AbortSignal.timeout(3000) })
+        if (!res.ok) return []
+        const data = await res.json()
+        return data ?? []
+    } catch {
+        return []
+    }
+}
+
 export const load: LayoutServerLoad = async ({ parent, cookies, fetch }) => {
     const { user } = await parent()
 
@@ -11,14 +22,10 @@ export const load: LayoutServerLoad = async ({ parent, cookies, fetch }) => {
         ? { Authorization: `Bearer ${token}` }
         : {}
 
-    const [feedRes, exploreRes] = await Promise.all([
-        fetch(`${GO_API_URL}/api/v1/feed`, { headers }),
-        fetch(`${GO_API_URL}/api/v1/feed/explore`, { headers })
+    const [feed, exploreFeed] = await Promise.all([
+        safeFetchJson(fetch, `${GO_API_URL}/api/v1/feed`, headers),
+        safeFetchJson(fetch, `${GO_API_URL}/api/v1/feed/explore`, headers)
     ])
 
-    const [feed, exploreFeed] = await Promise.all([
-        feedRes.ok ? feedRes.json() : [],
-        exploreRes.ok ? exploreRes.json() : []
-    ])
-    return { user, feed: feed ?? [], exploreFeed: exploreFeed ?? [] }
+    return { user, feed, exploreFeed }
 }
