@@ -122,7 +122,17 @@
 
 <div class="profile-container">
     <div class="profile-header">
-        <div class="profile-avatar">🪐</div>
+        <div class="profile-image">
+            {#if data.profileUser.profile_image}
+                <img
+                    src={data.profileUser.profile_image}
+                    alt="{data.profileUser.nickname}님의 프로필 이미지"
+                    class="profile-image-photo"
+                />
+            {:else}
+                <span class="profile-image-placeholder">🪐</span>
+            {/if}
+        </div>
         <div class="profile-info">
             <h1 class="profile-nickname">{data.profileUser.nickname}</h1>
             <span class="profile-username">@{data.profileUser.username}</span>

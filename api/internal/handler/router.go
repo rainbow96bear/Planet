@@ -50,6 +50,7 @@ func RegisterRoutes(
 		usersProtected := v1.Group("/users")
 		usersProtected.Use(middleware.AuthMiddleware())
 		{
+			usersProtected.GET("/me", userHandler.GetMe)
 			usersProtected.PATCH("/:userid", userHandler.UpdateProfile)
 			usersProtected.POST("/:userid/profile-image", userHandler.UploadProfileImage)
 			usersProtected.DELETE("/:userid/profile-image", userHandler.DeleteProfileImage)

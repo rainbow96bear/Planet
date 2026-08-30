@@ -16,3 +16,10 @@ export interface UpdateProfileResponse {
     id : string,
     nickname : string,
 }
+
+export interface UserProfile {
+    id : string,
+    username : string,
+    nickname : string,
+    profile_image : string | null,
+}

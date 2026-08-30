@@ -10,6 +10,7 @@ import (
 
 type UserHandler interface {
 	GetProfile(c *gin.Context)
+	GetMe(c *gin.Context)
 	Follow(c *gin.Context)
 	Unfollow(c *gin.Context)
 	UpdateProfile(c *gin.Context)
@@ -33,6 +34,26 @@ func (h *userHandler) GetProfile(c *gin.Context) {
 	req := dto.GetProfileRequest{
 		UserId:          userID,
 		RequesterUserId: c.GetString("userID"),
+	}
+	profile, err := h.userSvc.GetProfile(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
+		return
+	}
+
+	pkg.Success(c, 200, profile)
+}
+
+func (h *userHandler) GetMe(c *gin.Context) {
+	requesterID := c.GetString("userID")
+	if requesterID == "" {
+		pkg.Fail(c, 401, "인증이 필요합니다")
+		return
+	}
+
+	req := dto.GetProfileRequest{
+		UserId:          requesterID,
+		RequesterUserId: requesterID,
 	}
 	profile, err := h.userSvc.GetProfile(&req)
 	if err != nil {

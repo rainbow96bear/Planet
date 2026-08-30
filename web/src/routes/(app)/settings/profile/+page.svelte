@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores'
     import { goto } from '$app/navigation'
+    import { invalidate } from '$app/navigation'
     import './page.css'
     import { updateProfile, uploadProfileImage, deleteProfileImage } from '$lib/api/user.js';
 
@@ -10,7 +11,8 @@
 
     let nickname = $state(user?.nickname ?? '')
     let username = $state(user?.username ?? '')
-    let bio = $state(user?.bio ?? '')
+    // let bio = $state(user?.bio ?? '')
+        console.log("user : ", user)
 
     let loading = $state(false)
     let error = $state('')
@@ -43,6 +45,7 @@
         try {
             const res = await uploadProfileImage(user!.userid, file)
             profileImage = res.profile_image
+            await invalidate('app:user')
         } catch (e) {
             imageError = e instanceof Error ? e.message : '이미지 업로드에 실패했습니다.'
         } finally {
@@ -56,6 +59,7 @@
         try {
             await deleteProfileImage(user!.userid)
             profileImage = null
+            await invalidate('app:user')
         } catch (e) {
             imageError = e instanceof Error ? e.message : '이미지 삭제에 실패했습니다.'
         } finally {
@@ -75,6 +79,7 @@
         try {
             await updateProfile(user?.userid!, { nickname: nickname.trim() })
             success = true
+            await invalidate('app:user')
         } catch (e) {
             error = e instanceof Error ? e.message : '수정에 실패했습니다.'
         } finally {

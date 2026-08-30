@@ -1,11 +1,25 @@
-// +layout.server.ts
-import { decodeJwtPayload } from '$lib/utils/jwt'
+import { verifyJwt } from '$lib/utils/jwt'
 import { 
   GO_API_URL,
 } from '$env/static/private'
 import type { LayoutServerLoad } from './$types'
+import type { UserProfile } from '$lib/types/user'
 
-export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
+async function fetchProfile(fetch: typeof globalThis.fetch, accessToken: string) {
+    try {
+        const res = await fetch(`${GO_API_URL}/api/v1/users/me`, {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        })
+        if (!res.ok) return null
+        return await res.json() as UserProfile
+    } catch {
+        return null // 프로필 조회 실패가 세션을 죽이면 안 됨
+    }
+}
+
+export const load: LayoutServerLoad = async ({ cookies, fetch, depends }) => {
+    depends('app:user')
+
     const accessToken = cookies.get('access_token')
     const refreshToken = cookies.get('refresh_token')
 
@@ -13,9 +27,19 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 
     try {
         if (accessToken) {
-            const payload = decodeJwtPayload(accessToken)
-            if (payload.exp * 1000 > Date.now()) {
-                return { user: { userid: payload.userid, username: payload.username } }
+            try {
+                const payload = await verifyJwt(accessToken)
+                const profile = await fetchProfile(fetch, accessToken)
+                return {
+                    user: {
+                        userid: payload.userid,
+                        username: payload.username,
+                        nickname: profile?.nickname ?? null,
+                        profileImage: profile?.profile_image ?? null,
+                    }
+                }
+            } catch {
+                // 서명 위조 or 만료 → refresh 흐름으로 진행
             }
         }
 
@@ -40,8 +64,16 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
             httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 30
         })
 
-        const newPayload = decodeJwtPayload(data.access_token)
-        return { user: { userid: newPayload.userid, username: newPayload.username } }
+        const newPayload = await verifyJwt(data.access_token)
+        const profile = await fetchProfile(fetch, data.access_token)
+        return {
+            user: {
+                userid: newPayload.userid,
+                username: newPayload.username,
+                nickname: profile?.nickname ?? null,
+                profileImage: profile?.profile_image ?? null,
+            }
+        }
 
     } catch {
         return { user: null }

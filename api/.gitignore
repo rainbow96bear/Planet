@@ -28,3 +28,6 @@ tmp/
 # IDE
 .vscode/
 .idea/
+
+#image file
+uploads/
