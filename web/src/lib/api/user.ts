@@ -1,7 +1,7 @@
-import type { FollowResponse, UnfollowResponse, UpdateProfileRequest } from "$lib/types/user"
+import type { EnterOrbitResponse, LeaveOrbitResponse, UpdateProfileRequest, UpdateProfileResponse } from "$lib/types/user"
 
-export const follow = async (userid: string): Promise<FollowResponse> => {
-    const res = await fetch(`/api/v1/users/${userid}/follow`, {
+export const enterOrbit = async (userid: string): Promise<EnterOrbitResponse> => {
+    const res = await fetch(`/api/v1/users/${userid}/orbit`, {
         method: 'POST',
     })
 
@@ -14,8 +14,8 @@ export const follow = async (userid: string): Promise<FollowResponse> => {
 }
 
 
-export const unfollow = async (userid: string): Promise<UnfollowResponse> => {
-    const res = await fetch(`/api/v1/users/${userid}/follow`, {
+export const leaveOrbit = async (userid: string): Promise<LeaveOrbitResponse> => {
+    const res = await fetch(`/api/v1/users/${userid}/orbit`, {
         method: 'DELETE',
     })
 

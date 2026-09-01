@@ -6,8 +6,8 @@ type SearchUsersRequest struct {
 }
 
 type SearchUsersResponse struct {
-	UserId      string `json:"userid"`
-	Username    string `json:"username"`
-	Nickname    string `json:"nickname"`
-	IsFollowing bool   `json:"is_following"`
+	UserId     string `json:"userid"`
+	Username   string `json:"username"`
+	Nickname   string `json:"nickname"`
+	IsOrbiting bool   `json:"is_orbiting"`
 }

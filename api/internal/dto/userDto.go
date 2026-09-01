@@ -13,9 +13,9 @@ type GetProfileResponse struct {
 	Bio          string `json:"bio"`
 	ProfileImage string `json:"profile_image"`
 	IsOwner      bool   `json:"is_owner"`
-	IsFollowing  bool   `json:"is_following"`
-	Followers    int64  `json:"followers"`
-	Following    int64  `json:"following"`
+	IsOrbiting   bool   `json:"is_orbiting"`
+	Gravity      int64  `json:"gravity"`
+	Orbit        int64  `json:"orbit"`
 }
 
 type GetMeRequest struct {

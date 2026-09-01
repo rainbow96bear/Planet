@@ -29,7 +29,7 @@
         <h1 class="feed-title">피드</h1>
         <FeedTabs
             active={activeTab}
-            showFollow={isLoggedIn}
+            showOrbit={isLoggedIn}
             onchange={(tab) => activeTab = tab}
         />
     </div>

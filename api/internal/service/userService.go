@@ -13,8 +13,8 @@ import (
 
 type UserService interface {
 	GetProfile(*dto.GetProfileRequest) (*dto.GetProfileResponse, error)
-	Follow(*dto.FollowRequest) (*dto.FollowResponse, error)
-	Unfollow(*dto.UnfollowRequest) (*dto.UnfollowResponse, error)
+	EnterOrbit(*dto.EnterOrbitRequest) (*dto.EnterOrbitResponse, error)
+	LeaveOrbit(*dto.LeaveOrbitRequest) (*dto.LeaveOrbitResponse, error)
 	UpdateProfile(*dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error)
 	UploadProfileImage(*dto.UploadProfileImageRequest) (*dto.UploadProfileImageResponse, error)
 	DeleteProfileImage(userID string) error
@@ -23,7 +23,7 @@ type UserService interface {
 type userService struct {
 	db               *gorm.DB
 	userRepo         repository.UserRepository
-	followRepo       repository.FollowRepository
+	orbitRepo        repository.OrbitRepository
 	taskRepo         repository.TaskRepository
 	feedRepo         repository.FeedRepository
 	notificationRepo repository.NotificationRepository
@@ -33,7 +33,7 @@ type userService struct {
 func NewUserService(
 	db *gorm.DB,
 	userRepo repository.UserRepository,
-	followRepo repository.FollowRepository,
+	orbitRepo repository.OrbitRepository,
 	taskRepo repository.TaskRepository,
 	feedRepo repository.FeedRepository,
 	notificationRepo repository.NotificationRepository,
@@ -43,7 +43,7 @@ func NewUserService(
 	return &userService{
 		db:               db,
 		userRepo:         userRepo,
-		followRepo:       followRepo,
+		orbitRepo:        orbitRepo,
 		taskRepo:         taskRepo,
 		feedRepo:         feedRepo,
 		notificationRepo: notificationRepo,
@@ -58,21 +58,21 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 		return nil, err
 	}
 
-	followers, err := s.followRepo.CountFollowers(req.UserId)
+	gravity, err := s.orbitRepo.CountGravity(req.UserId)
 	if err != nil {
 		return nil, err
 	}
 
-	following, err := s.followRepo.CountFollowing(req.UserId)
+	orbit, err := s.orbitRepo.CountOrbit(req.UserId)
 	if err != nil {
 		return nil, err
 	}
 
 	isOwner := req.UserId == req.RequesterUserId
 
-	var isFollowing bool
+	var isOrbiting bool
 	if !isOwner {
-		isFollowing, err = s.followRepo.IsFollowing(req.RequesterUserId, req.UserId)
+		isOrbiting, err = s.orbitRepo.IsOrbiting(req.RequesterUserId, req.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -83,13 +83,13 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 		Nickname:     user.Nickname,
 		ProfileImage: user.ProfileImage,
 		IsOwner:      isOwner,
-		IsFollowing:  isFollowing,
-		Followers:    followers,
-		Following:    following,
+		IsOrbiting:   isOrbiting,
+		Gravity:      gravity,
+		Orbit:        orbit,
 	}, nil
 }
 
-func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error) {
+func (s *userService) EnterOrbit(req *dto.EnterOrbitRequest) (*dto.EnterOrbitResponse, error) {
 	tx := s.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -98,20 +98,20 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 		}
 	}()
 
-	if err := s.followRepo.Follow(tx, &model.Follow{
-		FollowerID:  req.FollowerID,
-		FollowingID: req.FollowingID,
+	if err := s.orbitRepo.EnterOrbit(tx, &model.Orbit{
+		OrbiterID: req.OrbiterID,
+		OrbitedID: req.OrbitedID,
 	}); err != nil {
 		tx.Rollback()
-		return nil, errors.New("이미 팔로우 중입니다")
+		return nil, errors.New("이미 궤도에 진입했습니다")
 	}
 
 	if err := s.notificationRepo.Upsert(tx, &model.Notification{
-		ReceiverID: req.FollowingID,
-		ActorID:    req.FollowerID,
-		TargetID:   req.FollowerID,
+		ReceiverID: req.OrbitedID,
+		ActorID:    req.OrbiterID,
+		TargetID:   req.OrbiterID,
 		TargetType: model.NotificationTargetTypeUser,
-		Type:       model.NotificationFollowed,
+		Type:       model.NotificationTypeOrbitEntered,
 	}); err != nil {
 		tx.Rollback()
 		return nil, err
@@ -121,10 +121,10 @@ func (s *userService) Follow(req *dto.FollowRequest) (*dto.FollowResponse, error
 		return nil, err
 	}
 
-	return &dto.FollowResponse{IsFollowing: true}, nil
+	return &dto.EnterOrbitResponse{IsOrbiting: true}, nil
 }
 
-func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse, error) {
+func (s *userService) LeaveOrbit(req *dto.LeaveOrbitRequest) (*dto.LeaveOrbitResponse, error) {
 	tx := s.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -133,16 +133,16 @@ func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse,
 		}
 	}()
 
-	if err := s.followRepo.Unfollow(tx, req.FollowerID, req.FollowingID); err != nil {
+	if err := s.orbitRepo.LeaveOrbit(tx, req.OrbiterID, req.OrbitedID); err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
 	if err := s.notificationRepo.DeleteByActorAndTask(
 		tx,
-		req.FollowerID,
-		req.FollowerID,
-		model.NotificationFollowed,
+		req.OrbiterID,
+		req.OrbiterID,
+		model.NotificationTypeOrbitEntered,
 	); err != nil {
 		tx.Rollback()
 		return nil, err
@@ -152,7 +152,7 @@ func (s *userService) Unfollow(req *dto.UnfollowRequest) (*dto.UnfollowResponse,
 		return nil, err
 	}
 
-	return &dto.UnfollowResponse{IsFollowing: false}, nil
+	return &dto.LeaveOrbitResponse{IsOrbiting: false}, nil
 }
 
 func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error) {

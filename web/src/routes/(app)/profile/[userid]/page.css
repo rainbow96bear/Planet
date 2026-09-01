@@ -91,13 +91,13 @@
     background: var(--planet-primary-hover);
 }
 .action-btn.secondary,
-.action-btn.following {
+.action-btn.orbiting {
     background: var(--surface);
     border-color: var(--border);
     color: var(--text-secondary);
 }
 .action-btn.secondary:hover:not(:disabled),
-.action-btn.following:hover:not(:disabled) {
+.action-btn.orbiting:hover:not(:disabled) {
     background: var(--surface-alt);
     color: var(--text-primary);
 }
@@ -317,4 +317,34 @@
     .calendar-cell {
         min-height: 76px;
     }
+}
+
+/* ==========================
+   Orbit / Gravity stats
+========================== */
+.orbit-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-xs);
+}
+.orbit-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-secondary);
+    font-size: .8rem;
+}
+.orbit-stat svg {
+    flex-shrink: 0;
+    color: var(--planet-primary);
+    opacity: .85;
+}
+.orbit-stat strong {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+.orbit-stat-label {
+    color: var(--text-muted);
+    font-size: .72rem;
 }

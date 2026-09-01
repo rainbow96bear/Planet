@@ -1,11 +1,11 @@
-export interface FollowResponse {
+export interface EnterOrbitResponse {
     id:string,
-    is_following:boolean,
+    is_orbiting:boolean,
 }
 
-export interface UnfollowResponse {
+export interface LeaveOrbitResponse {
     id:string,
-    is_following:boolean,
+    is_orbiting:boolean,
 }
 
 export interface UpdateProfileRequest {

@@ -3,23 +3,23 @@
 
     let {
         active,
-        showFollow = true,
+        showOrbit = true,
         onchange
     }: {
         active: Tab
-        showFollow?: boolean
+        showOrbit?: boolean
         onchange: (tab: Tab) => void
     } = $props()
 </script>
 
 <div class="feed-tabs">
-    {#if showFollow}
+    {#if showOrbit}
         <button
             class="tab-btn"
             class:active={active === 'feed'}
             onclick={() => onchange('feed')}
         >
-            팔로우
+            Orbit
         </button>
     {/if}
     <button

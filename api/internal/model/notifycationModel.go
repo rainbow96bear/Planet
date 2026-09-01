@@ -13,9 +13,9 @@ type Notification struct {
 type NotificationType string
 
 const (
-	NotificationFollowed     NotificationType = "followed"
-	NotificationTypeReaction NotificationType = "reaction"
-	NotificationTypeComment  NotificationType = "comment"
+	NotificationTypeOrbitEntered NotificationType = "orbit_entered"
+	NotificationTypeReaction     NotificationType = "reaction"
+	NotificationTypeComment      NotificationType = "comment"
 )
 
 type NotificationTargetType string
