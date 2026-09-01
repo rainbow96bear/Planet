@@ -7,7 +7,7 @@ export const POST: RequestHandler = async ({ params, fetch, cookies }) => {
     const { userid } = params
 
     const res = await fetchWithRefresh(
-        `${GO_API_URL}/api/v1/users/${userid}/follow`,
+        `${GO_API_URL}/api/v1/users/${userid}/orbit`,
         { method: 'POST' },
         cookies,
         fetch
@@ -21,7 +21,7 @@ export const DELETE: RequestHandler = async ({ params, fetch, cookies }) => {
     const { userid } = params
 
     const res = await fetchWithRefresh(
-        `${GO_API_URL}/api/v1/users/${userid}/follow`,
+        `${GO_API_URL}/api/v1/users/${userid}/orbit`,
         { method: 'DELETE' },
         cookies,
         fetch

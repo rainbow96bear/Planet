@@ -6,13 +6,13 @@
   let notifications = $state<Notification[]>([])
   let open = $state(false)
   let loading = $state(false)
-  let filter = $state<'all' | 'follow' | 'reaction'>('all')
+  let filter = $state<'all' | 'orbit' | 'reaction'>('all')
   let pollingTimer: ReturnType<typeof setInterval> | null = null
 
   const filtered = $derived(
     filter === 'all' ? notifications
-    : filter === 'follow' ? notifications.filter(n => n.type === 'followed')
-    : notifications.filter(n => n.type !== 'followed')
+    : filter === 'orbit' ? notifications.filter(n => n.type === 'orbit_entered')
+    : notifications.filter(n => n.type !== 'orbit_entered')
   )
   $effect(() => {
     if ($page.data.user) {
@@ -49,10 +49,10 @@
     return `${Math.floor(h / 24)}일 전`
   }
   const TYPE_ICON: Record<string, string> = {
-    follow: '👤', comment: '💬', reaction: '❤️'
+    orbit_entered: '👤', comment: '💬', reaction: '❤️'
   }
   const TAB_LABEL: Record<string, string> = {
-    all: '전체', follow: '팔로우', reaction: '댓글·반응'
+    all: '전체', orbit: 'Orbit', reaction: '댓글·반응'
   }
 </script>
 <svelte:window onclick={(e) => {
@@ -76,7 +76,7 @@
         <button class="mark-all-btn" onclick={handleMarkAll}>모두 읽음</button>
       </div>
       <div class="tabs">
-        {#each (['all', 'follow', 'reaction'] as const) as t}
+        {#each (['all', 'orbit', 'reaction'] as const) as t}
           <button
             class="tab"
             class:active={filter === t}

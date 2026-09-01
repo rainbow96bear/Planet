@@ -127,8 +127,8 @@
     color: var(--text-secondary);
 }
 
-/* ── 팔로우 버튼 ── */
-.btn-follow {
+/* ── 궤도 진입 버튼 ── */
+.btn-orbit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -145,24 +145,24 @@
     min-width: 72px;
 }
 
-.btn-follow:hover:not(:disabled) {
+.btn-orbit:hover:not(:disabled) {
     background: var(--planet-primary-hover);
     border-color: var(--planet-primary-hover);
 }
 
-.btn-follow.following {
+.btn-orbit.orbiting {
     background: var(--surface);
     border-color: var(--border);
     color: var(--text-secondary);
 }
 
-.btn-follow.following:hover:not(:disabled) {
+.btn-orbit.orbiting:hover:not(:disabled) {
     background: rgba(var(--danger-rgb), 0.08);
     border-color: var(--danger);
     color: var(--danger);
 }
 
-.btn-follow:disabled {
+.btn-orbit:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }

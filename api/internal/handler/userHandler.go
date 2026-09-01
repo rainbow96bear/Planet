@@ -11,8 +11,8 @@ import (
 type UserHandler interface {
 	GetProfile(c *gin.Context)
 	GetMe(c *gin.Context)
-	Follow(c *gin.Context)
-	Unfollow(c *gin.Context)
+	EnterOrbit(c *gin.Context)
+	LeaveOrbit(c *gin.Context)
 	UpdateProfile(c *gin.Context)
 	UploadProfileImage(c *gin.Context)
 	DeleteProfileImage(c *gin.Context)
@@ -64,16 +64,16 @@ func (h *userHandler) GetMe(c *gin.Context) {
 	pkg.Success(c, 200, profile)
 }
 
-func (h *userHandler) Follow(c *gin.Context) {
-	followingID := c.Param("userid")
-	followerID := c.GetString("userID") // JWT 미들웨어에서 세팅한 값
+func (h *userHandler) EnterOrbit(c *gin.Context) {
+	orbitedID := c.Param("userid")
+	orbiterID := c.GetString("userID") // JWT 미들웨어에서 세팅한 값
 
-	req := dto.FollowRequest{
-		FollowerID:  followerID,
-		FollowingID: followingID,
+	req := dto.EnterOrbitRequest{
+		OrbiterID: orbiterID,
+		OrbitedID: orbitedID,
 	}
 
-	result, err := h.userSvc.Follow(&req)
+	result, err := h.userSvc.EnterOrbit(&req)
 	if err != nil {
 		pkg.Fail(c, 409, err.Error())
 		return
@@ -81,17 +81,16 @@ func (h *userHandler) Follow(c *gin.Context) {
 	pkg.Success(c, 201, result)
 }
 
-func (h *userHandler) Unfollow(c *gin.Context) {
-	followingID := c.Param("userid")
+func (h *userHandler) LeaveOrbit(c *gin.Context) {
+	orbitedID := c.Param("userid")
+	orbiterID := c.GetString("userID") // JWT 미들웨어에서 세팅한 값
 
-	followerID := c.GetString("userID") // JWT 미들웨어에서 세팅한 값
-
-	req := dto.UnfollowRequest{
-		FollowerID:  followerID,
-		FollowingID: followingID,
+	req := dto.LeaveOrbitRequest{
+		OrbiterID: orbiterID,
+		OrbitedID: orbitedID,
 	}
 
-	result, err := h.userSvc.Unfollow(&req)
+	result, err := h.userSvc.LeaveOrbit(&req)
 	if err != nil {
 		pkg.Fail(c, 400, err.Error())
 		return

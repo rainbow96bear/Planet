@@ -54,8 +54,8 @@ func RegisterRoutes(
 			usersProtected.PATCH("/:userid", userHandler.UpdateProfile)
 			usersProtected.POST("/:userid/profile-image", userHandler.UploadProfileImage)
 			usersProtected.DELETE("/:userid/profile-image", userHandler.DeleteProfileImage)
-			usersProtected.POST("/:userid/follow", userHandler.Follow)
-			usersProtected.DELETE("/:userid/follow", userHandler.Unfollow)
+			usersProtected.POST("/:userid/orbit", userHandler.EnterOrbit)
+			usersProtected.DELETE("/:userid/orbit", userHandler.LeaveOrbit)
 		}
 
 		search := v1.Group("/search")

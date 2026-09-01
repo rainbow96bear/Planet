@@ -68,9 +68,9 @@ func (r *feedRepository) FindFeed(userID string, limit int) ([]*dto.GetFeedRespo
 		Joins("JOIN tasks t ON t.id = f.task_id AND t.deleted_at IS NULL").
 		Joins("LEFT JOIN reactions r ON r.task_id = f.task_id").
 		Where("f.actor_id IN (?)",
-			r.db.Table("follows").
-				Select("following_id").
-				Where("follower_id = ?", userID),
+			r.db.Table("orbits").
+				Select("orbited_id").
+				Where("orbiter_id = ?", userID),
 		).
 		Where("(t.is_public = true OR f.actor_id = ?)", userID).
 		Group("f.id, f.actor_id, u.nickname, f.type, f.task_id, t.title, f.created_at").

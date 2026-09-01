@@ -1,6 +1,6 @@
 <script lang="ts">
     import { getTasksByMonth } from '$lib/api/task'
-    import { follow, unfollow } from '$lib/api/user'
+    import { enterOrbit, leaveOrbit } from '$lib/api/user'
     import type { PageData } from './$types'
     import type { Task } from '$lib/types/task'
     import TaskModal from '$lib/components/TaskModal.svelte'
@@ -15,8 +15,13 @@
     let year = $state(data.year)
     let month = $state(data.month)
     let loading = $state(false)
-    let isFollowing = $state(data.profileUser.is_following ?? false)
-    let followLoading = $state(false)
+    let isOrbiting = $state(data.profileUser.is_orbiting ?? false)
+    let orbitLoading = $state(false)
+
+    // Orbit(내가 궤도를 도는 대상 수) / Gravity(나를 궤도로 끌어들인 사람 수)는
+    // 이미 GetProfile 응답(/api/v1/users/:userid)에 포함되어 있어 별도 요청이 필요 없다.
+    const orbitCount = $derived(data.profileUser.orbit ?? 0)
+    const gravityCount = $derived(data.profileUser.gravity ?? 0)
 
     let selectedDay = $state<number | null>(null)
     let addDay = $state<number | null>(null)
@@ -41,27 +46,27 @@
         loading = false
     }
 
-    async function handleFollow() {
-        followLoading = true
+    async function handleEnterOrbit() {
+        orbitLoading = true
         try {
-            await follow(userid)
-            isFollowing = true
+            await enterOrbit(userid)
+            isOrbiting = true
         } catch (e) {
             console.error(e)
         } finally {
-            followLoading = false
+            orbitLoading = false
         }
     }
 
-    async function handleUnfollow() {
-        followLoading = true
+    async function handleLeaveOrbit() {
+        orbitLoading = true
         try {
-            await unfollow(userid)
-            isFollowing = false
+            await leaveOrbit(userid)
+            isOrbiting = false
         } catch (e) {
             console.error(e)
         } finally {
-            followLoading = false
+            orbitLoading = false
         }
     }
 
@@ -136,6 +141,25 @@
         <div class="profile-info">
             <h1 class="profile-nickname">{data.profileUser.nickname}</h1>
             <span class="profile-username">@{data.profileUser.username}</span>
+
+            <div class="orbit-stats">
+                <span class="orbit-stat">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <ellipse cx="12" cy="12" rx="10" ry="4.2" />
+                        <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none" />
+                    </svg>
+                    <strong>{orbitCount}</strong>
+                    <span class="orbit-stat-label">Orbit</span>
+                </span>
+                <span class="orbit-stat">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="3.2" />
+                        <path d="M12 3v3.2M12 17.8V21M3 12h3.2M17.8 12H21" stroke-linecap="round" />
+                    </svg>
+                    <strong>{gravityCount}</strong>
+                    <span class="orbit-stat-label">Gravity</span>
+                </span>
+            </div>
         </div>
 
         <div class="profile-actions">
@@ -148,26 +172,24 @@
                     프로필 수정
                 </a>
             {:else}
-                {#if followLoading}
+                {#if orbitLoading}
                     <button class="action-btn primary" disabled>
                         <span class="spinner"></span>
                     </button>
-                {:else if isFollowing}
-                    <button class="action-btn following" onclick={handleUnfollow}>
+                {:else if isOrbiting}
+                    <button class="action-btn orbiting" onclick={handleLeaveOrbit}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
+                            <ellipse cx="12" cy="12" rx="9.5" ry="4" />
                         </svg>
-                        팔로잉
+                        Orbiting
                     </button>
                 {:else}
-                    <button class="action-btn primary" onclick={handleFollow}>
+                    <button class="action-btn primary" onclick={handleEnterOrbit}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <line x1="19" y1="8" x2="19" y2="14"/>
-                            <line x1="22" y1="11" x2="16" y2="11"/>
+                            <ellipse cx="12" cy="12" rx="9.5" ry="4" />
+                            <circle cx="21" cy="12" r="1.4" fill="currentColor" stroke="none" />
                         </svg>
-                        팔로우
+                        Enter orbit
                     </button>
                 {/if}
             {/if}

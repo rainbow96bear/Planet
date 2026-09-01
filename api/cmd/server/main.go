@@ -39,7 +39,7 @@ func main() {
 	if err := db.AutoMigrate(
 		&model.User{},
 		&model.Task{},
-		&model.Follow{},
+		&model.Orbit{},
 		&model.Feed{},
 		&model.Notification{},
 		&model.Reaction{},
@@ -47,10 +47,12 @@ func main() {
 		if strings.Contains(err.Error(), "already exists") {
 			log.Println("migration skipped (already exists)")
 		} else {
-			log.Println("migration error:", err)
+			log.Fatalf("migration error: %v", err)
 		}
 	}
 
+	// 파일 스토리지 — 현재는 로컬 디스크 구현체만 존재.
+	// 배포 플랫폼이 정해지면 이 부분만 다른 구현체로 교체하면 됨 (서비스/핸들러 코드는 변경 불필요).
 	uploadDir := "./uploads"
 	baseURL := fmt.Sprintf("http://localhost:%s/uploads", cfg.App.Port)
 	if err := os.MkdirAll(uploadDir, 0o755); err != nil {
@@ -60,15 +62,15 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 	taskRepo := repository.NewTaskRepository(db)
-	followRepo := repository.NewFollowRepository(db)
+	orbitRepo := repository.NewOrbitRepository(db)
 	feedRepo := repository.NewFeedRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
 	reactionRepo := repository.NewReactionRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo, fileStorage)
 	taskSvc := service.NewTaskService(db, taskRepo, feedRepo, reactionRepo)
-	userSvc := service.NewUserService(db, userRepo, followRepo, taskRepo, feedRepo, notificationRepo, fileStorage)
-	searchSvc := service.NewSearchService(db, userRepo, followRepo)
+	userSvc := service.NewUserService(db, userRepo, orbitRepo, taskRepo, feedRepo, notificationRepo, fileStorage)
+	searchSvc := service.NewSearchService(db, userRepo, orbitRepo)
 	feedSvc := service.NewFeedService(db, feedRepo)
 	notificationSvc := service.NewNotificationService(db, notificationRepo, userRepo)
 	reactionSvc := service.NewReactionService(db, reactionRepo, taskRepo, notificationRepo)
@@ -83,6 +85,7 @@ func main() {
 
 	r := gin.Default()
 
+	// 로컬 스토리지에 저장된 파일 서빙 (프로덕션 스토리지로 교체되면 이 라인은 제거)
 	r.Static("/uploads", uploadDir)
 
 	handler.RegisterRoutes(

@@ -1,6 +1,6 @@
 export interface Notification {
   id: string
-  type: 'followed' | 'comment' | 'reaction'
+  type: 'orbit_entered' | 'comment' | 'reaction'
   message: string
   is_read: boolean
   created_at: string

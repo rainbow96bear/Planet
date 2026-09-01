@@ -12,20 +12,20 @@ type SearchService interface {
 }
 
 type searchService struct {
-	db         *gorm.DB
-	userRepo   repository.UserRepository
-	followRepo repository.FollowRepository
+	db        *gorm.DB
+	userRepo  repository.UserRepository
+	orbitRepo repository.OrbitRepository
 }
 
 func NewSearchService(
 	db *gorm.DB,
 	userRepo repository.UserRepository,
-	followRepo repository.FollowRepository,
+	orbitRepo repository.OrbitRepository,
 ) SearchService {
 	return &searchService{
-		db:         db,
-		userRepo:   userRepo,
-		followRepo: followRepo,
+		db:        db,
+		userRepo:  userRepo,
+		orbitRepo: orbitRepo,
 	}
 }
 
@@ -37,19 +37,19 @@ func (s *searchService) SearchUsers(req *dto.SearchUsersRequest) ([]*dto.SearchU
 
 	result := make([]*dto.SearchUsersResponse, len(users))
 	for i, u := range users {
-		isFollowing := false
+		isOrbiting := false
 		if req.RequesterUserId != "" {
-			isFollowing, err = s.followRepo.IsFollowing(req.RequesterUserId, u.ID)
+			isOrbiting, err = s.orbitRepo.IsOrbiting(req.RequesterUserId, u.ID)
 			if err != nil {
 				return nil, err
 			}
 		}
 
 		result[i] = &dto.SearchUsersResponse{
-			UserId:      u.ID,
-			Username:    u.Username,
-			Nickname:    u.Nickname,
-			IsFollowing: isFollowing,
+			UserId:     u.ID,
+			Username:   u.Username,
+			Nickname:   u.Nickname,
+			IsOrbiting: isOrbiting,
 		}
 	}
 	return result, nil
