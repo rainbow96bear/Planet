@@ -144,18 +144,10 @@
 
             <div class="orbit-stats">
                 <span class="orbit-stat">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <ellipse cx="12" cy="12" rx="10" ry="4.2" />
-                        <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none" />
-                    </svg>
                     <strong>{orbitCount}</strong>
                     <span class="orbit-stat-label">Orbit</span>
                 </span>
                 <span class="orbit-stat">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                        <circle cx="12" cy="12" r="3.2" />
-                        <path d="M12 3v3.2M12 17.8V21M3 12h3.2M17.8 12H21" stroke-linecap="round" />
-                    </svg>
                     <strong>{gravityCount}</strong>
                     <span class="orbit-stat-label">Gravity</span>
                 </span>
@@ -178,17 +170,10 @@
                     </button>
                 {:else if isOrbiting}
                     <button class="action-btn orbiting" onclick={handleLeaveOrbit}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <ellipse cx="12" cy="12" rx="9.5" ry="4" />
-                        </svg>
                         Orbiting
                     </button>
                 {:else}
                     <button class="action-btn primary" onclick={handleEnterOrbit}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <ellipse cx="12" cy="12" rx="9.5" ry="4" />
-                            <circle cx="21" cy="12" r="1.4" fill="currentColor" stroke="none" />
-                        </svg>
                         Enter orbit
                     </button>
                 {/if}
