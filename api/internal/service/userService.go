@@ -71,7 +71,7 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 	isOwner := req.UserId == req.RequesterUserId
 
 	var isOrbiting bool
-	if !isOwner {
+	if req.RequesterUserId != "" && !isOwner {
 		isOrbiting, err = s.orbitRepo.IsOrbiting(req.RequesterUserId, req.UserId)
 		if err != nil {
 			return nil, err
