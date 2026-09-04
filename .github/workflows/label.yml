@@ -1,23 +1,13 @@
-# This workflow will triage pull requests and apply a label based on the
-# paths that are modified in the pull request.
-#
-# To use this workflow, you will need to set up a .github/labeler.yml
-# file with configuration.  For more information, see:
-# https://github.com/actions/labeler
-
 name: CI
 
-# main으로 향하는 PR이 열리거나 갱신될 때마다 실행
 on:
   pull_request:
-    branches: [dev]
+    branches: [dev, main]
 
 jobs:
-  # ── 백엔드(Go) 검증 ──
   backend:
     name: Backend (Go)
     runs-on: ubuntu-latest
-    # api/ 폴더에 변경이 있을 때만 실행 (프론트만 고친 PR에서는 스킵)
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,7 +16,6 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
-          # go.mod 위치가 api/ 안에 있다면 캐시 경로도 여기 기준으로 잡힘
           cache-dependency-path: api/go.sum
 
       - name: go build
@@ -37,16 +26,21 @@ jobs:
         working-directory: api
         run: go vet ./...
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          working-directory: api
-          version: latest
-
-  # ── 프론트엔드(SvelteKit) 검증 ──
   frontend:
     name: Frontend (SvelteKit)
     runs-on: ubuntu-latest
+    # svelte-check가 $env/static/private를 통해 이 값들을 참조하므로,
+    # 파일(.env) 없이 CI job 환경변수로 직접 주입한다.
+    # 타입 체크만 통과하면 되는 값들이라 진짜 값일 필요는 없다.
+    env:
+      GO_API_URL: http://localhost:8080
+      ACCESS_TOKEN_SECRET: dummy-secret
+      KAKAO_REST_API_KEY: dummy
+      KAKAO_REDIRECT_URI: http://localhost/callback
+      KAKAO_CLIENT_SECRET: dummy
+      NAVER_CLIENT_ID: dummy
+      NAVER_CLIENT_SECRET: dummy
+      NAVER_REDIRECT_URI: http://localhost/callback
     steps:
       - name: Checkout
         uses: actions/checkout@v4

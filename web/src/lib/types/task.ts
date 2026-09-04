@@ -16,12 +16,7 @@ export interface CreateTaskBody {
     is_public: boolean
 }
 
-export interface CreateTaskResponse {
-    id: string
-    title: string
-    date: string
-    is_completed: boolean
-    is_public: boolean
+export interface CreateTaskResponse extends Task {
     created_at: string
 }
 

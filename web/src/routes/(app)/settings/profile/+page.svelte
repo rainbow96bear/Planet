@@ -7,18 +7,17 @@
 
     let { data } = $props()
 
-    const user = data.user
+    const user = $derived(data.user)
 
     let nickname = $state(user?.nickname ?? '')
     let username = $state(user?.username ?? '')
     // let bio = $state(user?.bio ?? '')
-        console.log("user : ", user)
 
     let loading = $state(false)
     let error = $state('')
     let success = $state(false)
 
-    let profileImage = $state<string | null>(user?.profileImage ?? null)
+    let profileImage = $state<string | null>(user?.profile_image ?? null)
     let imageLoading = $state(false)
     let imageError = $state('')
 
@@ -77,7 +76,7 @@
         success = false
 
         try {
-            await updateProfile(user?.userid!, { nickname: nickname.trim() })
+            await updateProfile(user!.userid, { nickname: nickname.trim() })
             success = true
             await invalidate('app:user')
         } catch (e) {

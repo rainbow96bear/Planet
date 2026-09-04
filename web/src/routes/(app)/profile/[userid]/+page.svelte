@@ -30,6 +30,17 @@
         tasks = Array.isArray(data.tasks) ? data.tasks : []
     })
 
+    // 다른 유저 프로필로 이동(userid 변경)했을 때, 이전 프로필에서 쓰던
+    // year/month/isOrbiting이 그대로 남아있지 않도록 새로 내려온
+    // 서버 데이터로 다시 맞춘다. (prevMonth/nextMonth로 인한 로컬 변경은
+    // userid가 그대로라 이 effect가 다시 실행되지 않아 덮어써지지 않는다.)
+    $effect(() => {
+        userid
+        year = data.year
+        month = data.month
+        isOrbiting = data.profileUser.is_orbiting ?? false
+    })
+
     async function prevMonth() {
         if (month === 1) { year -= 1; month = 12 }
         else { month -= 1 }
@@ -123,6 +134,13 @@
     function handleTaskCreated(task: Task) {
         tasks = [...tasks, task]
     }
+
+    function handleCellKeydown(e: KeyboardEvent, day: number) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            openTaskModal(day)
+        }
+    }
 </script>
 
 <div class="profile-container">
@@ -165,7 +183,7 @@
                 </a>
             {:else}
                 {#if orbitLoading}
-                    <button class="action-btn primary" disabled>
+                    <button class="action-btn primary" disabled aria-label="처리 중">
                         <span class="spinner"></span>
                     </button>
                 {:else if isOrbiting}
@@ -199,12 +217,16 @@
 
                 {#each getCalendarDays(year, month) as day, i}
                     {@const isToday = day === getTodayDay()}
-                    <button
-                        class="calendar-cell {day === null ? 'empty' : ''} {isToday ? 'today' : ''}"
-                        onclick={() => day && openTaskModal(day)}
-                        disabled={day === null}
-                    >
-                        {#if day !== null}
+                    {#if day === null}
+                        <div class="calendar-cell empty" aria-hidden="true"></div>
+                    {:else}
+                        <div
+                            class="calendar-cell {isToday ? 'today' : ''}"
+                            role="button"
+                            tabindex="0"
+                            onclick={() => openTaskModal(day)}
+                            onkeydown={(e) => handleCellKeydown(e, day)}
+                        >
                             <div class="cell-top">
                                 <span class="day-number {i % 7 === 0 ? 'sunday' : i % 7 === 6 ? 'saturday' : ''} {isToday ? 'today-number' : ''}">
                                     {day}
@@ -225,8 +247,8 @@
                                     </div>
                                 {/each}
                             </div>
-                        {/if}
-                    </button>
+                        </div>
+                    {/if}
                 {/each}
             </div>
         {/if}

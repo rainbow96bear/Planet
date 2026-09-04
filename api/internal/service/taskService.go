@@ -73,10 +73,12 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 	}
 
 	return &dto.CreateTaskResponse{
-		ID:       task.ID,
-		Title:    task.Title,
-		Date:     task.Date,
-		IsPublic: task.IsPublic,
+		ID:          task.ID,
+		Title:       task.Title,
+		Description: task.Description,
+		Date:        task.Date,
+		IsCompleted: task.IsCompleted,
+		IsPublic:    task.IsPublic,
 	}, nil
 }
 
