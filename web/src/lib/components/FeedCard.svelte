@@ -9,6 +9,19 @@
     let cheered    = $state(feed.is_cheered ?? false)
     let likeCount  = $state(feed.like_count ?? 0)
     let cheerCount = $state(feed.cheer_count ?? 0)
+
+    // feed prop 자체가 다른 피드로 교체될 때(리스트 재정렬, 필터 전환 등)
+    // 로컬 낙관적 업데이트 상태를 서버 기준 최신 값으로 다시 맞춘다.
+    // feed.feed_id가 바뀔 때만 동기화해서, 이 컴포넌트 자신이 만든
+    // onupdate로 인한 부모 갱신 루프에 휘말리지 않게 한다.
+    $effect(() => {
+        feed.feed_id
+        liked      = feed.is_liked ?? false
+        cheered    = feed.is_cheered ?? false
+        likeCount  = feed.like_count ?? 0
+        cheerCount = feed.cheer_count ?? 0
+    })
+
     async function toggleLike() {
         if (!feed.task_id) return
         const prevLiked = liked
@@ -128,9 +141,6 @@
     .feed-card:hover {
         border-color: var(--planet-primary);
     }
-    /* =========================
-    Main
-    ========================= */
     .card-main {
         display: flex;
         align-items: flex-start;
@@ -153,9 +163,6 @@
         flex: 1;
         min-width: 0;
     }
-    /* =========================
-    Meta
-    ========================= */
     .feed-meta {
         display: flex;
         align-items: center;
@@ -206,9 +213,6 @@
         white-space: nowrap;
         flex-shrink: 0;
     }
-    /* =========================
-    Reactions
-    ========================= */
     .reactions {
         display: flex;
         gap: var(--space-sm);
@@ -249,10 +253,6 @@
     .reaction-label {
         color: inherit;
     }
-    /* =========================
-    Active — 좋아요/응원은 브랜드 색을 빌려온 "따뜻한 반응" 표현이라
-    에러 메시지와는 다른 의도적인 배색이다. RGB만 토큰화했다.
-    ========================= */
     .reaction-btn.liked {
         background: rgba(var(--planet-secondary-rgb), .08);
         border-color: rgba(var(--planet-secondary-rgb), .18);
@@ -263,9 +263,6 @@
         border-color: rgba(var(--planet-highlight-rgb), .22);
         color: var(--planet-highlight-text);
     }
-    /* =========================
-    Responsive
-    ========================= */
     @media (max-width:520px){
         .feed-card{
             padding: var(--space-md);

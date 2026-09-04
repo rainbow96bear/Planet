@@ -6,14 +6,8 @@
 
     let { data }: { data: PageData } = $props()
 
-    let q = $state(data.q)
-    let users = $state(data.users)
-
-    // 검색어 바뀌면 데이터 동기화
-    $effect(() => {
-        q = data.q
-        users = data.users
-    })
+    const q = $derived(data.q)
+    const users = $derived(data.users)
 </script>
 
 <div class="search-container">

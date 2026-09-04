@@ -7,13 +7,16 @@
 
     let { data }: { data: PageData } = $props()
 
-    const isLoggedIn = !!data.user
+    const isLoggedIn = $derived(!!data.user)
     let activeTab = $state<'feed' | 'explore'>(
         data.user ? 'feed' : 'explore'
     )
-    
-    const feeds = $derived(data.feed ?? [])
-    const exploreFeeds = $derived(data.exploreFeed ?? [])
+
+    // data.feed/data.exploreFeed의 타입이 load 체인 어딘가에서 unknown으로
+    // 흘러들어오는 경우를 대비해 Feed[]로 명시한다. 이러면 list, f 등
+    // 파생되는 모든 변수의 타입이 자동으로 안전하게 이어진다.
+    const feeds: Feed[] = $derived(data.feed ?? [])
+    const exploreFeeds: Feed[] = $derived(data.exploreFeed ?? [])
 
     const currentFeeds = $derived(activeTab === 'feed' ? feeds : exploreFeeds)
 
@@ -38,7 +41,7 @@
         <div class="feed-empty">
             {#if activeTab === 'feed'}
                 <p>아직 활동이 없습니다</p>
-                <p class="feed-empty-sub">사람들을 팔로우하면 여기에 활동이 표시됩니다</p>
+                <p class="feed-empty-sub">사람들의 궤도에 들어가면 여기에 활동이 표시됩니다</p>
             {:else}
                 <p>아직 활동이 없습니다</p>
             {/if}
