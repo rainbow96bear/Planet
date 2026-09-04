@@ -1,7 +1,7 @@
 import type { LayoutServerLoad } from './$types'
 import { GO_API_URL } from '$env/static/private'
 
-async function safeFetchJson(fetch: typeof globalThis.fetch, url: string, headers: Record<string, string>) {
+async function safeFetchJson<T>(fetch: typeof globalThis.fetch, url: string, headers: Record<string, string>): Promise<T[]> {
     try {
         const res = await fetch(url, { headers, signal: AbortSignal.timeout(3000) })
         if (!res.ok) return []
