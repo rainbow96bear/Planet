@@ -170,11 +170,12 @@
                     </button>
                 {:else if isOrbiting}
                     <button class="action-btn orbiting" onclick={handleLeaveOrbit}>
-                        Orbiting
+                        <span class="btn-text-default">In Orbit</span>
+                        <span class="btn-text-hover">Leave Orbit</span>
                     </button>
                 {:else}
                     <button class="action-btn primary" onclick={handleEnterOrbit}>
-                        Enter orbit
+                        Enter Orbit
                     </button>
                 {/if}
             {/if}
