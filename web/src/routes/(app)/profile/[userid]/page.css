@@ -90,16 +90,35 @@
 .action-btn.primary:hover:not(:disabled) {
     background: var(--planet-primary-hover);
 }
-.action-btn.secondary,
-.action-btn.orbiting {
+.action-btn.secondary {
     background: var(--surface);
     border-color: var(--border);
     color: var(--text-secondary);
 }
-.action-btn.secondary:hover:not(:disabled),
-.action-btn.orbiting:hover:not(:disabled) {
+.action-btn.secondary:hover:not(:disabled) {
     background: var(--surface-alt);
     color: var(--text-primary);
+}
+/* ── In Orbit / hover 시 Leave Orbit 전환 ── */
+.action-btn.orbiting {
+    position: relative;
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-secondary);
+}
+.action-btn.orbiting .btn-text-hover {
+    display: none;
+}
+.action-btn.orbiting:hover:not(:disabled) {
+    background: rgba(var(--danger-rgb), .08);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.action-btn.orbiting:hover:not(:disabled) .btn-text-default {
+    display: none;
+}
+.action-btn.orbiting:hover:not(:disabled) .btn-text-hover {
+    display: inline;
 }
 /* ==========================
    Spinner
