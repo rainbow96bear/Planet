@@ -15,8 +15,8 @@
     // data.feed/data.exploreFeed의 타입이 load 체인 어딘가에서 unknown으로
     // 흘러들어오는 경우를 대비해 Feed[]로 명시한다. 이러면 list, f 등
     // 파생되는 모든 변수의 타입이 자동으로 안전하게 이어진다.
-    const feeds: Feed[] = $derived(data.feed ?? [])
-    const exploreFeeds: Feed[] = $derived(data.exploreFeed ?? [])
+    const feeds = $derived((data.feed ?? []) as Feed[])
+    const exploreFeeds = $derived((data.exploreFeed ?? []) as Feed[])
 
     const currentFeeds = $derived(activeTab === 'feed' ? feeds : exploreFeeds)
 

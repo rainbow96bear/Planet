@@ -71,7 +71,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch, depends }) => {
                 userid: newPayload.userid,
                 username: newPayload.username,
                 nickname: profile?.nickname ?? null,
-                profileImage: profile?.profile_image ?? null,
+                profile_image: profile?.profile_image ?? null,
             }
         }
 
