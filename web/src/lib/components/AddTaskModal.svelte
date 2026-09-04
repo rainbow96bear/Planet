@@ -85,6 +85,7 @@
                     type="button"
                     onclick={() => isPublic = !isPublic}
                     aria-pressed={isPublic}
+                    aria-label="공개 여부 전환"
                 >
                     <span class="toggle-thumb"></span>
                 </button>
