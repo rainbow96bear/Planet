@@ -11,8 +11,13 @@ import (
 type UserHandler interface {
 	GetProfile(c *gin.Context)
 	GetMe(c *gin.Context)
+<<<<<<< HEAD
 	EnterOrbit(c *gin.Context)
 	LeaveOrbit(c *gin.Context)
+=======
+	Follow(c *gin.Context)
+	Unfollow(c *gin.Context)
+>>>>>>> 333c7e2721c5c424d32bc0c58c2615fac7024653
 	UpdateProfile(c *gin.Context)
 	UploadProfileImage(c *gin.Context)
 	DeleteProfileImage(c *gin.Context)

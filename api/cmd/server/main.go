@@ -68,6 +68,7 @@ func main() {
 	reactionRepo := repository.NewReactionRepository(db)
 
 	authSvc := service.NewAuthService(db, userRepo, fileStorage)
+	authSvc := service.NewAuthService(db, userRepo, fileStorage)
 	taskSvc := service.NewTaskService(db, taskRepo, feedRepo, reactionRepo)
 	userSvc := service.NewUserService(db, userRepo, orbitRepo, taskRepo, feedRepo, notificationRepo, fileStorage)
 	searchSvc := service.NewSearchService(db, userRepo, orbitRepo)
@@ -105,6 +106,7 @@ func main() {
 	}
 
 	go func() {
+		log.Printf("server running on : %s\n", cfg.App.Port)
 		log.Printf("server running on : %s\n", cfg.App.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("server error: %v", err)
