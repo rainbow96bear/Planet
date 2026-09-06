@@ -1,221 +1,221 @@
 .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-    background: var(--bg);
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem 1rem;
+	background: var(--bg);
 }
 /* ==========================
    Card
 ========================== */
 .login-card {
-    width: 100%;
-    max-width: 420px;
-    padding: 2.5rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+	width: 100%;
+	max-width: 420px;
+	padding: 2.5rem;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
 }
 /* ==========================
    Brand
 ========================== */
 .login-logo {
-    display: inline-flex;
-    align-items: center;
-    gap: .6rem;
-    margin-bottom: .4rem;
-    color: var(--planet-primary);
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    text-decoration: none;
-    transition: color var(--transition-fast);
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin-bottom: 0.4rem;
+	color: var(--planet-primary);
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	text-decoration: none;
+	transition: color var(--transition-fast);
 }
 .login-logo:hover {
-    color: var(--planet-primary-hover);
+	color: var(--planet-primary-hover);
 }
 .login-tagline {
-    margin: 0 0 2.25rem;
-    color: var(--text-muted);
-    font-size: .875rem;
-    line-height: 1.6;
+	margin: 0 0 2.25rem;
+	color: var(--text-muted);
+	font-size: 0.875rem;
+	line-height: 1.6;
 }
 /* ==========================
    Title
 ========================== */
 .login-title {
-    margin: 0 0 1.75rem;
-    color: var(--text-primary);
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
+	margin: 0 0 1.75rem;
+	color: var(--text-primary);
+	font-size: 1.4rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 /* ==========================
    Form
 ========================== */
 .field {
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    margin-bottom: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 1.25rem;
 }
 .field label {
-    color: var(--text-secondary);
-    font-size: .875rem;
-    font-weight: 600;
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	font-weight: 600;
 }
 .field input {
-    width: 100%;
-    height: 42px;
-    padding: 0 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font: inherit;
-    transition:
-        border-color var(--transition-fast),
-        background var(--transition-fast),
-        box-shadow var(--transition-fast);
-    box-sizing: border-box;
+	width: 100%;
+	height: 42px;
+	padding: 0 14px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	color: var(--text-primary);
+	font: inherit;
+	transition:
+		border-color var(--transition-fast),
+		background var(--transition-fast),
+		box-shadow var(--transition-fast);
+	box-sizing: border-box;
 }
 .field input::placeholder {
-    color: var(--text-muted);
+	color: var(--text-muted);
 }
 .field input:focus {
-    outline: none;
-    border-color: var(--planet-primary);
-    box-shadow: 0 0 0 3px rgba(78,199,188,.12);
+	outline: none;
+	border-color: var(--planet-primary);
+	box-shadow: 0 0 0 3px rgba(78, 199, 188, 0.12);
 }
 /* ==========================
    Error
 ========================== */
 .error-msg {
-    margin: 0 0 1.25rem;
-    padding: .8rem 1rem;
-    background: rgba(239,68,68,.06);
-    border: 1px solid rgba(239,68,68,.12);
-    border-radius: var(--radius-md);
-    color: var(--danger);
-    font-size: .875rem;
+	margin: 0 0 1.25rem;
+	padding: 0.8rem 1rem;
+	background: rgba(239, 68, 68, 0.06);
+	border: 1px solid rgba(239, 68, 68, 0.12);
+	border-radius: var(--radius-md);
+	color: var(--danger);
+	font-size: 0.875rem;
 }
 /* ==========================
    Primary Button
 ========================== */
 .btn-primary {
-    width: 100%;
-    height: 42px;
-    margin-top: .5rem;
-    border: 1px solid var(--planet-primary);
-    border-radius: var(--radius-md);
-    background: var(--planet-primary);
-    color: #fff;
-    font: inherit;
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-        background var(--transition-fast),
-        border-color var(--transition-fast),
-        opacity var(--transition-fast);
+	width: 100%;
+	height: 42px;
+	margin-top: 0.5rem;
+	border: 1px solid var(--planet-primary);
+	border-radius: var(--radius-md);
+	background: var(--planet-primary);
+	color: #fff;
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background var(--transition-fast),
+		border-color var(--transition-fast),
+		opacity var(--transition-fast);
 }
 .btn-primary:hover:not(:disabled) {
-    background: var(--planet-primary-hover);
-    border-color: var(--planet-primary-hover);
+	background: var(--planet-primary-hover);
+	border-color: var(--planet-primary-hover);
 }
 .btn-primary:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 /* ==========================
    Divider
 ========================== */
 .divider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin: 2rem 0 1rem;
-    color: var(--text-muted);
-    font-size: .8rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin: 2rem 0 1rem;
+	color: var(--text-muted);
+	font-size: 0.8rem;
 }
 .divider::before,
 .divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--border-subtle);
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border-subtle);
 }
 /* ==========================
    Social Buttons
 ========================== */
 .btn-kakao,
 .btn-naver {
-    width: 100%;
-    height: 44px;
-    margin-top: .75rem;
-    border: none;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font: inherit;
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-        opacity var(--transition-fast),
-        transform var(--transition-fast);
+	width: 100%;
+	height: 44px;
+	margin-top: 0.75rem;
+	border: none;
+	border-radius: var(--radius-md);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		opacity var(--transition-fast),
+		transform var(--transition-fast);
 }
 .btn-kakao:hover:not(:disabled),
 .btn-naver:hover:not(:disabled) {
-    opacity: .92;
+	opacity: 0.92;
 }
 .btn-kakao:active:not(:disabled),
 .btn-naver:active:not(:disabled) {
-    transform: translateY(1px);
+	transform: translateY(1px);
 }
 .btn-kakao:disabled,
 .btn-naver:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 .btn-kakao {
-    background: #FEE500;
-    color: rgba(0,0,0,.75);
+	background: #fee500;
+	color: rgba(0, 0, 0, 0.75);
 }
 .btn-naver {
-    background: #03C75A;
-    color: #fff;
+	background: #03c75a;
+	color: #fff;
 }
 /* ==========================
    Footer
 ========================== */
 .login-footer {
-    margin-top: 2rem;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: .875rem;
+	margin-top: 2rem;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 0.875rem;
 }
 .login-footer a {
-    color: var(--planet-primary);
-    text-decoration: none;
-    transition: color var(--transition-fast);
+	color: var(--planet-primary);
+	text-decoration: none;
+	transition: color var(--transition-fast);
 }
 .login-footer a:hover {
-    color: var(--planet-primary-hover);
+	color: var(--planet-primary-hover);
 }
 /* ==========================
    Responsive
 ========================== */
 @media (max-width: 520px) {
-    .login-container {
-        padding: 1.5rem 1rem;
-    }
-    .login-card {
-        padding: 2rem 1.5rem;
-    }
-    .login-title {
-        font-size: 1.25rem;
-    }
+	.login-container {
+		padding: 1.5rem 1rem;
+	}
+	.login-card {
+		padding: 2rem 1.5rem;
+	}
+	.login-title {
+		font-size: 1.25rem;
+	}
 }

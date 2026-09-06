@@ -1,369 +1,369 @@
 .profile-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: var(--space-3xl) var(--space-lg);
+	max-width: 900px;
+	margin: 0 auto;
+	padding: var(--space-3xl) var(--space-lg);
 }
 /* ==========================
    Profile Header
 ========================== */
 .profile-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xl);
-    margin-bottom: var(--space-3xl);
+	display: flex;
+	align-items: center;
+	gap: var(--space-xl);
+	margin-bottom: var(--space-3xl);
 }
 .profile-image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 72px;
-    height: 72px;
-    overflow: hidden;
-    background: var(--surface-alt);
-    border: 1px solid var(--border);
-    border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 72px;
+	height: 72px;
+	overflow: hidden;
+	background: var(--surface-alt);
+	border: 1px solid var(--border);
+	border-radius: 50%;
 }
 .profile-image-photo {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 .profile-image-placeholder {
-    font-size: 2.5rem;
+	font-size: 2.5rem;
 }
 .profile-info {
-    flex: 1;
-    min-width: 0;
+	flex: 1;
+	min-width: 0;
 }
 .profile-nickname {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
+	margin: 0;
+	color: var(--text-primary);
+	font-size: 1.35rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 .profile-username {
-    margin-top: var(--space-2xs);
-    color: var(--text-secondary);
-    font-size: .9rem;
+	margin-top: var(--space-2xs);
+	color: var(--text-secondary);
+	font-size: 0.9rem;
 }
 /* ==========================
    Actions
 ========================== */
 .profile-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	flex-shrink: 0;
 }
 .action-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xs);
-    height: 40px;
-    padding: 0 18px;
-    border-radius: var(--radius-md);
-    border: 1px solid transparent;
-    cursor: pointer;
-    font-size: .875rem;
-    font-weight: 600;
-    font-family: inherit;
-    text-decoration: none;
-    white-space: nowrap;
-    transition:
-        background var(--transition-fast),
-        border-color var(--transition-fast),
-        color var(--transition-fast);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-xs);
+	height: 40px;
+	padding: 0 18px;
+	border-radius: var(--radius-md);
+	border: 1px solid transparent;
+	cursor: pointer;
+	font-size: 0.875rem;
+	font-weight: 600;
+	font-family: inherit;
+	text-decoration: none;
+	white-space: nowrap;
+	transition:
+		background var(--transition-fast),
+		border-color var(--transition-fast),
+		color var(--transition-fast);
 }
 .action-btn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 .action-btn.primary {
-    background: var(--planet-primary);
-    border-color: var(--planet-primary);
-    color: var(--text-on-dark);
+	background: var(--planet-primary);
+	border-color: var(--planet-primary);
+	color: var(--text-on-dark);
 }
 .action-btn.primary:hover:not(:disabled) {
-    background: var(--planet-primary-hover);
+	background: var(--planet-primary-hover);
 }
 .action-btn.secondary {
-    background: var(--surface);
-    border-color: var(--border);
-    color: var(--text-secondary);
+	background: var(--surface);
+	border-color: var(--border);
+	color: var(--text-secondary);
 }
 .action-btn.secondary:hover:not(:disabled) {
-    background: var(--surface-alt);
-    color: var(--text-primary);
+	background: var(--surface-alt);
+	color: var(--text-primary);
 }
 /* ── In Orbit / hover 시 Leave Orbit 전환 ── */
 .action-btn.orbiting {
-    position: relative;
-    background: var(--surface);
-    border-color: var(--border);
-    color: var(--text-secondary);
+	position: relative;
+	background: var(--surface);
+	border-color: var(--border);
+	color: var(--text-secondary);
 }
 .action-btn.orbiting .btn-text-hover {
-    display: none;
+	display: none;
 }
 .action-btn.orbiting:hover:not(:disabled) {
-    background: rgba(var(--danger-rgb), .08);
-    border-color: var(--danger);
-    color: var(--danger);
+	background: rgba(var(--danger-rgb), 0.08);
+	border-color: var(--danger);
+	color: var(--danger);
 }
 .action-btn.orbiting:hover:not(:disabled) .btn-text-default {
-    display: none;
+	display: none;
 }
 .action-btn.orbiting:hover:not(:disabled) .btn-text-hover {
-    display: inline;
+	display: inline;
 }
 /* ==========================
    Spinner
 ========================== */
 .spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid currentColor;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin .6s linear infinite;
+	width: 14px;
+	height: 14px;
+	border: 2px solid currentColor;
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: spin 0.6s linear infinite;
 }
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+	to {
+		transform: rotate(360deg);
+	}
 }
 /* ==========================
    Calendar
 ========================== */
 .calendar-card {
-    padding: var(--space-2xl);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+	padding: var(--space-2xl);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
 }
 .calendar-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-2xl);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-2xl);
 }
 .calendar-title {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--text-primary);
+	font-size: 1.05rem;
+	font-weight: 600;
+	color: var(--text-primary);
 }
 .nav-btn {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition:
-        background var(--transition-fast),
-        color var(--transition-fast),
-        border-color var(--transition-fast);
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	color: var(--text-secondary);
+	cursor: pointer;
+	transition:
+		background var(--transition-fast),
+		color var(--transition-fast),
+		border-color var(--transition-fast);
 }
 .nav-btn:hover:not(:disabled) {
-    background: var(--surface-alt);
-    color: var(--planet-primary);
+	background: var(--surface-alt);
+	color: var(--planet-primary);
 }
 .nav-btn:disabled {
-    opacity: .4;
-    cursor: not-allowed;
+	opacity: 0.4;
+	cursor: not-allowed;
 }
 .calendar-loading {
-    padding: var(--space-4xl) 0;
-    text-align: center;
-    color: var(--text-secondary);
+	padding: var(--space-4xl) 0;
+	text-align: center;
+	color: var(--text-secondary);
 }
 /* ==========================
    Calendar Grid
 ========================== */
 .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: var(--space-xs);
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: var(--space-xs);
 }
 .calendar-day-header {
-    padding: var(--space-sm) 0;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: .75rem;
-    font-weight: 600;
+	padding: var(--space-sm) 0;
+	text-align: center;
+	color: var(--text-secondary);
+	font-size: 0.75rem;
+	font-weight: 600;
 }
 .calendar-cell {
-    position: relative;
-    width: 100%;
-    min-height: 92px;
-    padding: var(--space-xs);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        background var(--transition-fast),
-        border-color var(--transition-fast);
+	position: relative;
+	width: 100%;
+	min-height: 92px;
+	padding: var(--space-xs);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	text-align: left;
+	cursor: pointer;
+	transition:
+		background var(--transition-fast),
+		border-color var(--transition-fast);
 }
 .calendar-cell:hover:not(:disabled) {
-    background: var(--surface-alt);
+	background: var(--surface-alt);
 }
 .calendar-cell:hover .add-task-btn {
-    opacity: 1;
+	opacity: 1;
 }
 .calendar-cell.empty {
-    background: transparent;
-    border-color: transparent;
-    cursor: default;
+	background: transparent;
+	border-color: transparent;
+	cursor: default;
 }
 .calendar-cell.today {
-    background: rgba(var(--planet-primary-rgb), .05);
-    border-color: var(--planet-primary);
+	background: rgba(var(--planet-primary-rgb), 0.05);
+	border-color: var(--planet-primary);
 }
 .calendar-cell:disabled {
-    cursor: default;
+	cursor: default;
 }
 /* ==========================
    Cell
 ========================== */
 .cell-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
 }
 .day-number {
-    color: var(--text-secondary);
-    font-size: .8rem;
+	color: var(--text-secondary);
+	font-size: 0.8rem;
 }
 .day-number.sunday {
-    color: var(--danger);
+	color: var(--danger);
 }
 .day-number.saturday {
-    color: var(--planet-primary);
+	color: var(--planet-primary);
 }
 .day-number.today-number {
-    color: var(--planet-primary);
-    font-weight: 700;
+	color: var(--planet-primary);
+	font-weight: 700;
 }
 /* ==========================
    Add Button
 ========================== */
 .add-task-btn {
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition:
-        opacity var(--transition-fast),
-        color var(--transition-fast);
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	padding: 0;
+	background: transparent;
+	border: none;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition:
+		opacity var(--transition-fast),
+		color var(--transition-fast);
 }
 .add-task-btn:hover {
-    color: var(--planet-primary);
-    opacity: 1;
+	color: var(--planet-primary);
+	opacity: 1;
 }
 /* ==========================
    Tasks
 ========================== */
 .task-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2xs);
 }
 .task-chip {
-    display: block;
-    padding: 2px 0 2px 6px;
-    border-left: 2px solid var(--planet-primary);
-    background: transparent;
-    border-radius: 0;
-    color: var(--text-secondary);
-    font-size: .7rem;
-    line-height: 1.4;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition:
-        color var(--transition-fast),
-        border-color var(--transition-fast);
+	display: block;
+	padding: 2px 0 2px 6px;
+	border-left: 2px solid var(--planet-primary);
+	background: transparent;
+	border-radius: 0;
+	color: var(--text-secondary);
+	font-size: 0.7rem;
+	line-height: 1.4;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition:
+		color var(--transition-fast),
+		border-color var(--transition-fast);
 }
 .task-chip:hover {
-    color: var(--text-primary);
+	color: var(--text-primary);
 }
 .task-chip.completed {
-    opacity: .55;
-    border-left-color: var(--border);
-    text-decoration: line-through;
+	opacity: 0.55;
+	border-left-color: var(--border);
+	text-decoration: line-through;
 }
 /* ==========================
    Responsive
 ========================== */
 @media (max-width: 520px) {
-    .profile-container {
-        padding: var(--space-2xl) var(--space-md);
-    }
-    .profile-header {
-        flex-wrap: wrap;
-        gap: var(--space-md);
-    }
-    .profile-actions {
-        width: 100%;
-    }
-    .action-btn {
-        flex: 1;
-    }
-    .calendar-card {
-        padding: var(--space-lg);
-    }
-    .calendar-grid {
-        gap: 6px;
-    }
-    .calendar-cell {
-        min-height: 76px;
-    }
+	.profile-container {
+		padding: var(--space-2xl) var(--space-md);
+	}
+	.profile-header {
+		flex-wrap: wrap;
+		gap: var(--space-md);
+	}
+	.profile-actions {
+		width: 100%;
+	}
+	.action-btn {
+		flex: 1;
+	}
+	.calendar-card {
+		padding: var(--space-lg);
+	}
+	.calendar-grid {
+		gap: 6px;
+	}
+	.calendar-cell {
+		min-height: 76px;
+	}
 }
 
 /* ==========================
    Orbit / Gravity stats
 ========================== */
 .orbit-stats {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-top: var(--space-xs);
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+	margin-top: var(--space-xs);
 }
 .orbit-stat {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--text-secondary);
-    font-size: .8rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	color: var(--text-secondary);
+	font-size: 0.8rem;
 }
 .orbit-stat svg {
-    flex-shrink: 0;
-    color: var(--planet-primary);
-    opacity: .85;
+	flex-shrink: 0;
+	color: var(--planet-primary);
+	opacity: 0.85;
 }
 .orbit-stat strong {
-    color: var(--text-primary);
-    font-weight: 700;
+	color: var(--text-primary);
+	font-weight: 700;
 }
 .orbit-stat-label {
-    color: var(--text-muted);
-    font-size: .72rem;
+	color: var(--text-muted);
+	font-size: 0.72rem;
 }

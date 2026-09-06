@@ -1,101 +1,93 @@
 <script lang="ts">
-    type Tab = 'feed' | 'explore'
+	type Tab = 'feed' | 'explore';
 
-    let {
-        active,
-        showOrbit = true,
-        onchange
-    }: {
-        active: Tab
-        showOrbit?: boolean
-        onchange: (tab: Tab) => void
-    } = $props()
+	let {
+		active,
+		showOrbit = true,
+		onchange
+	}: {
+		active: Tab;
+		showOrbit?: boolean;
+		onchange: (tab: Tab) => void;
+	} = $props();
 </script>
 
 <div class="feed-tabs">
-    {#if showOrbit}
-        <button
-            class="tab-btn"
-            class:active={active === 'feed'}
-            onclick={() => onchange('feed')}
-        >
-            Orbit
-        </button>
-    {/if}
-    <button
-        class="tab-btn"
-        class:active={active === 'explore'}
-        onclick={() => onchange('explore')}
-    >
-        탐색
-    </button>
+	{#if showOrbit}
+		<button class="tab-btn" class:active={active === 'feed'} onclick={() => onchange('feed')}>
+			Orbit
+		</button>
+	{/if}
+	<button class="tab-btn" class:active={active === 'explore'} onclick={() => onchange('explore')}>
+		탐색
+	</button>
 </div>
 
 <style>
-    .feed-tabs {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2xs);
+	.feed-tabs {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2xs);
 
-        padding: var(--space-2xs);
+		padding: var(--space-2xs);
 
-        background: var(--surface-hover);
+		background: var(--surface-hover);
 
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-    }
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+	}
 
-    .tab-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+	.tab-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 
-        min-width: 72px;
-        height: 36px;
+		min-width: 72px;
+		height: 36px;
 
-        padding: 0 1rem;
+		padding: 0 1rem;
 
-        border: none;
-        border-radius: var(--radius-sm);
+		border: none;
+		border-radius: var(--radius-sm);
 
-        background: transparent;
+		background: transparent;
 
-        color: var(--text-secondary);
+		color: var(--text-secondary);
 
-        font: inherit;
-        font-size: 0.85rem;
-        font-weight: 600;
+		font: inherit;
+		font-size: 0.85rem;
+		font-weight: 600;
 
-        cursor: pointer;
+		cursor: pointer;
 
-        transition:
-            background var(--transition-fast),
-            color var(--transition-fast);
-    }
+		transition:
+			background var(--transition-fast),
+			color var(--transition-fast);
+	}
 
-    .tab-btn:hover:not(.active) {
-        background: rgba(var(--planet-primary-rgb), 0.08);
-        color: var(--planet-primary);
-    }
+	.tab-btn:hover:not(.active) {
+		background: rgba(var(--planet-primary-rgb), 0.08);
+		color: var(--planet-primary);
+	}
 
-    .tab-btn.active {
-        background: var(--planet-primary);
-        color: var(--text-on-dark);
-    }
+	.tab-btn.active {
+		background: var(--planet-primary);
+		color: var(--text-on-dark);
+	}
 
-    .tab-btn:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.18);
-    }
+	.tab-btn:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.18);
+	}
 
-    @media (max-width: 520px) {
-        .feed-tabs {
-            width: 100%;
-        }
+	@media (max-width: 520px) {
+		.feed-tabs {
+			width: 100%;
+		}
 
-        .tab-btn {
-            flex: 1;
-            min-width: 0;
-        }
-    }
+		.tab-btn {
+			flex: 1;
+			min-width: 0;
+		}
+	}
 </style>

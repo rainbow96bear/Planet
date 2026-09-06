@@ -1,171 +1,171 @@
 .app-layout {
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--text-primary);
+	min-height: 100vh;
+	background: var(--bg);
+	color: var(--text-primary);
 }
 /* ==========================
    Header
 ========================== */
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    padding: 0 var(--space-2xl);
-    gap: var(--space-xl);
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 64px;
+	padding: 0 var(--space-2xl);
+	gap: var(--space-xl);
+	background: var(--surface);
+	border-bottom: 1px solid var(--border);
 }
 .logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    flex-shrink: 0;
-    color: var(--planet-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    text-decoration: none;
-    transition: color var(--transition-fast);
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	flex-shrink: 0;
+	color: var(--planet-primary);
+	font-size: 1.1rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	text-decoration: none;
+	transition: color var(--transition-fast);
 }
 .logo:hover {
-    color: var(--planet-primary-hover);
+	color: var(--planet-primary-hover);
 }
 /* ==========================
    Search
 ========================== */
 .search-form {
-    flex: 1;
-    max-width: 360px;
+	flex: 1;
+	max-width: 360px;
 }
 .search-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+	position: relative;
+	display: flex;
+	align-items: center;
 }
 .search-icon {
-    position: absolute;
-    left: 14px;
-    color: var(--text-muted);
-    pointer-events: none;
+	position: absolute;
+	left: 14px;
+	color: var(--text-muted);
+	pointer-events: none;
 }
 .search-input {
-    width: 100%;
-    height: 40px;
-    padding: 0 var(--space-sm) 0 42px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--surface-alt);
-    color: var(--text-primary);
-    font: inherit;
-    transition:
-        border-color var(--transition-fast),
-        background var(--transition-fast),
-        box-shadow var(--transition-fast);
+	width: 100%;
+	height: 40px;
+	padding: 0 var(--space-sm) 0 42px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--surface-alt);
+	color: var(--text-primary);
+	font: inherit;
+	transition:
+		border-color var(--transition-fast),
+		background var(--transition-fast),
+		box-shadow var(--transition-fast);
 }
 .search-input::placeholder {
-    color: var(--text-muted);
+	color: var(--text-muted);
 }
 .search-input:focus {
-    outline: none;
-    background: var(--surface);
-    border-color: var(--planet-primary);
-    box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), .12);
+	outline: none;
+	background: var(--surface);
+	border-color: var(--planet-primary);
+	box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.12);
 }
 /* ==========================
    Navigation
 ========================== */
 .nav {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+	flex-shrink: 0;
 }
 .profile-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    color: var(--text-secondary);
-    border-radius: 50%;
-    text-decoration: none;
-    transition:
-        color var(--transition-fast),
-        background var(--transition-fast),
-        transform var(--transition-fast);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	color: var(--text-secondary);
+	border-radius: 50%;
+	text-decoration: none;
+	transition:
+		color var(--transition-fast),
+		background var(--transition-fast),
+		transform var(--transition-fast);
 }
 .profile-icon:hover {
-    color: var(--planet-primary);
-    background: var(--surface-alt);
+	color: var(--planet-primary);
+	background: var(--surface-alt);
 }
 .profile-icon:active {
-    transform: translateY(1px);
+	transform: translateY(1px);
 }
 .btn-login {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 38px;
-    padding: 0 18px;
-    border-radius: var(--radius-md);
-    background: var(--planet-primary);
-    color: var(--text-on-dark);
-    font-size: .875rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition:
-        background var(--transition-fast),
-        transform var(--transition-fast);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 38px;
+	padding: 0 18px;
+	border-radius: var(--radius-md);
+	background: var(--planet-primary);
+	color: var(--text-on-dark);
+	font-size: 0.875rem;
+	font-weight: 600;
+	text-decoration: none;
+	transition:
+		background var(--transition-fast),
+		transform var(--transition-fast);
 }
 .btn-login:hover {
-    background: var(--planet-primary-hover);
+	background: var(--planet-primary-hover);
 }
 .btn-login:active {
-    transform: translateY(1px);
+	transform: translateY(1px);
 }
 .btn-logout {
-    display: inline-flex;
-    align-items: center;
-    height: 36px;
-    padding: 0 var(--space-sm);
-    border: none;
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: var(--text-secondary);
-    font: inherit;
-    font-size: .875rem;
-    cursor: pointer;
-    transition:
-        color var(--transition-fast),
-        background var(--transition-fast),
-        transform var(--transition-fast);
+	display: inline-flex;
+	align-items: center;
+	height: 36px;
+	padding: 0 var(--space-sm);
+	border: none;
+	border-radius: var(--radius-md);
+	background: transparent;
+	color: var(--text-secondary);
+	font: inherit;
+	font-size: 0.875rem;
+	cursor: pointer;
+	transition:
+		color var(--transition-fast),
+		background var(--transition-fast),
+		transform var(--transition-fast);
 }
 .btn-logout:hover {
-    color: var(--planet-primary);
-    background: var(--surface-alt);
+	color: var(--planet-primary);
+	background: var(--surface-alt);
 }
 .btn-logout:active {
-    transform: translateY(1px);
+	transform: translateY(1px);
 }
 /* ==========================
    Main
 ========================== */
 .main {
-    padding: var(--space-2xl);
+	padding: var(--space-2xl);
 }
 /* ==========================
    Responsive
 ========================== */
 @media (max-width: 640px) {
-    .header {
-        padding: 0 var(--space-md);
-        gap: var(--space-md);
-    }
-    .search-form {
-        max-width: none;
-    }
-    .logo {
-        font-size: 1rem;
-    }
+	.header {
+		padding: 0 var(--space-md);
+		gap: var(--space-md);
+	}
+	.search-form {
+		max-width: none;
+	}
+	.logo {
+		font-size: 1rem;
+	}
 }

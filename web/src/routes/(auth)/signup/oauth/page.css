@@ -1,248 +1,248 @@
 .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-    background: var(--bg);
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem 1rem;
+	background: var(--bg);
 }
 /* ==========================
    Card
 ========================== */
 .login-card {
-    width: 100%;
-    max-width: 420px;
-    padding: 2.5rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+	width: 100%;
+	max-width: 420px;
+	padding: 2.5rem;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
 }
 /* ==========================
    Brand
 ========================== */
 .login-logo {
-    display: inline-flex;
-    align-items: center;
-    gap: .6rem;
-    margin-bottom: .4rem;
-    color: var(--planet-primary);
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin-bottom: 0.4rem;
+	color: var(--planet-primary);
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 .login-logo img {
-    width: 36px;
-    height: 36px;
-    object-fit: contain;
-    flex-shrink: 0;
+	width: 36px;
+	height: 36px;
+	object-fit: contain;
+	flex-shrink: 0;
 }
 .login-tagline {
-    margin: 0 0 2.25rem;
-    color: var(--text-muted);
-    font-size: .875rem;
-    line-height: 1.6;
+	margin: 0 0 2.25rem;
+	color: var(--text-muted);
+	font-size: 0.875rem;
+	line-height: 1.6;
 }
 /* ==========================
    Title
 ========================== */
 .login-title {
-    margin: 0 0 1.75rem;
-    color: var(--text-primary);
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
+	margin: 0 0 1.75rem;
+	color: var(--text-primary);
+	font-size: 1.4rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 /* ==========================
    Profile Image
 ========================== */
 .profile-image-field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 1.25rem;
 }
 .profile-image-picker {
-    position: relative;
-    width: 84px;
-    height: 84px;
+	position: relative;
+	width: 84px;
+	height: 84px;
 }
 .profile-image-preview {
-    width: 84px;
-    height: 84px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--border);
+	width: 84px;
+	height: 84px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 1px solid var(--border);
 }
 .profile-image-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 84px;
-    height: 84px;
-    border-radius: 50%;
-    background: var(--surface);
-    border: 1px dashed var(--border);
-    color: var(--text-muted);
-    cursor: pointer;
-    gap: 2px;
-    transition:
-        border-color var(--transition-fast),
-        color var(--transition-fast);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 84px;
+	height: 84px;
+	border-radius: 50%;
+	background: var(--surface);
+	border: 1px dashed var(--border);
+	color: var(--text-muted);
+	cursor: pointer;
+	gap: 2px;
+	transition:
+		border-color var(--transition-fast),
+		color var(--transition-fast);
 }
 .profile-image-placeholder:hover {
-    border-color: var(--planet-primary);
-    color: var(--planet-primary);
+	border-color: var(--planet-primary);
+	color: var(--planet-primary);
 }
 .profile-image-remove {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 11px;
-    line-height: 1;
-    cursor: pointer;
-    transition: color var(--transition-fast);
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	color: var(--text-muted);
+	font-size: 11px;
+	line-height: 1;
+	cursor: pointer;
+	transition: color var(--transition-fast);
 }
 .profile-image-remove:hover {
-    color: var(--danger);
+	color: var(--danger);
 }
 .field-optional {
-    font-weight: 400;
-    font-size: 12px;
-    color: var(--text-muted);
+	font-weight: 400;
+	font-size: 12px;
+	color: var(--text-muted);
 }
 /* ==========================
    Form
 ========================== */
 .field {
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    margin-bottom: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 1.25rem;
 }
 .field label {
-    color: var(--text-secondary);
-    font-size: .875rem;
-    font-weight: 600;
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	font-weight: 600;
 }
 .field input {
-    width: 100%;
-    height: 42px;
-    padding: 0 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font: inherit;
-    box-sizing: border-box;
-    transition:
-        border-color var(--transition-fast),
-        background var(--transition-fast),
-        box-shadow var(--transition-fast);
+	width: 100%;
+	height: 42px;
+	padding: 0 14px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	color: var(--text-primary);
+	font: inherit;
+	box-sizing: border-box;
+	transition:
+		border-color var(--transition-fast),
+		background var(--transition-fast),
+		box-shadow var(--transition-fast);
 }
 .field input::placeholder {
-    color: var(--text-muted);
+	color: var(--text-muted);
 }
 .field input:focus {
-    outline: none;
-    background: var(--surface);
-    border-color: var(--planet-primary);
-    box-shadow: 0 0 0 3px rgba(78,199,188,.12);
+	outline: none;
+	background: var(--surface);
+	border-color: var(--planet-primary);
+	box-shadow: 0 0 0 3px rgba(78, 199, 188, 0.12);
 }
 /* ==========================
    Validation
 ========================== */
 .field-ok,
 .field-error {
-    margin-top: .15rem;
-    font-size: .75rem;
+	margin-top: 0.15rem;
+	font-size: 0.75rem;
 }
 .field-ok {
-    color: var(--success);
+	color: var(--success);
 }
 .field-error {
-    color: var(--danger);
+	color: var(--danger);
 }
 /* ==========================
    Error
 ========================== */
 .error-msg {
-    margin: 0 0 1.25rem;
-    padding: .8rem 1rem;
-    background: rgba(233,106,90,.06);
-    border: 1px solid rgba(233,106,90,.12);
-    border-radius: var(--radius-md);
-    color: var(--danger);
-    font-size: .875rem;
+	margin: 0 0 1.25rem;
+	padding: 0.8rem 1rem;
+	background: rgba(233, 106, 90, 0.06);
+	border: 1px solid rgba(233, 106, 90, 0.12);
+	border-radius: var(--radius-md);
+	color: var(--danger);
+	font-size: 0.875rem;
 }
 /* ==========================
    Button
 ========================== */
 .btn-primary {
-    width: 100%;
-    height: 42px;
-    margin-top: .75rem;
-    background: var(--planet-primary);
-    border: 1px solid var(--planet-primary);
-    border-radius: var(--radius-md);
-    color: #fff;
-    font: inherit;
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-        background var(--transition-fast),
-        border-color var(--transition-fast),
-        opacity var(--transition-fast),
-        transform var(--transition-fast);
+	width: 100%;
+	height: 42px;
+	margin-top: 0.75rem;
+	background: var(--planet-primary);
+	border: 1px solid var(--planet-primary);
+	border-radius: var(--radius-md);
+	color: #fff;
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background var(--transition-fast),
+		border-color var(--transition-fast),
+		opacity var(--transition-fast),
+		transform var(--transition-fast);
 }
 .btn-primary:hover:not(:disabled) {
-    background: var(--planet-primary-hover);
-    border-color: var(--planet-primary-hover);
+	background: var(--planet-primary-hover);
+	border-color: var(--planet-primary-hover);
 }
 .btn-primary:active:not(:disabled) {
-    transform: translateY(1px);
+	transform: translateY(1px);
 }
 .btn-primary:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 /* ==========================
    Footer
 ========================== */
 .login-footer {
-    margin-top: 2rem;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: .875rem;
+	margin-top: 2rem;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 0.875rem;
 }
 .login-footer a {
-    color: var(--planet-primary);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color var(--transition-fast);
+	color: var(--planet-primary);
+	text-decoration: none;
+	font-weight: 600;
+	transition: color var(--transition-fast);
 }
 .login-footer a:hover {
-    color: var(--planet-primary-hover);
+	color: var(--planet-primary-hover);
 }
 /* ==========================
    Responsive
 ========================== */
 @media (max-width: 520px) {
-    .login-container {
-        padding: 1.5rem 1rem;
-    }
-    .login-card {
-        padding: 2rem 1.5rem;
-    }
-    .login-title {
-        font-size: 1.25rem;
-    }
+	.login-container {
+		padding: 1.5rem 1rem;
+	}
+	.login-card {
+		padding: 2rem 1.5rem;
+	}
+	.login-title {
+		font-size: 1.25rem;
+	}
 }
