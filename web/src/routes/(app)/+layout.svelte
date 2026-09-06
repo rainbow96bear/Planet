@@ -20,8 +20,8 @@
 	function handleSearch(e: Event) {
 		e.preventDefault();
 		if (!searchQuery.trim()) return;
-		const path = resolve('/search');
-		goto(`${path}?q=${encodeURIComponent(searchQuery.trim())}`);
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- resolve()로 경로를 검증한 뒤 쿼리스트링만 별도로 덧붙임
+		goto(`${resolve('/search')}?q=${encodeURIComponent(searchQuery.trim())}`);
 	}
 </script>
 
