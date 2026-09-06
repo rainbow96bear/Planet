@@ -20,7 +20,8 @@
 	function handleSearch(e: Event) {
 		e.preventDefault();
 		if (!searchQuery.trim()) return;
-		goto(`${resolve('/search')}?q=${encodeURIComponent(searchQuery.trim())}`);
+		const path = resolve('/search');
+		goto(`${path}?q=${encodeURIComponent(searchQuery.trim())}`);
 	}
 </script>
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import logo from '$lib/assets/planet.png';
 	import './page.css';
