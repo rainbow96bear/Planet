@@ -3,6 +3,7 @@
 	import logo from '$lib/assets/planet.png';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { logout } from '$lib/api/auth';
 	import './layout.css';
 	import NotificationBell from '$lib/components/NotificationBell.svelte';
@@ -19,7 +20,7 @@
 	function handleSearch(e: Event) {
 		e.preventDefault();
 		if (!searchQuery.trim()) return;
-		goto(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+		goto(`${resolve('/search')}?q=${encodeURIComponent(searchQuery.trim())}`);
 	}
 </script>
 
@@ -29,7 +30,7 @@
 
 <div class="app-layout">
 	<header class="header">
-		<a href="/" class="logo"><img src={logo} alt="Planet" height="32" />Planet</a>
+		<a href={resolve('/')} class="logo"><img src={logo} alt="Planet" height="32" />Planet</a>
 
 		<form class="search-form" onsubmit={handleSearch}>
 			<div class="search-wrapper">
@@ -60,7 +61,11 @@
 		<nav class="nav">
 			{#if $page.data.user}
 				<NotificationBell />
-				<a href={`/profile/${$page.data.user.userid}`} class="profile-icon" aria-label="내 프로필">
+				<a
+					href={resolve(`/profile/${$page.data.user.userid}`)}
+					class="profile-icon"
+					aria-label="내 프로필"
+				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="24"
@@ -78,7 +83,7 @@
 				</a>
 				<button onclick={handleLogout} class="btn-logout">로그아웃</button>
 			{:else}
-				<a href="/login" class="btn-login">로그인</a>
+				<a href={resolve('/login')} class="btn-login">로그인</a>
 			{/if}
 		</nav>
 	</header>

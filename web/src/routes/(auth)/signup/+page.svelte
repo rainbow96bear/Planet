@@ -1,6 +1,7 @@
 <script lang="ts">
 	import logo from '$lib/assets/planet.png';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { onDestroy } from 'svelte';
 	import { createUser, checkUsername } from '$lib/api/auth';
 	import { validateNickname } from '$lib/utils/validation';
@@ -154,7 +155,7 @@
 				},
 				profileImageFile
 			);
-			goto('/login');
+			goto(resolve('/login'));
 		} catch (e) {
 			console.error('signup failed', e);
 			error = '회원가입에 실패했습니다. 다시 시도해주세요.';
@@ -298,7 +299,7 @@
 		</form>
 
 		<div class="login-footer">
-			이미 계정이 있으신가요? <a href="/login">로그인</a>
+			이미 계정이 있으신가요? <a href={resolve('/login')}>로그인</a>
 		</div>
 	</div>
 </div>

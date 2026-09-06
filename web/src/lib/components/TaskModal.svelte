@@ -63,7 +63,7 @@
 				<p class="error-msg">{error}</p>
 			{/if}
 			<ul class="task-list">
-				{#each tasks as task}
+				{#each tasks as task (task.id)}
 					<li class="task-item {task.is_completed ? 'completed' : ''}">
 						{#if isOwner}
 							<button

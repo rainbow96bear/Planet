@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getTasksByMonth } from '$lib/api/task';
 	import { enterOrbit, leaveOrbit } from '$lib/api/user';
+	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
 	import type { Task } from '$lib/types/task';
 	import TaskModal from '$lib/components/TaskModal.svelte';
@@ -35,7 +36,7 @@
 	// 서버 데이터로 다시 맞춘다. (prevMonth/nextMonth로 인한 로컬 변경은
 	// userid가 그대로라 이 effect가 다시 실행되지 않아 덮어써지지 않는다.)
 	$effect(() => {
-		userid;
+		void userid;
 		year = data.year;
 		month = data.month;
 		isOrbiting = data.profileUser.is_orbiting ?? false;
@@ -180,7 +181,7 @@
 
 		<div class="profile-actions">
 			{#if isOwner}
-				<a href="/settings/profile" class="action-btn secondary">
+				<a href={resolve('/settings/profile')} class="action-btn secondary">
 					<svg
 						width="14"
 						height="14"
@@ -222,11 +223,11 @@
 			<div class="calendar-loading">불러오는 중...</div>
 		{:else}
 			<div class="calendar-grid">
-				{#each DAYS as day}
+				{#each DAYS as day (day)}
 					<div class="calendar-day-header">{day}</div>
 				{/each}
 
-				{#each getCalendarDays(year, month) as day, i}
+				{#each getCalendarDays(year, month) as day, i (i)}
 					{@const isToday = day === getTodayDay()}
 					{#if day === null}
 						<div class="calendar-cell empty" aria-hidden="true"></div>
@@ -258,7 +259,7 @@
 								{/if}
 							</div>
 							<div class="task-list">
-								{#each getTasksForDay(day) as task}
+								{#each getTasksForDay(day) as task (task.id)}
 									<div class="task-chip {task.is_completed ? 'completed' : ''}">
 										{task.title}
 									</div>

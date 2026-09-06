@@ -8,6 +8,7 @@
 	let loading = $state(false);
 	let filter = $state<'all' | 'orbit' | 'reaction'>('all');
 	let pollingTimer: ReturnType<typeof setInterval> | null = null;
+	let markingAll = $state(false);
 
 	const filtered = $derived(
 		filter === 'all'
@@ -38,13 +39,32 @@
 		}
 		open = true;
 		loading = true;
-		notifications = await getNotifications();
-		unreadCount = 0;
-		loading = false;
-		await markAllRead();
+		try {
+			notifications = await getNotifications();
+			unreadCount = notifications.filter((n) => !n.is_read).length;
+		} catch (e) {
+			console.error(e);
+		} finally {
+			loading = false;
+		}
 	}
-	function handleMarkAll() {
+
+	async function handleMarkAll() {
+		if (markingAll) return;
+		markingAll = true;
+		const prevNotifications = notifications;
+		const prevUnreadCount = unreadCount;
 		notifications = notifications.map((n) => ({ ...n, is_read: true }));
+		unreadCount = 0;
+		try {
+			await markAllRead();
+		} catch (e) {
+			console.error(e);
+			notifications = prevNotifications;
+			unreadCount = prevUnreadCount;
+		} finally {
+			markingAll = false;
+		}
 	}
 	function timeAgo(dateStr: string) {
 		const diff = Date.now() - new Date(dateStr).getTime();
@@ -95,10 +115,10 @@
 		<div class="dropdown" role="dialog" aria-label="알림 목록">
 			<div class="drop-header">
 				<span class="drop-title">알림</span>
-				<button class="mark-all-btn" onclick={handleMarkAll}>모두 읽음</button>
+				<button class="mark-all-btn" onclick={handleMarkAll} disabled={markingAll}>모두 읽음</button>
 			</div>
 			<div class="tabs">
-				{#each ['all', 'orbit', 'reaction'] as const as t}
+				{#each ['all', 'orbit', 'reaction'] as const as t (t)}
 					<button class="tab" class:active={filter === t} onclick={() => (filter = t)}>
 						{TAB_LABEL[t]}
 					</button>
@@ -110,7 +130,7 @@
 				{:else if filtered.length === 0}
 					<li class="notif-empty">알림이 없습니다</li>
 				{:else}
-					{#each filtered as notif}
+					{#each filtered as notif (notif.id)}
 						<li class="notif-item" class:unread={!notif.is_read}>
 							<div class="notif-avatar">
 								{notif.actor_nickname.charAt(0)}

@@ -73,14 +73,28 @@ export const login = async (body: LoginBody): Promise<LoginResponse> => {
 
 export const kakaoOAuthLogin = async () => {
 	const res = await fetch('/api/v1/auth/login/oauth/kakao');
+	if (!res.ok) {
+		const err = await res.json();
+		throw new Error(err.error ?? '서버 오류');
+	}
+	return res.json();
 };
 
 export const naverOAuthLogin = async () => {
 	const res = await fetch('/api/v1/auth/login/oauth/naver');
+	if (!res.ok) {
+		const err = await res.json();
+		throw new Error(err.error ?? '서버 오류');
+	}
+	return res.json();
 };
 
 export const logout = async () => {
 	const res = await fetch('/api/v1/auth/logout', {
 		method: 'POST'
 	});
+	if (!res.ok) {
+		const err = await res.json();
+		throw new Error(err.error ?? '서버 오류');
+	}
 };

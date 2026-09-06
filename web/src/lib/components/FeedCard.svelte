@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { addTaskReaction, removeTaskReaction } from '$lib/api/reaction';
+	import { resolve } from '$app/paths';
 	import type { Feed } from '$lib/types/feed';
 	let {
 		feed,
@@ -18,7 +19,7 @@
 	// feed.feed_id가 바뀔 때만 동기화해서, 이 컴포넌트 자신이 만든
 	// onupdate로 인한 부모 갱신 루프에 휘말리지 않게 한다.
 	$effect(() => {
-		feed.feed_id;
+		void feed.feed_id;
 		liked = feed.is_liked ?? false;
 		cheered = feed.is_cheered ?? false;
 		likeCount = feed.like_count ?? 0;
@@ -38,6 +39,7 @@
 			}
 			onupdate({ is_liked: liked, like_count: likeCount });
 		} catch (e) {
+			console.error(e);
 			liked = prevLiked;
 			likeCount += liked ? 1 : -1;
 		}
@@ -56,6 +58,7 @@
 			}
 			onupdate({ is_cheered: cheered, cheer_count: cheerCount });
 		} catch (e) {
+			console.error(e);
 			cheered = prevCheered;
 			cheerCount = prevCount;
 		}
@@ -91,7 +94,7 @@
 		</span>
 		<div class="feed-body">
 			<div class="feed-meta">
-				<a href={`/profile/${feed.actor_id}`} class="feed-actor">
+				<a href={resolve(`/profile/${feed.actor_id}`)} class="feed-actor">
 					@{feed.actor_nickname}
 				</a>
 				<span class="type-label">{labelMap[feed.type] ?? '활동'}</span>

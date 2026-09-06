@@ -201,6 +201,7 @@
 	font-weight: 600;
 }
 .calendar-cell {
+	box-sizing: border-box;
 	position: relative;
 	width: 100%;
 	min-height: 92px;
@@ -214,11 +215,15 @@
 		background var(--transition-fast),
 		border-color var(--transition-fast);
 }
-.calendar-cell:hover:not(:disabled) {
+.calendar-cell:hover {
 	background: var(--surface-alt);
 }
 .calendar-cell:hover .add-task-btn {
 	opacity: 1;
+}
+.calendar-cell:focus-visible {
+	outline: 2px solid var(--planet-primary);
+	outline-offset: 2px;
 }
 .calendar-cell.empty {
 	background: transparent;
@@ -228,9 +233,6 @@
 .calendar-cell.today {
 	background: rgba(var(--planet-primary-rgb), 0.05);
 	border-color: var(--planet-primary);
-}
-.calendar-cell:disabled {
-	cursor: default;
 }
 /* ==========================
    Cell
@@ -353,11 +355,6 @@
 	gap: 5px;
 	color: var(--text-secondary);
 	font-size: 0.8rem;
-}
-.orbit-stat svg {
-	flex-shrink: 0;
-	color: var(--planet-primary);
-	opacity: 0.85;
 }
 .orbit-stat strong {
 	color: var(--text-primary);

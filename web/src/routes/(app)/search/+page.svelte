@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
 	import './page.css';
 
 	let { data }: { data: PageData } = $props();
 
-	const q = $derived(data.q);
 	const users = $derived(data.users);
 </script>
 
@@ -23,9 +21,9 @@
 				<p class="empty-text">검색 결과가 없습니다.</p>
 			</div>
 		{:else}
-			{#each users as user}
+			{#each users as user (user.userid)}
 				<div class="user-card">
-					<a href={`/profile/${user.userid}`} class="user-info">
+					<a href={resolve(`/profile/${user.userid}`)} class="user-info">
 						<div class="user-avatar">🪐</div>
 						<div class="user-detail">
 							<span class="user-nickname">{user.nickname}</span>

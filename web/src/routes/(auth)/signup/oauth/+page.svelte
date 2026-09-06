@@ -1,6 +1,7 @@
 <script lang="ts">
 	import logo from '$lib/assets/planet.png';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { onDestroy } from 'svelte';
 	import { createOAuthUser, checkUsername } from '$lib/api/auth';
 	import { validateNickname } from '$lib/utils/validation';
@@ -107,7 +108,7 @@
 		try {
 			// 회원가입 요청 하나에 이미지까지 함께 전송 (multipart/form-data)
 			await createOAuthUser({ username, nickname, agreeTerms, agreePrivacy }, profileImageFile);
-			goto('/login');
+			goto(resolve('/login'));
 		} catch (e) {
 			console.error('oauth signup failed', e);
 			error = '회원가입에 실패했습니다. 다시 시도해주세요.';
@@ -221,7 +222,7 @@
 		</form>
 
 		<div class="login-footer">
-			이미 계정이 있으신가요? <a href="/login">로그인</a>
+			이미 계정이 있으신가요? <a href={resolve('/login')}>로그인</a>
 		</div>
 	</div>
 </div>

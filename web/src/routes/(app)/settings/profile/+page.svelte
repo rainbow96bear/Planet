@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { invalidate } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import './page.css';
 	import { updateProfile, uploadProfileImage, deleteProfileImage } from '$lib/api/user.js';
 
@@ -89,7 +88,7 @@
 
 <div class="settings-container">
 	<div class="settings-header">
-		<a href={`/profile/${user?.userid}`} class="back-btn">
+		<a href={resolve(`/profile/${user?.userid}`)} class="back-btn">
 			<svg
 				width="16"
 				height="16"
@@ -196,7 +195,7 @@
 			{/if}
 
 			<div class="form-actions">
-				<a href={`/profile/${user?.userid}`} class="btn-cancel">취소</a>
+				<a href={resolve(`/profile/${user?.userid}`)} class="btn-cancel">취소</a>
 				<button type="submit" class="btn-submit" disabled={loading}>
 					{#if loading}
 						<span class="spinner"></span>
