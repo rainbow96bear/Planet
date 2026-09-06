@@ -32,7 +32,6 @@
 			<p class="error-msg">{error}</p>
 		{/if}
 
-
 		<!-- 
 		<form onsubmit={handleSubmit}>
 		<div class="field">

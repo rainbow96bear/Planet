@@ -115,7 +115,8 @@
 		<div class="dropdown" role="dialog" aria-label="알림 목록">
 			<div class="drop-header">
 				<span class="drop-title">알림</span>
-				<button class="mark-all-btn" onclick={handleMarkAll} disabled={markingAll}>모두 읽음</button>
+				<button class="mark-all-btn" onclick={handleMarkAll} disabled={markingAll}>모두 읽음</button
+				>
 			</div>
 			<div class="tabs">
 				{#each ['all', 'orbit', 'reaction'] as const as t (t)}

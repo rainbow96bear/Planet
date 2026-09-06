@@ -1,8 +1,4 @@
-import type {
-	CreateTaskBody,
-	CreateTaskResponse,
-	GetTasksByMonthResponse,
-} from '$lib/types/task';
+import type { CreateTaskBody, CreateTaskResponse, GetTasksByMonthResponse } from '$lib/types/task';
 
 export const getTasksByMonth = async (
 	userid: string,
