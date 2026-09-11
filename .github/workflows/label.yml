@@ -8,6 +8,7 @@ jobs:
   backend:
     name: Backend (Go)
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,20 +19,18 @@ jobs:
           go-version: '1.24'
           cache-dependency-path: api/go.sum
 
-      - name: go build
+      - name: Build
         working-directory: api
         run: go build ./...
 
-      - name: go vet
+      - name: Vet
         working-directory: api
         run: go vet ./...
 
   frontend:
     name: Frontend (SvelteKit)
     runs-on: ubuntu-latest
-    # svelte-check가 $env/static/private를 통해 이 값들을 참조하므로,
-    # 파일(.env) 없이 CI job 환경변수로 직접 주입한다.
-    # 타입 체크만 통과하면 되는 값들이라 진짜 값일 필요는 없다.
+
     env:
       GO_API_URL: http://localhost:8080
       ACCESS_TOKEN_SECRET: dummy-secret
@@ -41,6 +40,7 @@ jobs:
       NAVER_CLIENT_ID: dummy
       NAVER_CLIENT_SECRET: dummy
       NAVER_REDIRECT_URI: http://localhost/callback
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,3 +59,11 @@ jobs:
       - name: Type & Svelte check
         working-directory: web
         run: npm run check
+
+      - name: Lint
+        working-directory: web
+        run: npm run lint
+
+      - name: Build
+        working-directory: web
+        run: npm run build

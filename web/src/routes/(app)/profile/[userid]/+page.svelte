@@ -1,280 +1,298 @@
 <script lang="ts">
-    import { getTasksByMonth } from '$lib/api/task'
-    import { enterOrbit, leaveOrbit } from '$lib/api/user'
-    import type { PageData } from './$types'
-    import type { Task } from '$lib/types/task'
-    import TaskModal from '$lib/components/TaskModal.svelte'
-    import AddTaskModal from '$lib/components/AddTaskModal.svelte'
-    import './page.css'
+	import { getTasksByMonth } from '$lib/api/task';
+	import { enterOrbit, leaveOrbit } from '$lib/api/user';
+	import { resolve } from '$app/paths';
+	import type { PageData } from './$types';
+	import type { Task } from '$lib/types/task';
+	import TaskModal from '$lib/components/TaskModal.svelte';
+	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
+	import './page.css';
 	import { page } from '$app/stores';
 
-    let { data }: { data: PageData } = $props()
-    const userid = $derived($page.params.userid || "")
-    const isOwner = $derived(userid === data.me?.userid)
-    let tasks = $state<Task[]>(Array.isArray(data.tasks) ? data.tasks : [])
-    let year = $state(data.year)
-    let month = $state(data.month)
-    let loading = $state(false)
-    let isOrbiting = $state(data.profileUser.is_orbiting ?? false)
-    let orbitLoading = $state(false)
+	let { data }: { data: PageData } = $props();
+	const userid = $derived($page.params.userid || '');
+	const isOwner = $derived(userid === data.me?.userid);
+	let tasks = $state<Task[]>(Array.isArray(data.tasks) ? data.tasks : []);
+	let year = $state(data.year);
+	let month = $state(data.month);
+	let loading = $state(false);
+	let isOrbiting = $state(data.profileUser.is_orbiting ?? false);
+	let orbitLoading = $state(false);
 
-    // Orbit(내가 궤도를 도는 대상 수) / Gravity(나를 궤도로 끌어들인 사람 수)는
-    // 이미 GetProfile 응답(/api/v1/users/:userid)에 포함되어 있어 별도 요청이 필요 없다.
-    const orbitCount = $derived(data.profileUser.orbit ?? 0)
-    const gravityCount = $derived(data.profileUser.gravity ?? 0)
+	// Orbit(내가 궤도를 도는 대상 수) / Gravity(나를 궤도로 끌어들인 사람 수)는
+	// 이미 GetProfile 응답(/api/v1/users/:userid)에 포함되어 있어 별도 요청이 필요 없다.
+	const orbitCount = $derived(data.profileUser.orbit ?? 0);
+	const gravityCount = $derived(data.profileUser.gravity ?? 0);
 
-    let selectedDay = $state<number | null>(null)
-    let addDay = $state<number | null>(null)
+	let selectedDay = $state<number | null>(null);
+	let addDay = $state<number | null>(null);
 
-    $effect(() => {
-        tasks = Array.isArray(data.tasks) ? data.tasks : []
-    })
+	$effect(() => {
+		tasks = Array.isArray(data.tasks) ? data.tasks : [];
+	});
 
-    // 다른 유저 프로필로 이동(userid 변경)했을 때, 이전 프로필에서 쓰던
-    // year/month/isOrbiting이 그대로 남아있지 않도록 새로 내려온
-    // 서버 데이터로 다시 맞춘다. (prevMonth/nextMonth로 인한 로컬 변경은
-    // userid가 그대로라 이 effect가 다시 실행되지 않아 덮어써지지 않는다.)
-    $effect(() => {
-        userid
-        year = data.year
-        month = data.month
-        isOrbiting = data.profileUser.is_orbiting ?? false
-    })
+	// 다른 유저 프로필로 이동(userid 변경)했을 때, 이전 프로필에서 쓰던
+	// year/month/isOrbiting이 그대로 남아있지 않도록 새로 내려온
+	// 서버 데이터로 다시 맞춘다. (prevMonth/nextMonth로 인한 로컬 변경은
+	// userid가 그대로라 이 effect가 다시 실행되지 않아 덮어써지지 않는다.)
+	$effect(() => {
+		void userid;
+		year = data.year;
+		month = data.month;
+		isOrbiting = data.profileUser.is_orbiting ?? false;
+	});
 
-    async function prevMonth() {
-        if (month === 1) { year -= 1; month = 12 }
-        else { month -= 1 }
-        loading = true
-        tasks = await getTasksByMonth(userid, year, month)
-        loading = false
-    }
+	async function prevMonth() {
+		if (month === 1) {
+			year -= 1;
+			month = 12;
+		} else {
+			month -= 1;
+		}
+		loading = true;
+		tasks = await getTasksByMonth(userid, year, month);
+		loading = false;
+	}
 
-    async function nextMonth() {
-        if (month === 12) { year += 1; month = 1 }
-        else { month += 1 }
-        loading = true
-        tasks = await getTasksByMonth(userid, year, month)
-        loading = false
-    }
+	async function nextMonth() {
+		if (month === 12) {
+			year += 1;
+			month = 1;
+		} else {
+			month += 1;
+		}
+		loading = true;
+		tasks = await getTasksByMonth(userid, year, month);
+		loading = false;
+	}
 
-    async function handleEnterOrbit() {
-        orbitLoading = true
-        try {
-            await enterOrbit(userid)
-            isOrbiting = true
-        } catch (e) {
-            console.error(e)
-        } finally {
-            orbitLoading = false
-        }
-    }
+	async function handleEnterOrbit() {
+		orbitLoading = true;
+		try {
+			await enterOrbit(userid);
+			isOrbiting = true;
+		} catch (e) {
+			console.error(e);
+		} finally {
+			orbitLoading = false;
+		}
+	}
 
-    async function handleLeaveOrbit() {
-        orbitLoading = true
-        try {
-            await leaveOrbit(userid)
-            isOrbiting = false
-        } catch (e) {
-            console.error(e)
-        } finally {
-            orbitLoading = false
-        }
-    }
+	async function handleLeaveOrbit() {
+		orbitLoading = true;
+		try {
+			await leaveOrbit(userid);
+			isOrbiting = false;
+		} catch (e) {
+			console.error(e);
+		} finally {
+			orbitLoading = false;
+		}
+	}
 
-    // 삭제 콜백: 페이지 tasks에서 제거
-    function handleTaskDeleted(taskId: string) {
-        tasks = tasks.filter(t => t.id !== taskId)
-    }
+	// 삭제 콜백: 페이지 tasks에서 제거
+	function handleTaskDeleted(taskId: string) {
+		tasks = tasks.filter((t) => t.id !== taskId);
+	}
 
-    // 토글 콜백: 페이지 tasks에서 완료 상태 반전
-    function handleTaskToggled(taskId: string) {
-        tasks = tasks.map(t =>
-            t.id === taskId ? { ...t, is_completed: !t.is_completed } : t
-        )
-    }
+	// 토글 콜백: 페이지 tasks에서 완료 상태 반전
+	function handleTaskToggled(taskId: string) {
+		tasks = tasks.map((t) => (t.id === taskId ? { ...t, is_completed: !t.is_completed } : t));
+	}
 
-    const DAYS = ['일', '월', '화', '수', '목', '금', '토']
+	const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-    function getCalendarDays(year: number, month: number) {
-        const firstDay = new Date(year, month - 1, 1).getDay()
-        const lastDate = new Date(year, month, 0).getDate()
-        const days: (number | null)[] = []
-        for (let i = 0; i < firstDay; i++) days.push(null)
-        for (let i = 1; i <= lastDate; i++) days.push(i)
-        return days
-    }
+	function getCalendarDays(year: number, month: number) {
+		const firstDay = new Date(year, month - 1, 1).getDay();
+		const lastDate = new Date(year, month, 0).getDate();
+		const days: (number | null)[] = [];
+		for (let i = 0; i < firstDay; i++) days.push(null);
+		for (let i = 1; i <= lastDate; i++) days.push(i);
+		return days;
+	}
 
-    function getTasksForDay(day: number) {
-        return tasks.filter(t => new Date(t.date).getDate() === day)
-    }
+	function getTasksForDay(day: number) {
+		return tasks.filter((t) => new Date(t.date).getDate() === day);
+	}
 
-    function getTodayDay() {
-        const now = new Date()
-        if (now.getFullYear() === year && now.getMonth() + 1 === month) {
-            return now.getDate()
-        }
-        return null
-    }
+	function getTodayDay() {
+		const now = new Date();
+		if (now.getFullYear() === year && now.getMonth() + 1 === month) {
+			return now.getDate();
+		}
+		return null;
+	}
 
-    function openTaskModal(day: number) {
-        selectedDay = day
-    }
+	function openTaskModal(day: number) {
+		selectedDay = day;
+	}
 
-    function openAddModal(day: number, e: MouseEvent) {
-        e.stopPropagation()
-        addDay = day
-    }
+	function openAddModal(day: number, e: MouseEvent) {
+		e.stopPropagation();
+		addDay = day;
+	}
 
-    function handleAddClick() {
-        if (selectedDay !== null) {
-            addDay = selectedDay
-        }
-    }
+	function handleAddClick() {
+		if (selectedDay !== null) {
+			addDay = selectedDay;
+		}
+	}
 
-    function handleTaskCreated(task: Task) {
-        tasks = [...tasks, task]
-    }
+	function handleTaskCreated(task: Task) {
+		tasks = [...tasks, task];
+	}
 
-    function handleCellKeydown(e: KeyboardEvent, day: number) {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            openTaskModal(day)
-        }
-    }
+	function handleCellKeydown(e: KeyboardEvent, day: number) {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			openTaskModal(day);
+		}
+	}
 </script>
 
 <div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-image">
-            {#if data.profileUser.profile_image}
-                <img
-                    src={data.profileUser.profile_image}
-                    alt="{data.profileUser.nickname}님의 프로필 이미지"
-                    class="profile-image-photo"
-                />
-            {:else}
-                <span class="profile-image-placeholder">🪐</span>
-            {/if}
-        </div>
-        <div class="profile-info">
-            <h1 class="profile-nickname">{data.profileUser.nickname}</h1>
-            <span class="profile-username">@{data.profileUser.username}</span>
+	<div class="profile-header">
+		<div class="profile-image">
+			{#if data.profileUser.profile_image}
+				<img
+					src={data.profileUser.profile_image}
+					alt="{data.profileUser.nickname}님의 프로필 이미지"
+					class="profile-image-photo"
+				/>
+			{:else}
+				<span class="profile-image-placeholder">🪐</span>
+			{/if}
+		</div>
+		<div class="profile-info">
+			<h1 class="profile-nickname">{data.profileUser.nickname}</h1>
+			<span class="profile-username">@{data.profileUser.username}</span>
 
-            <div class="orbit-stats">
-                <span class="orbit-stat">
-                    <strong>{orbitCount}</strong>
-                    <span class="orbit-stat-label">Orbit</span>
-                </span>
-                <span class="orbit-stat">
-                    <strong>{gravityCount}</strong>
-                    <span class="orbit-stat-label">Gravity</span>
-                </span>
-            </div>
-        </div>
+			<div class="orbit-stats">
+				<span class="orbit-stat">
+					<strong>{orbitCount}</strong>
+					<span class="orbit-stat-label">Orbit</span>
+				</span>
+				<span class="orbit-stat">
+					<strong>{gravityCount}</strong>
+					<span class="orbit-stat-label">Gravity</span>
+				</span>
+			</div>
+		</div>
 
-        <div class="profile-actions">
-            {#if isOwner}
-                <a href="/settings/profile" class="action-btn secondary">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    프로필 수정
-                </a>
-            {:else}
-                {#if orbitLoading}
-                    <button class="action-btn primary" disabled aria-label="처리 중">
-                        <span class="spinner"></span>
-                    </button>
-                {:else if isOrbiting}
-                    <button class="action-btn orbiting" onclick={handleLeaveOrbit}>
-                        <span class="btn-text-default">In Orbit</span>
-                        <span class="btn-text-hover">Leave Orbit</span>
-                    </button>
-                {:else}
-                    <button class="action-btn primary" onclick={handleEnterOrbit}>
-                        Enter Orbit
-                    </button>
-                {/if}
-            {/if}
-        </div>
-    </div>
+		<div class="profile-actions">
+			{#if isOwner}
+				<a href={resolve('/settings/profile')} class="action-btn secondary">
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+					</svg>
+					프로필 수정
+				</a>
+			{:else if orbitLoading}
+				<button class="action-btn primary" disabled aria-label="처리 중">
+					<span class="spinner"></span>
+				</button>
+			{:else if isOrbiting}
+				<button class="action-btn orbiting" onclick={handleLeaveOrbit}>
+					<span class="btn-text-default">In Orbit</span>
+					<span class="btn-text-hover">Leave Orbit</span>
+				</button>
+			{:else}
+				<button class="action-btn primary" onclick={handleEnterOrbit}> Enter Orbit </button>
+			{/if}
+		</div>
+	</div>
 
-    <div class="calendar-card">
-        <div class="calendar-nav">
-            <button class="nav-btn" onclick={prevMonth} disabled={loading}>◀</button>
-            <span class="calendar-title">{year}년 {month}월</span>
-            <button class="nav-btn" onclick={nextMonth} disabled={loading}>▶</button>
-        </div>
+	<div class="calendar-card">
+		<div class="calendar-nav">
+			<button class="nav-btn" onclick={prevMonth} disabled={loading}>◀</button>
+			<span class="calendar-title">{year}년 {month}월</span>
+			<button class="nav-btn" onclick={nextMonth} disabled={loading}>▶</button>
+		</div>
 
-        {#if loading}
-            <div class="calendar-loading">불러오는 중...</div>
-        {:else}
-            <div class="calendar-grid">
-                {#each DAYS as day}
-                    <div class="calendar-day-header">{day}</div>
-                {/each}
+		{#if loading}
+			<div class="calendar-loading">불러오는 중...</div>
+		{:else}
+			<div class="calendar-grid">
+				{#each DAYS as day (day)}
+					<div class="calendar-day-header">{day}</div>
+				{/each}
 
-                {#each getCalendarDays(year, month) as day, i}
-                    {@const isToday = day === getTodayDay()}
-                    {#if day === null}
-                        <div class="calendar-cell empty" aria-hidden="true"></div>
-                    {:else}
-                        <div
-                            class="calendar-cell {isToday ? 'today' : ''}"
-                            role="button"
-                            tabindex="0"
-                            onclick={() => openTaskModal(day)}
-                            onkeydown={(e) => handleCellKeydown(e, day)}
-                        >
-                            <div class="cell-top">
-                                <span class="day-number {i % 7 === 0 ? 'sunday' : i % 7 === 6 ? 'saturday' : ''} {isToday ? 'today-number' : ''}">
-                                    {day}
-                                </span>
-                                {#if isOwner}
-                                    <button
-                                        class="add-task-btn"
-                                        onclick={(e) => openAddModal(day, e)}
-                                        title="할 일 추가"
-                                        aria-label="할 일 추가"
-                                    >+</button>
-                                {/if}
-                            </div>
-                            <div class="task-list">
-                                {#each getTasksForDay(day) as task}
-                                    <div class="task-chip {task.is_completed ? 'completed' : ''}">
-                                        {task.title}
-                                    </div>
-                                {/each}
-                            </div>
-                        </div>
-                    {/if}
-                {/each}
-            </div>
-        {/if}
-    </div>
+				{#each getCalendarDays(year, month) as day, i (i)}
+					{@const isToday = day === getTodayDay()}
+					{#if day === null}
+						<div class="calendar-cell empty" aria-hidden="true"></div>
+					{:else}
+						<div
+							class="calendar-cell {isToday ? 'today' : ''}"
+							role="button"
+							tabindex="0"
+							onclick={() => openTaskModal(day)}
+							onkeydown={(e) => handleCellKeydown(e, day)}
+						>
+							<div class="cell-top">
+								<span
+									class="day-number {i % 7 === 0
+										? 'sunday'
+										: i % 7 === 6
+											? 'saturday'
+											: ''} {isToday ? 'today-number' : ''}"
+								>
+									{day}
+								</span>
+								{#if isOwner}
+									<button
+										class="add-task-btn"
+										onclick={(e) => openAddModal(day, e)}
+										title="할 일 추가"
+										aria-label="할 일 추가">+</button
+									>
+								{/if}
+							</div>
+							<div class="task-list">
+								{#each getTasksForDay(day) as task (task.id)}
+									<div class="task-chip {task.is_completed ? 'completed' : ''}">
+										{task.title}
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				{/each}
+			</div>
+		{/if}
+	</div>
 </div>
 
 {#if selectedDay !== null && addDay === null}
-    <TaskModal
-        day={selectedDay}
-        {year}
-        {month}
-        tasks={getTasksForDay(selectedDay)}
-        {isOwner}
-        onClose={() => selectedDay = null}
-        onAddClick={handleAddClick}
-        onDeleted={handleTaskDeleted}
-        onToggled={handleTaskToggled}
-    />
+	<TaskModal
+		day={selectedDay}
+		{year}
+		{month}
+		tasks={getTasksForDay(selectedDay)}
+		{isOwner}
+		onClose={() => (selectedDay = null)}
+		onAddClick={handleAddClick}
+		onDeleted={handleTaskDeleted}
+		onToggled={handleTaskToggled}
+	/>
 {/if}
 
 {#if addDay !== null}
-    <AddTaskModal
-        day={addDay}
-        {year}
-        {month}
-        onClose={() => addDay = null}
-        onCreated={handleTaskCreated}
-    />
+	<AddTaskModal
+		day={addDay}
+		{year}
+		{month}
+		onClose={() => (addDay = null)}
+		onCreated={handleTaskCreated}
+	/>
 {/if}

@@ -1,311 +1,311 @@
 .settings-container {
-    max-width: 560px;
-    margin: 0 auto;
-    padding: var(--space-3xl) var(--space-lg);
+	max-width: 560px;
+	margin: 0 auto;
+	padding: var(--space-3xl) var(--space-lg);
 }
 /* ==========================
    Header
 ========================== */
 .settings-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-2xl);
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+	margin-bottom: var(--space-2xl);
 }
 .back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    height: 38px;
-    padding: 0 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    font-size: .875rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition:
-        background var(--transition-fast),
-        color var(--transition-fast),
-        border-color var(--transition-fast);
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	height: 38px;
+	padding: 0 14px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition:
+		background var(--transition-fast),
+		color var(--transition-fast),
+		border-color var(--transition-fast);
 }
 .back-btn:hover {
-    background: var(--surface-alt);
-    color: var(--planet-primary);
+	background: var(--surface-alt);
+	color: var(--planet-primary);
 }
 .settings-title {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
+	margin: 0;
+	color: var(--text-primary);
+	font-size: 1.25rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 /* ==========================
    Card
 ========================== */
 .settings-card {
-    padding: var(--space-2xl);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+	padding: var(--space-2xl);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
 }
 /* ==========================
    Avatar
 ========================== */
 .profile-image-section {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-2xl);
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+	margin-bottom: var(--space-2xl);
 }
 .profile-image-picker {
-    position: relative;
-    flex-shrink: 0;
-    width: 68px;
-    height: 68px;
+	position: relative;
+	flex-shrink: 0;
+	width: 68px;
+	height: 68px;
 }
 .profile-image-image {
-    display: block;
-    width: 68px;
-    height: 68px;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    border-radius: 50%;
+	display: block;
+	width: 68px;
+	height: 68px;
+	object-fit: cover;
+	border: 1px solid var(--border);
+	border-radius: 50%;
 }
 .profile-image-placeholder-circle {
-    width: 68px;
-    height: 68px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 2.5rem;
-    background: var(--surface-alt);
-    border: 1px solid var(--border);
-    border-radius: 50%;
+	width: 68px;
+	height: 68px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	font-size: 2.5rem;
+	background: var(--surface-alt);
+	border: 1px solid var(--border);
+	border-radius: 50%;
 }
 .profile-image-edit-btn {
-    position: absolute;
-    right: -2px;
-    bottom: -2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    background: var(--planet-primary);
-    border: 2px solid var(--surface);
-    border-radius: 50%;
-    color: var(--text-on-dark);
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
-    transition:
-        background var(--transition-fast),
-        transform var(--transition-fast);
+	position: absolute;
+	right: -2px;
+	bottom: -2px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	background: var(--planet-primary);
+	border: 2px solid var(--surface);
+	border-radius: 50%;
+	color: var(--text-on-dark);
+	cursor: pointer;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+	transition:
+		background var(--transition-fast),
+		transform var(--transition-fast);
 }
 .profile-image-edit-btn:hover {
-    background: var(--planet-primary-hover);
-    transform: scale(1.08);
+	background: var(--planet-primary-hover);
+	transform: scale(1.08);
 }
 .profile-image-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2xs);
 }
 .profile-image-name {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
+	color: var(--text-primary);
+	font-size: 1.1rem;
+	font-weight: 700;
 }
 .profile-image-username {
-    color: var(--text-secondary);
-    font-size: .875rem;
+	color: var(--text-secondary);
+	font-size: 0.875rem;
 }
 .profile-image-remove-link {
-    align-self: flex-start;
-    padding: 0;
-    margin-top: 2px;
-    background: none;
-    border: none;
-    color: var(--danger);
-    font-size: .8125rem;
-    font-weight: 500;
-    cursor: pointer;
+	align-self: flex-start;
+	padding: 0;
+	margin-top: 2px;
+	background: none;
+	border: none;
+	color: var(--danger);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	cursor: pointer;
 }
 .profile-image-remove-link:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 .profile-image-remove-link:disabled {
-    color: var(--text-muted);
-    cursor: not-allowed;
-    text-decoration: none;
+	color: var(--text-muted);
+	cursor: not-allowed;
+	text-decoration: none;
 }
 /* ==========================
    Divider
 ========================== */
 .divider {
-    height: 1px;
-    margin: 0 0 var(--space-2xl);
-    background: var(--border-subtle);
+	height: 1px;
+	margin: 0 0 var(--space-2xl);
+	background: var(--border-subtle);
 }
 /* ==========================
    Form
 ========================== */
 .settings-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xl);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xl);
 }
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
 }
 .form-label {
-    color: var(--text-secondary);
-    font-size: .875rem;
-    font-weight: 600;
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	font-weight: 600;
 }
 .form-input {
-    width: 100%;
-    height: 42px;
-    padding: 0 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font: inherit;
-    transition:
-        border-color var(--transition-fast),
-        background var(--transition-fast),
-        box-shadow var(--transition-fast);
-    box-sizing: border-box;
+	width: 100%;
+	height: 42px;
+	padding: 0 14px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	color: var(--text-primary);
+	font: inherit;
+	transition:
+		border-color var(--transition-fast),
+		background var(--transition-fast),
+		box-shadow var(--transition-fast);
+	box-sizing: border-box;
 }
 .form-input:focus {
-    outline: none;
-    background: var(--surface);
-    border-color: var(--planet-primary);
-    box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), .12);
+	outline: none;
+	background: var(--surface);
+	border-color: var(--planet-primary);
+	box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.12);
 }
 .form-input:disabled {
-    background: var(--surface-alt);
-    color: var(--text-muted);
-    cursor: not-allowed;
+	background: var(--surface-alt);
+	color: var(--text-muted);
+	cursor: not-allowed;
 }
 .form-textarea {
-    height: auto;
-    min-height: 96px;
-    padding: 12px 14px;
-    resize: vertical;
-    line-height: 1.6;
+	height: auto;
+	min-height: 96px;
+	padding: 12px 14px;
+	resize: vertical;
+	line-height: 1.6;
 }
 .form-hint {
-    text-align: right;
-    color: var(--text-muted);
-    font-size: .75rem;
+	text-align: right;
+	color: var(--text-muted);
+	font-size: 0.75rem;
 }
 /* ==========================
    Messages
 ========================== */
 .form-error,
 .form-success {
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    font-size: .875rem;
+	padding: var(--space-sm) var(--space-md);
+	border-radius: var(--radius-md);
+	font-size: 0.875rem;
 }
 .form-error {
-    color: var(--danger);
-    background: rgba(var(--danger-rgb), .06);
-    border: 1px solid rgba(var(--danger-rgb), .12);
+	color: var(--danger);
+	background: rgba(var(--danger-rgb), 0.06);
+	border: 1px solid rgba(var(--danger-rgb), 0.12);
 }
 .form-success {
-    color: var(--success);
-    background: rgba(var(--success-rgb), .06);
-    border: 1px solid rgba(var(--success-rgb), .12);
+	color: var(--success);
+	background: rgba(var(--success-rgb), 0.06);
+	border: 1px solid rgba(var(--success-rgb), 0.12);
 }
 /* ==========================
    Actions
 ========================== */
 .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-sm);
-    margin-top: var(--space-xs);
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--space-sm);
+	margin-top: var(--space-xs);
 }
 .btn-cancel,
 .btn-submit {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
-    padding: 0 18px;
-    border-radius: var(--radius-md);
-    font-size: .875rem;
-    font-weight: 600;
-    transition:
-        background var(--transition-fast),
-        color var(--transition-fast),
-        border-color var(--transition-fast);
-    text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 40px;
+	padding: 0 18px;
+	border-radius: var(--radius-md);
+	font-size: 0.875rem;
+	font-weight: 600;
+	transition:
+		background var(--transition-fast),
+		color var(--transition-fast),
+		border-color var(--transition-fast);
+	text-decoration: none;
 }
 .btn-cancel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--text-secondary);
 }
 .btn-cancel:hover {
-    background: var(--surface-alt);
-    color: var(--text-primary);
+	background: var(--surface-alt);
+	color: var(--text-primary);
 }
 .btn-submit {
-    min-width: 84px;
-    background: var(--planet-primary);
-    border: 1px solid var(--planet-primary);
-    color: var(--text-on-dark);
-    cursor: pointer;
+	min-width: 84px;
+	background: var(--planet-primary);
+	border: 1px solid var(--planet-primary);
+	color: var(--text-on-dark);
+	cursor: pointer;
 }
 .btn-submit:hover:not(:disabled) {
-    background: var(--planet-primary-hover);
+	background: var(--planet-primary-hover);
 }
 .btn-submit:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 /* ==========================
    Spinner
 ========================== */
 .spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid currentColor;
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin .6s linear infinite;
+	width: 14px;
+	height: 14px;
+	border: 2px solid currentColor;
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: spin 0.6s linear infinite;
 }
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+	to {
+		transform: rotate(360deg);
+	}
 }
 /* ==========================
    Responsive
 ========================== */
 @media (max-width: 520px) {
-    .settings-container {
-        padding: var(--space-2xl) var(--space-md);
-    }
-    .settings-card {
-        padding: var(--space-xl);
-    }
-    .profile-image-section {
-        margin-bottom: var(--space-xl);
-    }
-    .form-actions {
-        flex-direction: column-reverse;
-    }
-    .btn-cancel,
-    .btn-submit {
-        width: 100%;
-    }
+	.settings-container {
+		padding: var(--space-2xl) var(--space-md);
+	}
+	.settings-card {
+		padding: var(--space-xl);
+	}
+	.profile-image-section {
+		margin-bottom: var(--space-xl);
+	}
+	.form-actions {
+		flex-direction: column-reverse;
+	}
+	.btn-cancel,
+	.btn-submit {
+		width: 100%;
+	}
 }
