@@ -155,7 +155,8 @@ func (h *authHandler) OauthLogin(c *gin.Context) {
 
 	res, err := h.authSvc.OauthLogin(&req)
 	if err != nil {
-		c.JSON(401, gin.H{"error": ""})
+		c.JSON(401, gin.H{"error": "oauth login failed"})
+		return
 	}
 
 	c.JSON(200, res)

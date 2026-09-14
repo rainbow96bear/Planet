@@ -65,3 +65,9 @@
 - docker compose up -d
 #### 삭제
 - docker compose down -v
+
+---
+
+## 📚 개발 문서
+
+- [로깅 가이드](./docs/LOGGING.md) — 로그 기록 양식, 레벨별 사용 기준

@@ -8,8 +8,8 @@ import (
 )
 
 type ReactionRepository interface {
-	Upsert(reaction *model.Reaction) error
-	Delete(taskID, userID string, reactionType model.ReactionType) error
+	Upsert(tx *gorm.DB, reaction *model.Reaction) error
+	Delete(tx *gorm.DB, taskID, userID string, reactionType model.ReactionType) error
 	DeleteByTaskID(tx *gorm.DB, taskID string) error
 }
 
@@ -28,14 +28,14 @@ func (r *reactionRepository) getDB(tx *gorm.DB) *gorm.DB {
 	return r.db
 }
 
-func (r *reactionRepository) Upsert(reaction *model.Reaction) error {
-	return r.db.
+func (r *reactionRepository) Upsert(tx *gorm.DB, reaction *model.Reaction) error {
+	return r.getDB(tx).
 		Clauses(clause.OnConflict{DoNothing: true}).
 		Create(reaction).Error
 }
 
-func (r *reactionRepository) Delete(taskID, userID string, reactionType model.ReactionType) error {
-	return r.db.
+func (r *reactionRepository) Delete(tx *gorm.DB, taskID, userID string, reactionType model.ReactionType) error {
+	return r.getDB(tx).
 		Where("task_id = ? AND user_id = ? AND type = ?", taskID, userID, reactionType).
 		Delete(&model.Reaction{}).Error
 }

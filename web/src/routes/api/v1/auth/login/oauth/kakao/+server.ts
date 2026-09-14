@@ -7,7 +7,6 @@ export const GET: RequestHandler = async () => {
 	params.append('response_type', 'code');
 	params.append('client_id', KAKAO_REST_API_KEY);
 	params.append('redirect_uri', KAKAO_REDIRECT_URI);
-	params.append('client_secret', KAKAO_CLIENT_SECRET);
 
 	throw redirect(302, `https://kauth.kakao.com/oauth/authorize?${params}`);
 };
