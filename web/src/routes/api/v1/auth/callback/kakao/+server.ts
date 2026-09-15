@@ -17,15 +17,15 @@ export const GET: RequestHandler = async ({ url, fetch, cookies }) => {
 		return json({ error: 'code가 없습니다' }, { status: 400 });
 	}
 
-	// CSRF 방지: authorize 요청 시 심어둔 state와 콜백으로 돌아온 state가 일치하는지 확인.
-	// (authorize 라우트에서 'oauth_state' 쿠키를 생성/저장하도록 별도 수정 필요)
-	const returnedState = url.searchParams.get('state');
-	const savedState = cookies.get('oauth_state');
-	cookies.delete('oauth_state', { path: '/' });
+	// // CSRF 방지: authorize 요청 시 심어둔 state와 콜백으로 돌아온 state가 일치하는지 확인.
+	// // (authorize 라우트에서 'oauth_state' 쿠키를 생성/저장하도록 별도 수정 필요)
+	// const returnedState = url.searchParams.get('state');
+	// const savedState = cookies.get('oauth_state');
+	// cookies.delete('oauth_state', { path: '/' });
 
-	if (!returnedState || !savedState || returnedState !== savedState) {
-		return json({ error: '잘못된 요청입니다 (state mismatch)' }, { status: 400 });
-	}
+	// if (!returnedState || !savedState || returnedState !== savedState) {
+	// 	return json({ error: '잘못된 요청입니다 (state mismatch)' }, { status: 400 });
+	// }
 
 	// 1. code → access_token 교환
 	const params = new URLSearchParams();

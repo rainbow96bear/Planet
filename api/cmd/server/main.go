@@ -16,6 +16,7 @@ import (
 	"planet/internal/repository"
 	"planet/internal/service"
 	"planet/internal/storage"
+	"runtime/debug"
 	"strings"
 	"syscall"
 	"time"
@@ -97,9 +98,15 @@ func main() {
 
 	// gin.Default()의 텍스트 포맷 Logger 미들웨어 대신 slog 기반 요청 로거를 사용해서
 	// 서버 전체 로그 포맷을 일관되게 유지한다 (Cloud Run 등에서 로그 수집 시 유리).
+	//
+	// 미들웨어 순서 주의: slogRequestLogger가 바깥쪽, slogRecovery가 안쪽이어야 한다.
+	// gin.Recovery()는 쓰지 않는다 — panic이 나면 slogRequestLogger의 c.Next() 이후
+	// 코드(status/latency 계산, 로그 출력)가 실행되지 않고 건너뛰어져서, JSON 로그에
+	// 500 에러가 전혀 남지 않는 문제가 있었다. slogRecovery가 panic을 흡수해서
+	// 정상적으로 500을 반환해야 바깥쪽 로거가 그 status를 로깅할 수 있다.
 	r := gin.New()
-	r.Use(gin.Recovery())
 	r.Use(slogRequestLogger())
+	r.Use(slogRecovery())
 
 	// 로컬 스토리지에 저장된 파일 서빙 (프로덕션 스토리지로 교체되면 이 라인은 제거)
 	r.Static("/uploads", uploadDir)
@@ -144,6 +151,7 @@ func main() {
 
 // slogRequestLogger는 각 HTTP 요청을 slog로 구조화해서 남긴다.
 // 4xx/5xx 응답은 Warn/Error로, 그 외에는 Info로 구분한다.
+// user_id(인증 미들웨어가 설정한 경우)와 핸들러 에러(c.Errors)가 있으면 함께 로깅한다.
 func slogRequestLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -160,6 +168,14 @@ func slogRequestLogger() gin.HandlerFunc {
 			"client_ip", c.ClientIP(),
 		}
 
+		if uid, exists := c.Get("userID"); exists {
+			attrs = append(attrs, "user_id", uid)
+		}
+
+		if len(c.Errors) > 0 {
+			attrs = append(attrs, "error", c.Errors.String())
+		}
+
 		switch {
 		case status >= 500:
 			slog.Error("http request", attrs...)
@@ -168,5 +184,25 @@ func slogRequestLogger() gin.HandlerFunc {
 		default:
 			slog.Info("http request", attrs...)
 		}
+	}
+}
+
+// slogRecovery는 gin.Recovery()를 대체한다. panic을 잡아 slog로 스택트레이스와 함께
+// 남기고 500을 반환한다. slogRequestLogger보다 안쪽에 등록해야, panic이 나도
+// 바깥쪽 로거의 status/latency 로깅이 정상적으로 실행된다.
+func slogRecovery() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				slog.Error("panic recovered",
+					"method", c.Request.Method,
+					"path", c.Request.URL.Path,
+					"error", fmt.Sprint(rec),
+					"stack", string(debug.Stack()),
+				)
+				c.AbortWithStatus(http.StatusInternalServerError)
+			}
+		}()
+		c.Next()
 	}
 }
