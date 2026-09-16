@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI, KAKAO_CLIENT_SECRET } from '$env/static/private';
+import { KAKAO_REST_API_KEY, KAKAO_REDIRECT_URI } from '$env/static/private';
 
 export const GET: RequestHandler = async () => {
 	const params = new URLSearchParams();
