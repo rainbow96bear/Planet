@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log/slog"
 	"planet/internal/dto"
 	"planet/internal/model"
 	"planet/internal/repository"
@@ -54,7 +55,13 @@ func (s *reactionService) AddReaction(req *dto.AddReactionRequest) (*dto.AddReac
 			UserID: req.UserID,
 			Type:   reactionType,
 		}
-		if err := s.reactionRepo.Upsert(reaction); err != nil {
+		if err := s.reactionRepo.Upsert(tx, reaction); err != nil {
+			slog.Error("failed to upsert reaction",
+				"task_id", req.TaskID,
+				"user_id", req.UserID,
+				"type", req.Type,
+				"error", err,
+			)
 			return err
 		}
 
@@ -69,6 +76,12 @@ func (s *reactionService) AddReaction(req *dto.AddReactionRequest) (*dto.AddReac
 				IsRead:     false,
 			}
 			if err := s.notificationRepo.Upsert(tx, n); err != nil {
+				slog.Error("failed to create reaction notification",
+					"task_id", req.TaskID,
+					"receiver_id", task.UserID,
+					"actor_id", req.UserID,
+					"error", err,
+				)
 				return err
 			}
 		}
@@ -90,9 +103,23 @@ func (s *reactionService) RemoveReaction(req *dto.RemoveReactionRequest) error {
 	}
 
 	return s.db.Transaction(func(tx *gorm.DB) error {
-		if err := s.reactionRepo.Delete(req.TaskID, req.UserID, reactionType); err != nil {
+		if err := s.reactionRepo.Delete(tx, req.TaskID, req.UserID, reactionType); err != nil {
+			slog.Error("failed to delete reaction",
+				"task_id", req.TaskID,
+				"user_id", req.UserID,
+				"type", req.Type,
+				"error", err,
+			)
 			return err
 		}
-		return s.notificationRepo.DeleteByActorAndTask(tx, req.UserID, req.TaskID, model.NotificationTypeReaction)
+		if err := s.notificationRepo.DeleteByActorAndTask(tx, req.UserID, req.TaskID, model.NotificationTypeReaction); err != nil {
+			slog.Error("failed to delete reaction notification",
+				"task_id", req.TaskID,
+				"actor_id", req.UserID,
+				"error", err,
+			)
+			return err
+		}
+		return nil
 	})
 }

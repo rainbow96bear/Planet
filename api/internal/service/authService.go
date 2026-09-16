@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"io"
-	"log"
+	"log/slog"
 	"planet/internal/constants"
 	"planet/internal/dto"
 	"planet/internal/model"
@@ -50,20 +50,9 @@ func (s *authService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
+		slog.Error("password hashing failed", "username", req.Username, "error", err)
 		return nil, err
 	}
-
-	tx := s.db.Begin()
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r)
-		}
-	}()
 
 	now := time.Now()
 
@@ -81,14 +70,14 @@ func (s *authService) CreateUser(req *dto.CreateUserRequest) (*dto.CreateUserRes
 		PrivacyAgreedAt: &now,
 	}
 
-	if err := s.userRepo.CreateUser(tx, user); err != nil {
-		tx.Rollback()
+	if err := s.db.Transaction(func(tx *gorm.DB) error {
+		return s.userRepo.CreateUser(tx, user)
+	}); err != nil {
+		slog.Error("failed to create user", "username", req.Username, "error", err)
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		return nil, err
-	}
+	slog.Info("user created", "user_id", user.ID, "username", user.Username, "provider", user.Provider)
 
 	// 이미지 업로드는 DB 트랜잭션 밖에서 best-effort로 처리 (실패해도 가입은 유지)
 	s.attachProfileImageBestEffort(user, req.ProfileImage, req.ProfileImageFilename)
@@ -110,21 +99,10 @@ func (s *authService) CreateOAuthUser(req *dto.CreateOAuthUserRequest) (*dto.Cre
 		return nil, errors.New("privacy agreement is required")
 	}
 
-	tx := s.db.Begin()
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r)
-		}
-	}()
-
+	// DB와 무관한 순수 검증이라 트랜잭션 밖에서 먼저 처리한다.
 	claims, err := pkg.ParseTempToken(req.TempToken)
 	if err != nil {
-		tx.Rollback()
+		slog.Warn("invalid temp token on oauth signup", "error", err)
 		return nil, errors.New("invalid temp token")
 	}
 
@@ -143,14 +121,14 @@ func (s *authService) CreateOAuthUser(req *dto.CreateOAuthUserRequest) (*dto.Cre
 		PrivacyAgreedAt: &now,
 	}
 
-	if err := s.userRepo.CreateUser(tx, user); err != nil {
-		tx.Rollback()
+	if err := s.db.Transaction(func(tx *gorm.DB) error {
+		return s.userRepo.CreateUser(tx, user)
+	}); err != nil {
+		slog.Error("failed to create oauth user", "username", req.Username, "provider", claims.Provider, "error", err)
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		return nil, err
-	}
+	slog.Info("oauth user created", "user_id", user.ID, "username", user.Username, "provider", user.Provider)
 
 	// 이미지 업로드는 DB 트랜잭션 밖에서 best-effort로 처리 (실패해도 가입은 유지)
 	s.attachProfileImageBestEffort(user, req.ProfileImage, req.ProfileImageFilename)
@@ -177,21 +155,23 @@ func (s *authService) attachProfileImageBestEffort(user *model.User, image io.Re
 		Reader: image,
 	})
 	if err != nil {
-		log.Printf("profile image upload failed for user %v: %v", user.ID, err)
+		slog.Warn("profile image upload failed", "user_id", user.ID, "error", err)
 		return
 	}
 
 	if err := s.userRepo.UpdateProfileImage(s.db, user.ID, url); err != nil {
-		log.Printf("failed to save profile image url for user %v: %v", user.ID, err)
+		slog.Warn("failed to save profile image url", "user_id", user.ID, "error", err)
 		return
 	}
 
 	user.ProfileImage = url
+	slog.Info("profile image attached", "user_id", user.ID)
 }
 
 func (s *authService) IsUsernameAvailable(req *dto.CheckUsernameRequest) (*dto.CheckUsernameResponse, error) {
 	exists, err := s.userRepo.IsUsernameExists(req.Username)
 	if err != nil {
+		slog.Error("username availability check failed", "username", req.Username, "error", err)
 		return nil, err
 	}
 
@@ -204,32 +184,40 @@ func (s *authService) IsUsernameAvailable(req *dto.CheckUsernameRequest) (*dto.C
 func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 	user, err := s.userRepo.FindByUsername(req.Username)
 	if err != nil {
+		slog.Warn("login failed: user not found", "username", req.Username)
 		return nil, errors.New("user not found")
 	}
 
 	if user.UserStatus != model.UserStatusActive {
+		slog.Warn("login failed: inactive account", "user_id", user.ID, "status", user.UserStatus)
 		return nil, errors.New("account unavailable")
 	}
 
 	// 저장된 hash와 입력된 password 비교
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		slog.Warn("login failed: invalid password", "user_id", user.ID)
 		return nil, errors.New("invalid password")
 	}
 
 	now := time.Now()
 	if err := s.userRepo.UpdateLastLogin(user.ID, now); err != nil {
-		// 로그인을 실패시키진 않고 로그만 남기는 걸 추천
-		log.Printf("failed to update last login: %v", err)
+		// 로그인을 실패시키진 않고 로그만 남긴다
+		slog.Warn("failed to update last login", "user_id", user.ID, "error", err)
 	}
 
 	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username)
 	if err != nil {
-
+		slog.Error("access token generation failed", "user_id", user.ID, "error", err)
+		return nil, err
 	}
 	refreshToken, err := pkg.GenerateRefreshToken(user.ID, user.Username)
 	if err != nil {
-
+		slog.Error("refresh token generation failed", "user_id", user.ID, "error", err)
+		return nil, err
 	}
+
+	slog.Info("login success", "user_id", user.ID, "username", user.Username)
+
 	return &dto.LoginResponse{
 		Username:     user.Username,
 		AccessToken:  accessToken,
@@ -239,12 +227,12 @@ func (s *authService) Login(req *dto.LoginRequest) (*dto.LoginResponse, error) {
 
 func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginResponse, error) {
 	user, err := s.userRepo.FindByProviderInfo(req.Provider, req.ProviderID)
-	log.Printf("provider : %+v, provider id: %+v\n", req.Provider, req.ProviderID)
 	if err != nil {
-		log.Printf("FindByProviderInfo err : %+v\n", err.Error())
-		// 유저 없으면 temp_token 발급
+		slog.Info("oauth login: new user, issuing temp token", "provider", req.Provider, "provider_id", req.ProviderID)
+
 		tempToken, err := pkg.GenerateTempToken(req.Provider, req.ProviderID)
 		if err != nil {
+			slog.Error("temp token generation failed", "provider", req.Provider, "error", err)
 			return nil, err
 		}
 		return &dto.OauthLoginResponse{
@@ -256,12 +244,16 @@ func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginRes
 	// 기존 유저면 JWT 발급
 	accessToken, err := pkg.GenerateAccessToken(user.ID, user.Username)
 	if err != nil {
+		slog.Error("access token generation failed", "user_id", user.ID, "error", err)
 		return nil, err
 	}
 	refreshToken, err := pkg.GenerateRefreshToken(user.ID, user.Username)
 	if err != nil {
+		slog.Error("refresh token generation failed", "user_id", user.ID, "error", err)
 		return nil, err
 	}
+
+	slog.Info("oauth login success", "user_id", user.ID, "username", user.Username, "provider", req.Provider)
 
 	return &dto.OauthLoginResponse{
 		IsNewUser:    false,
@@ -275,24 +267,29 @@ func (s *authService) OauthLogin(req *dto.OauthLoginRequest) (*dto.OauthLoginRes
 func (s *authService) Refresh(req *dto.RefreshRequest) (*dto.RefreshResponse, error) {
 	claims, err := pkg.ParseRefreshToken(req.RefreshToken)
 	if err != nil {
+		slog.Warn("refresh failed: invalid refresh token", "error", err)
 		return nil, err
 	}
 
 	userid := claims.UserID
 	username := claims.Username
-	_, err = s.userRepo.FindByUsername(username)
-	if err != nil {
+	if _, err := s.userRepo.FindByUsername(username); err != nil {
+		slog.Warn("refresh failed: user not found", "username", username)
 		return nil, errors.New("user not found")
 	}
 
 	accessToken, err := pkg.GenerateAccessToken(userid, username)
 	if err != nil {
+		slog.Error("access token generation failed", "user_id", userid, "error", err)
 		return nil, err
 	}
 	refreshToken, err := pkg.GenerateRefreshToken(userid, username)
 	if err != nil {
+		slog.Error("refresh token generation failed", "user_id", userid, "error", err)
 		return nil, err
 	}
+
+	slog.Info("token refreshed", "user_id", userid, "username", username)
 
 	return &dto.RefreshResponse{
 		AccessToken:  accessToken,

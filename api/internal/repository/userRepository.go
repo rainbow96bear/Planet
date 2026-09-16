@@ -28,8 +28,15 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
+func (r *userRepository) getDB(tx *gorm.DB) *gorm.DB {
+	if tx != nil {
+		return tx
+	}
+	return r.db
+}
+
 func (r *userRepository) CreateUser(tx *gorm.DB, u *model.User) error {
-	return tx.Create(u).Error
+	return r.getDB(tx).Create(u).Error
 }
 
 func (r *userRepository) IsUsernameExists(username string) (bool, error) {
@@ -63,7 +70,7 @@ func (r *userRepository) FindByUserId(userid string) (model.User, error) {
 }
 
 func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
-	return tx.Model(u).Updates(model.User{
+	return r.getDB(tx).Model(u).Updates(model.User{
 		Nickname: u.Nickname,
 	}).Error
 }
@@ -72,7 +79,7 @@ func (r *userRepository) UpdateProfile(tx *gorm.DB, u *model.User) error {
 // 구조체 기반 Updates는 zero value(빈 문자열 등)를 무시하므로,
 // 프로필 이미지 삭제(빈 문자열로 되돌리기) 시 반드시 map 또는 Select를 써야 한다.
 func (r *userRepository) UpdateProfileImage(tx *gorm.DB, userID string, profileImageURL string) error {
-	return tx.Model(&model.User{}).
+	return r.getDB(tx).Model(&model.User{}).
 		Where("id = ?", userID).
 		Update("profile_image", profileImageURL).
 		Error

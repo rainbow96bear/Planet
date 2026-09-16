@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"planet/internal/pkg"
 	"planet/internal/service"
 
@@ -28,7 +27,6 @@ func (h *feedHandler) GetFeed(c *gin.Context) {
 		h.GetExploreFeed(c)
 		return
 	}
-	fmt.Printf("userID : %+v\n", userID)
 	feed, err := h.feedSvc.GetFeed(userID)
 	if err != nil {
 		pkg.Fail(c, 500, "피드를 불러오지 못했습니다")

@@ -51,20 +51,22 @@ func NewUserService(
 	}
 }
 
-// service
 func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileResponse, error) {
 	user, err := s.userRepo.FindByUserId(req.UserId)
 	if err != nil {
+		slog.Error("failed to fetch user profile", "user_id", req.UserId, "error", err)
 		return nil, err
 	}
 
 	gravity, err := s.orbitRepo.CountGravity(req.UserId)
 	if err != nil {
+		slog.Error("failed to count gravity", "user_id", req.UserId, "error", err)
 		return nil, err
 	}
 
 	orbit, err := s.orbitRepo.CountOrbit(req.UserId)
 	if err != nil {
+		slog.Error("failed to count orbit", "user_id", req.UserId, "error", err)
 		return nil, err
 	}
 
@@ -74,6 +76,11 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 	if req.RequesterUserId != "" && !isOwner {
 		isOrbiting, err = s.orbitRepo.IsOrbiting(req.RequesterUserId, req.UserId)
 		if err != nil {
+			slog.Error("failed to check orbit status",
+				"requester_id", req.RequesterUserId,
+				"target_id", req.UserId,
+				"error", err,
+			)
 			return nil, err
 		}
 	}
@@ -90,34 +97,39 @@ func (s *userService) GetProfile(req *dto.GetProfileRequest) (*dto.GetProfileRes
 }
 
 func (s *userService) EnterOrbit(req *dto.EnterOrbitRequest) (*dto.EnterOrbitResponse, error) {
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r) // 롤백 후 패닉을 다시 던져서 상위(recovery 미들웨어)가 처리하도록 함
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		if err := s.orbitRepo.EnterOrbit(tx, &model.Orbit{
+			OrbiterID: req.OrbiterID,
+			OrbitedID: req.OrbitedID,
+		}); err != nil {
+			// unique constraint 위반(정상적인 중복 진입)일 수도, 다른 DB 오류일 수도 있어
+			// 사용자에게는 동일한 메시지를 주되 실제 원인은 남겨둔다.
+			slog.Warn("enter orbit failed",
+				"orbiter_id", req.OrbiterID,
+				"orbited_id", req.OrbitedID,
+				"error", err,
+			)
+			return errors.New("이미 궤도에 진입했습니다")
 		}
-	}()
 
-	if err := s.orbitRepo.EnterOrbit(tx, &model.Orbit{
-		OrbiterID: req.OrbiterID,
-		OrbitedID: req.OrbitedID,
-	}); err != nil {
-		tx.Rollback()
-		return nil, errors.New("이미 궤도에 진입했습니다")
-	}
+		if err := s.notificationRepo.Upsert(tx, &model.Notification{
+			ReceiverID: req.OrbitedID,
+			ActorID:    req.OrbiterID,
+			TargetID:   req.OrbiterID,
+			TargetType: model.NotificationTargetTypeUser,
+			Type:       model.NotificationTypeOrbitEntered,
+		}); err != nil {
+			slog.Error("failed to create orbit notification",
+				"orbiter_id", req.OrbiterID,
+				"orbited_id", req.OrbitedID,
+				"error", err,
+			)
+			return err
+		}
 
-	if err := s.notificationRepo.Upsert(tx, &model.Notification{
-		ReceiverID: req.OrbitedID,
-		ActorID:    req.OrbiterID,
-		TargetID:   req.OrbiterID,
-		TargetType: model.NotificationTargetTypeUser,
-		Type:       model.NotificationTypeOrbitEntered,
-	}); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err := tx.Commit().Error; err != nil {
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -125,30 +137,33 @@ func (s *userService) EnterOrbit(req *dto.EnterOrbitRequest) (*dto.EnterOrbitRes
 }
 
 func (s *userService) LeaveOrbit(req *dto.LeaveOrbitRequest) (*dto.LeaveOrbitResponse, error) {
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r)
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		if err := s.orbitRepo.LeaveOrbit(tx, req.OrbiterID, req.OrbitedID); err != nil {
+			slog.Error("failed to leave orbit",
+				"orbiter_id", req.OrbiterID,
+				"orbited_id", req.OrbitedID,
+				"error", err,
+			)
+			return err
 		}
-	}()
 
-	if err := s.orbitRepo.LeaveOrbit(tx, req.OrbiterID, req.OrbitedID); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
+		if err := s.notificationRepo.DeleteByActorAndTask(
+			tx,
+			req.OrbiterID,
+			req.OrbiterID,
+			model.NotificationTypeOrbitEntered,
+		); err != nil {
+			slog.Error("failed to delete orbit notification",
+				"orbiter_id", req.OrbiterID,
+				"orbited_id", req.OrbitedID,
+				"error", err,
+			)
+			return err
+		}
 
-	if err := s.notificationRepo.DeleteByActorAndTask(
-		tx,
-		req.OrbiterID,
-		req.OrbiterID,
-		model.NotificationTypeOrbitEntered,
-	); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err := tx.Commit().Error; err != nil {
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -156,27 +171,19 @@ func (s *userService) LeaveOrbit(req *dto.LeaveOrbitRequest) (*dto.LeaveOrbitRes
 }
 
 func (s *userService) UpdateProfile(req *dto.UpdateProfileRequest) (*dto.UpdateProfileResponse, error) {
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r)
-		}
-	}()
-
 	user := &model.User{
 		BaseModel: model.BaseModel{ID: req.UserID},
 		Nickname:  req.Nickname,
 	}
 
-	if err := s.userRepo.UpdateProfile(tx, user); err != nil {
-		tx.Rollback()
+	if err := s.db.Transaction(func(tx *gorm.DB) error {
+		return s.userRepo.UpdateProfile(tx, user)
+	}); err != nil {
+		slog.Error("failed to update profile", "user_id", req.UserID, "error", err)
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		return nil, err
-	}
+	slog.Info("profile updated", "user_id", user.ID, "nickname", user.Nickname)
 
 	return &dto.UpdateProfileResponse{
 		UserID:   user.ID,
@@ -189,6 +196,7 @@ func (s *userService) UploadProfileImage(req *dto.UploadProfileImageRequest) (*d
 	// 기존 이미지 URL을 먼저 조회 (업로드 성공 후 이전 파일 정리용)
 	existing, err := s.userRepo.FindByUserId(req.UserID)
 	if err != nil {
+		slog.Error("failed to fetch user for profile image upload", "user_id", req.UserID, "error", err)
 		return nil, err
 	}
 	previousImageURL := existing.ProfileImage
@@ -201,30 +209,18 @@ func (s *userService) UploadProfileImage(req *dto.UploadProfileImageRequest) (*d
 		Size:        req.Size,
 	})
 	if err != nil {
+		slog.Error("profile image upload to storage failed", "user_id", req.UserID, "error", err)
 		return nil, errors.New("이미지 업로드에 실패했습니다")
 	}
 
 	// 2) DB 반영은 트랜잭션으로 처리. UpdateProfileImage는 map 기반이라 빈 문자열도 정확히 반영된다.
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r)
-		}
-	}()
-
-	if err := s.userRepo.UpdateProfileImage(tx, req.UserID, newURL); err != nil {
-		tx.Rollback()
+	if err := s.db.Transaction(func(tx *gorm.DB) error {
+		return s.userRepo.UpdateProfileImage(tx, req.UserID, newURL)
+	}); err != nil {
+		slog.Error("failed to update profile image in db", "user_id", req.UserID, "error", err)
 		// DB 반영 실패 시 방금 업로드한 파일을 정리 (베스트 에포트)
 		if delErr := s.fileStorage.Delete(newURL); delErr != nil {
-			slog.Error("failed to cleanup orphaned profile image after db failure", "url", newURL, "err", delErr)
-		}
-		return nil, err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		if delErr := s.fileStorage.Delete(newURL); delErr != nil {
-			slog.Error("failed to cleanup orphaned profile image after commit failure", "url", newURL, "err", delErr)
+			slog.Error("failed to cleanup orphaned profile image after db failure", "url", newURL, "error", delErr)
 		}
 		return nil, err
 	}
@@ -232,9 +228,11 @@ func (s *userService) UploadProfileImage(req *dto.UploadProfileImageRequest) (*d
 	// 3) 이전 이미지가 있었다면 커밋 성공 후 정리 (실패해도 응답에는 영향 없음 — 베스트 에포트)
 	if previousImageURL != "" && previousImageURL != newURL {
 		if delErr := s.fileStorage.Delete(previousImageURL); delErr != nil {
-			slog.Error("failed to delete previous profile image", "url", previousImageURL, "err", delErr)
+			slog.Error("failed to delete previous profile image", "url", previousImageURL, "error", delErr)
 		}
 	}
+
+	slog.Info("profile image updated", "user_id", req.UserID, "url", newURL)
 
 	return &dto.UploadProfileImageResponse{ProfileImage: newURL}, nil
 }
@@ -242,32 +240,25 @@ func (s *userService) UploadProfileImage(req *dto.UploadProfileImageRequest) (*d
 func (s *userService) DeleteProfileImage(userID string) error {
 	existing, err := s.userRepo.FindByUserId(userID)
 	if err != nil {
+		slog.Error("failed to fetch user for profile image deletion", "user_id", userID, "error", err)
 		return err
 	}
 	if existing.ProfileImage == "" {
 		return nil // 이미 기본 이미지 상태 — 별도 처리 불필요
 	}
 
-	tx := s.db.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			panic(r)
-		}
-	}()
-
-	if err := s.userRepo.UpdateProfileImage(tx, userID, ""); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
+	if err := s.db.Transaction(func(tx *gorm.DB) error {
+		return s.userRepo.UpdateProfileImage(tx, userID, "")
+	}); err != nil {
+		slog.Error("failed to clear profile image in db", "user_id", userID, "error", err)
 		return err
 	}
 
 	if delErr := s.fileStorage.Delete(existing.ProfileImage); delErr != nil {
-		slog.Error("failed to delete profile image file", "url", existing.ProfileImage, "err", delErr)
+		slog.Error("failed to delete profile image file", "url", existing.ProfileImage, "error", delErr)
 	}
+
+	slog.Info("profile image deleted", "user_id", userID)
 
 	return nil
 }
