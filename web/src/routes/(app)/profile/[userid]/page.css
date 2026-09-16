@@ -99,7 +99,6 @@
 	background: var(--surface-alt);
 	color: var(--text-primary);
 }
-/* ── In Orbit / hover 시 Leave Orbit 전환 ── */
 .action-btn.orbiting {
 	position: relative;
 	background: var(--surface);
@@ -137,7 +136,7 @@
 	}
 }
 /* ==========================
-   Calendar
+   Calendar Card
 ========================== */
 .calendar-card {
 	padding: var(--space-2xl);
@@ -145,6 +144,46 @@
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
 }
+/* ==========================
+   Layer Pills
+========================== */
+.layer-pills {
+	display: flex;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-lg);
+}
+.layer-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 32px;
+	padding: 0 14px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	color: var(--text-muted);
+	font-size: 0.8rem;
+	font-weight: 600;
+	font-family: inherit;
+	cursor: pointer;
+	transition:
+		color var(--transition-fast),
+		border-color var(--transition-fast),
+		background var(--transition-fast);
+}
+.layer-pill.active.my {
+	color: var(--planet-primary);
+	border-color: var(--planet-primary);
+	background: rgba(var(--planet-primary-rgb), 0.06);
+}
+.layer-pill.active.orbit {
+	color: var(--text-primary);
+	border-color: var(--text-secondary);
+	background: var(--surface-alt);
+}
+/* ==========================
+   Calendar Nav
+========================== */
 .calendar-nav {
 	display: flex;
 	align-items: center;
@@ -203,8 +242,10 @@
 .calendar-cell {
 	box-sizing: border-box;
 	position: relative;
+	display: flex;
+	flex-direction: column;
 	width: 100%;
-	min-height: 92px;
+	min-height: 64px;
 	padding: var(--space-xs);
 	background: var(--surface);
 	border: 1px solid var(--border);
@@ -241,7 +282,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 6px;
+	margin-bottom: 4px;
 }
 .day-number {
 	color: var(--text-secondary);
@@ -281,39 +322,32 @@
 	opacity: 1;
 }
 /* ==========================
-   Tasks
+   Cell indicators — My(dot) / Orbit(strip)
+   문서 6번: My Schedule은 상세(제목), Orbit Schedule은 시간 영역 중심 압축 표시.
+   월간 칸에서는 둘 다 "있다/없다" 수준의 최소 정보만 보여주고,
+   실제 상세는 Day View(클릭 시)에서 확인한다.
 ========================== */
-.task-list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2xs);
+.my-dot {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-top: auto;
+	border-radius: 50%;
+	background: var(--planet-primary);
 }
-.task-chip {
+.orbit-strip {
 	display: block;
-	padding: 2px 0 2px 6px;
-	border-left: 2px solid var(--planet-primary);
-	background: transparent;
-	border-radius: 0;
-	color: var(--text-secondary);
-	font-size: 0.7rem;
-	line-height: 1.4;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	transition:
-		color var(--transition-fast),
-		border-color var(--transition-fast);
-}
-.task-chip:hover {
-	color: var(--text-primary);
-}
-.task-chip.completed {
-	opacity: 0.55;
-	border-left-color: var(--border);
-	text-decoration: line-through;
+	height: 3px;
+	margin-top: 4px;
+	border-radius: 2px;
+	background: linear-gradient(
+		90deg,
+		rgba(var(--planet-primary-rgb), 0.35),
+		rgba(var(--planet-primary-rgb), 0.15)
+	);
 }
 /* ==========================
-   Responsive
+   Responsive — Month View
 ========================== */
 @media (max-width: 520px) {
 	.profile-container {
@@ -336,10 +370,9 @@
 		gap: 6px;
 	}
 	.calendar-cell {
-		min-height: 76px;
+		min-height: 52px;
 	}
 }
-
 /* ==========================
    Orbit / Gravity stats
 ========================== */
@@ -363,4 +396,319 @@
 .orbit-stat-label {
 	color: var(--text-muted);
 	font-size: 0.72rem;
+}
+
+/* ==========================
+   Day View
+   month↔day 전환은 같은 calendar-card 안에서 일어난다 (Phase 5 설계).
+========================== */
+.day-view {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xl);
+}
+.back-btn {
+	align-self: flex-start;
+	padding: 6px 0;
+	background: transparent;
+	border: none;
+	color: var(--text-primary);
+	font-size: 1rem;
+	font-weight: 700;
+	font-family: inherit;
+	cursor: pointer;
+}
+.back-btn:hover {
+	color: var(--planet-primary);
+}
+.day-section-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 var(--space-md);
+	color: var(--text-primary);
+	font-size: 0.9rem;
+	font-weight: 700;
+}
+.day-section-title .my-dot {
+	margin-top: 0;
+}
+.orbit-dot {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--text-secondary);
+}
+.day-item-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+	list-style: none;
+	margin: 0 0 var(--space-md);
+	padding: 0;
+}
+.day-item {
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+	padding: 0.75rem 0.9rem;
+	background: var(--bg);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	transition:
+		border-color var(--transition-normal),
+		background var(--transition-normal);
+}
+.day-item:hover {
+	border-color: var(--planet-primary);
+}
+.day-item.completed {
+	color: var(--text-muted);
+}
+.day-item.completed .day-item-title {
+	text-decoration: line-through;
+}
+.day-item-time {
+	flex-shrink: 0;
+	color: var(--text-secondary);
+	font-size: 0.78rem;
+	font-variant-numeric: tabular-nums;
+}
+.day-item-title {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 0.9rem;
+	color: inherit;
+}
+/* ---------- Toggle / Delete (My Schedule) ---------- */
+.btn-toggle {
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: transparent;
+	color: var(--planet-primary);
+	font-size: 0.95rem;
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	flex-shrink: 0;
+	transition:
+		color var(--transition-normal),
+		background var(--transition-normal);
+}
+.btn-toggle:hover {
+	background: rgba(var(--planet-primary-rgb), 0.08);
+	color: var(--planet-primary-hover);
+}
+.btn-delete {
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	flex-shrink: 0;
+	transition:
+		color var(--transition-normal),
+		background var(--transition-normal);
+}
+.btn-delete:hover {
+	background: rgba(var(--danger-rgb), 0.08);
+	color: var(--danger);
+}
+.btn-open-add {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	width: 100%;
+	height: 42px;
+	border-radius: var(--radius-md);
+	border: 1px dashed var(--border);
+	background: var(--surface);
+	color: var(--planet-primary);
+	font-size: 0.85rem;
+	font-weight: 600;
+	font-family: inherit;
+	cursor: pointer;
+	transition:
+		border-color var(--transition-normal),
+		background var(--transition-normal),
+		color var(--transition-normal);
+}
+.btn-open-add:hover {
+	border-color: var(--planet-primary);
+	background: rgba(var(--planet-primary-rgb), 0.05);
+}
+.btn-open-add span {
+	font-size: 1rem;
+	line-height: 1;
+}
+
+.orbit-item-detail {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	padding: 0.5rem 0.9rem 0.1rem;
+	color: var(--text-secondary);
+	font-size: 0.82rem;
+}
+.orbit-author {
+	flex-shrink: 0;
+	color: var(--text-primary);
+	font-weight: 600;
+}
+.orbit-title {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+/* ---------- Empty / Error ---------- */
+.empty-msg {
+	margin: 0 0 var(--space-md);
+	padding: var(--space-2xl) var(--space-md);
+	text-align: center;
+	font-size: 0.85rem;
+	color: var(--text-secondary);
+}
+.error-msg {
+	margin: 0 0 var(--space-md);
+	padding: 0.65rem 0.85rem;
+	font-size: 0.8rem;
+	color: var(--danger);
+	background: rgba(var(--danger-rgb), 0.08);
+	border: 1px solid rgba(var(--danger-rgb), 0.18);
+	border-radius: var(--radius-md);
+}
+/* ==========================
+   Responsive — Day View
+========================== */
+@media (max-width: 520px) {
+	.day-item {
+		padding: 0.7rem 0.8rem;
+	}
+	.day-item-title {
+		font-size: 0.875rem;
+	}
+	.orbit-item-summary {
+		padding: 0.55rem 0.8rem;
+	}
+}
+
+/* ==========================
+   Day View — Header + Week Strip
+========================== */
+.day-view-header {
+	display: flex;
+	align-items: center;
+}
+.week-strip {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: var(--space-xs);
+	padding: var(--space-sm) 0 var(--space-lg);
+	border-bottom: 1px solid var(--border);
+}
+.week-strip-day {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 6px 0;
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	transition: background var(--transition-fast);
+}
+.week-strip-day:hover {
+	background: var(--surface-alt);
+}
+.week-strip-dow {
+	color: var(--text-muted);
+	font-size: 0.68rem;
+	font-weight: 600;
+}
+.week-strip-dow.sunday {
+	color: var(--danger);
+}
+.week-strip-dow.saturday {
+	color: var(--planet-primary);
+}
+.week-strip-date {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	color: var(--text-primary);
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+.week-strip-day.selected .week-strip-date {
+	background: var(--planet-primary);
+	color: var(--text-on-dark);
+}
+
+/* ==========================
+   Orbit Timeline — 겹치는 일정을 레인(가로줄)으로 배치
+========================== */
+.orbit-timeline {
+	position: relative;
+	margin-bottom: var(--space-md);
+}
+.orbit-timeline-ruler {
+	position: relative;
+	height: 16px;
+	margin-bottom: 6px;
+}
+.ruler-mark {
+	position: absolute;
+	transform: translateX(-50%);
+	color: var(--text-muted);
+	font-size: 0.65rem;
+	white-space: nowrap;
+}
+.ruler-mark:first-child {
+	transform: translateX(0);
+}
+.ruler-mark:last-child {
+	transform: translateX(-100%);
+}
+.orbit-timeline-track {
+	position: relative;
+	width: 100%;
+	background: var(--surface-alt);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+}
+.orbit-lane-bar {
+	position: absolute;
+	height: 26px;
+	margin-top: 4px;
+	padding: 0;
+	background: linear-gradient(
+		90deg,
+		rgba(var(--planet-primary-rgb), 0.55),
+		rgba(var(--planet-primary-rgb), 0.25)
+	);
+	border: none;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition:
+		filter var(--transition-fast),
+		outline-color var(--transition-fast);
+}
+.orbit-lane-bar:hover {
+	filter: brightness(1.1);
+}
+.orbit-lane-bar.expanded {
+	outline: 2px solid var(--planet-primary);
+	outline-offset: 1px;
 }

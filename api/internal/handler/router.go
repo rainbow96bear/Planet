@@ -56,6 +56,7 @@ func RegisterRoutes(
 			usersProtected.DELETE("/:userid/profile-image", userHandler.DeleteProfileImage)
 			usersProtected.POST("/:userid/orbit", userHandler.EnterOrbit)
 			usersProtected.DELETE("/:userid/orbit", userHandler.LeaveOrbit)
+			usersProtected.GET("/:userid/orbit-schedules", taskHandler.GetOrbitSchedulesByMonth)
 		}
 
 		search := v1.Group("/search")

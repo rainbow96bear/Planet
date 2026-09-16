@@ -27,9 +27,11 @@
 		loading = true;
 		error = '';
 		try {
+			const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 			const task = await createTask({
 				title: title.trim(),
-				date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00:00Z`,
+				start_at: `${dateStr}T00:00:00Z`,
+				end_at: `${dateStr}T23:59:59Z`,
 				is_public: isPublic
 			});
 			onCreated(task);

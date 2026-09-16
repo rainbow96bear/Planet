@@ -14,6 +14,7 @@ type TaskService interface {
 	CreateTask(*dto.CreateTaskRequest) (*dto.CreateTaskResponse, error)
 	DeleteTask(*dto.DeleteTaskRequest) error
 	GetTasksByMonth(*dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error)
+	GetOrbitSchedulesByMonth(req *dto.GetOrbitSchedulesByMonthRequest) ([]*dto.OrbitScheduleResponse, error)
 	ToggleTask(*dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error)
 }
 
@@ -39,43 +40,34 @@ func NewTaskService(
 }
 
 func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskResponse, error) {
-	tx := s.db.Begin()
-	if tx.Error != nil {
-		slog.Error("failed to begin transaction", "user_id", req.UserID, "error", tx.Error)
-		return nil, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
 	task := &model.Task{
 		UserID:      req.UserID,
 		Title:       req.Title,
 		Description: req.Description,
-		Date:        req.Date,
+		StartAt:     req.StartAt,
+		EndAt:       req.EndAt,
 		IsPublic:    req.IsPublic,
 	}
-	if err := s.taskRepo.CreateTask(tx, task); err != nil {
-		tx.Rollback()
-		slog.Error("failed to create task", "user_id", req.UserID, "error", err)
-		return nil, err
-	}
 
-	// TargetID/TargetType → TaskID, UserID → ActorID
-	if err := s.feedRepo.Create(tx, &model.Feed{
-		ActorID: req.UserID,
-		TaskID:  task.ID,
-		Type:    model.TaskCreated,
-	}); err != nil {
-		tx.Rollback()
-		slog.Error("failed to create feed for task", "task_id", task.ID, "user_id", req.UserID, "error", err)
-		return nil, err
-	}
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		if err := s.taskRepo.CreateTask(tx, task); err != nil {
+			slog.Error("failed to create task", "user_id", req.UserID, "error", err)
+			return err
+		}
 
-	if err := tx.Commit().Error; err != nil {
-		slog.Error("failed to commit task creation", "user_id", req.UserID, "error", err)
+		// TargetID/TargetType → TaskID, UserID → ActorID
+		if err := s.feedRepo.Create(tx, &model.Feed{
+			ActorID: req.UserID,
+			TaskID:  task.ID,
+			Type:    model.TaskCreated,
+		}); err != nil {
+			slog.Error("failed to create feed for task", "task_id", task.ID, "user_id", req.UserID, "error", err)
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -85,7 +77,8 @@ func (s *taskService) CreateTask(req *dto.CreateTaskRequest) (*dto.CreateTaskRes
 		ID:          task.ID,
 		Title:       task.Title,
 		Description: task.Description,
-		Date:        task.Date,
+		StartAt:     task.StartAt,
+		EndAt:       task.EndAt,
 		IsCompleted: task.IsCompleted,
 		IsPublic:    task.IsPublic,
 	}, nil
@@ -105,32 +98,25 @@ func (s *taskService) DeleteTask(req *dto.DeleteTaskRequest) error {
 		return errors.New("권한이 없습니다")
 	}
 
-	tx := s.db.Begin()
-	if tx.Error != nil {
-		slog.Error("failed to begin transaction", "task_id", req.ID, "error", tx.Error)
-		return tx.Error
-	}
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		if err := s.taskRepo.DeleteTask(tx, req.ID); err != nil {
+			slog.Error("failed to delete task", "task_id", req.ID, "user_id", req.UserID, "error", err)
+			return err
+		}
 
-	if err := s.taskRepo.DeleteTask(tx, req.ID); err != nil {
-		tx.Rollback()
-		slog.Error("failed to delete task", "task_id", req.ID, "user_id", req.UserID, "error", err)
-		return err
-	}
+		if err := s.feedRepo.DeleteByTaskID(tx, req.ID); err != nil {
+			slog.Error("failed to delete feed for task", "task_id", req.ID, "error", err)
+			return err
+		}
 
-	if err := s.feedRepo.DeleteByTaskID(tx, req.ID); err != nil {
-		tx.Rollback()
-		slog.Error("failed to delete feed for task", "task_id", req.ID, "error", err)
-		return err
-	}
+		if err := s.reactionRepo.DeleteByTaskID(tx, req.ID); err != nil {
+			slog.Error("failed to delete reactions for task", "task_id", req.ID, "error", err)
+			return err
+		}
 
-	if err := s.reactionRepo.DeleteByTaskID(tx, req.ID); err != nil {
-		tx.Rollback()
-		slog.Error("failed to delete reactions for task", "task_id", req.ID, "error", err)
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		slog.Error("failed to commit task deletion", "task_id", req.ID, "error", err)
+		return nil
+	})
+	if err != nil {
 		return err
 	}
 
@@ -158,7 +144,8 @@ func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.G
 			ID:          task.ID,
 			Title:       task.Title,
 			Description: task.Description,
-			Date:        task.Date,
+			StartAt:     task.StartAt,
+			EndAt:       task.EndAt,
 			IsCompleted: task.IsCompleted,
 			IsPublic:    task.IsPublic,
 		}
@@ -166,46 +153,61 @@ func (s *taskService) GetTasksByMonth(req *dto.GetTasksByMonthRequest) ([]*dto.G
 	return result, nil
 }
 
-func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error) {
-	tx := s.db.Begin()
-	if tx.Error != nil {
-		slog.Error("failed to begin transaction", "task_id", req.ID, "error", tx.Error)
-		return nil, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	task, err := s.taskRepo.ToggleTask(tx, req.ID)
+func (s *taskService) GetOrbitSchedulesByMonth(req *dto.GetOrbitSchedulesByMonthRequest) ([]*dto.OrbitScheduleResponse, error) {
+	schedules, err := s.taskRepo.GetOrbitSchedulesByMonth(req.OrbiterID, req.Year, req.Month)
 	if err != nil {
-		tx.Rollback()
-		slog.Error("failed to toggle task", "task_id", req.ID, "error", err)
+		slog.Error("failed to fetch orbit schedules",
+			"orbiter_id", req.OrbiterID,
+			"year", req.Year,
+			"month", req.Month,
+			"error", err,
+		)
 		return nil, err
 	}
+	return schedules, nil
+}
 
-	if task.IsCompleted {
-		if err := s.feedRepo.Create(tx, &model.Feed{
-			ActorID: task.UserID,
-			TaskID:  task.ID,
-			Type:    model.TaskCompleted,
-		}); err != nil {
-			tx.Rollback()
-			slog.Error("failed to create completion feed", "task_id", task.ID, "error", err)
-			return nil, err
-		}
-	} else {
-		// 토글 해제 시 완료 피드 삭제
-		if err := s.feedRepo.DeleteByActorAndTask(tx, task.UserID, task.ID, model.TaskCompleted); err != nil {
-			tx.Rollback()
-			slog.Error("failed to delete completion feed", "task_id", task.ID, "error", err)
-			return nil, err
-		}
+func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error) {
+	existing, err := s.taskRepo.GetTaskByID(req.ID)
+	if err != nil {
+		return nil, errors.New("존재하지 않는 할 일입니다")
+	}
+	if existing.UserID != req.UserID {
+		slog.Warn("unauthorized task toggle attempt",
+			"task_id", req.ID,
+			"owner_id", existing.UserID,
+			"requester_id", req.UserID,
+		)
+		return nil, errors.New("권한이 없습니다")
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		slog.Error("failed to commit task toggle", "task_id", req.ID, "error", err)
+	var task *model.Task
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		toggled, err := s.taskRepo.ToggleTask(tx, req.ID)
+		if err != nil {
+			slog.Error("failed to toggle task", "task_id", req.ID, "error", err)
+			return err
+		}
+		task = toggled
+
+		if task.IsCompleted {
+			if err := s.feedRepo.Create(tx, &model.Feed{
+				ActorID: task.UserID,
+				TaskID:  task.ID,
+				Type:    model.TaskCompleted,
+			}); err != nil {
+				slog.Error("failed to create completion feed", "task_id", task.ID, "error", err)
+				return err
+			}
+		} else {
+			if err := s.feedRepo.DeleteByActorAndTask(tx, task.UserID, task.ID, model.TaskCompleted); err != nil {
+				slog.Error("failed to delete completion feed", "task_id", task.ID, "error", err)
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 

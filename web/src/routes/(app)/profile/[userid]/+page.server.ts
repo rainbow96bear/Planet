@@ -11,11 +11,19 @@ export const load: PageServerLoad = async ({ params, fetch, cookies, parent }) =
 	const year = now.getFullYear();
 	const month = now.getMonth() + 1;
 
+	const isOwner = userid === me?.userid;
 	const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-	const [profileUserRes, tasksRes] = await Promise.all([
+	const [profileUserRes, tasksRes, orbitSchedulesRes] = await Promise.all([
 		fetch(`${GO_API_URL}/api/v1/users/${userid}`, { headers }),
-		fetch(`${GO_API_URL}/api/v1/users/${userid}/tasks?year=${year}&month=${month}`, { headers })
+		fetch(`${GO_API_URL}/api/v1/users/${userid}/tasks?year=${year}&month=${month}`, { headers }),
+		// Orbit Schedule은 본인 프로필에서만 의미가 있다. Backend도 본인 여부를 확인해서
+		// 아니면 403을 주지만, 애초에 다른 사람 프로필에서는 요청 자체를 보내지 않는다.
+		isOwner
+			? fetch(`${GO_API_URL}/api/v1/users/${userid}/orbit-schedules?year=${year}&month=${month}`, {
+					headers
+				})
+			: Promise.resolve(null)
 	]);
 
 	// 프로필 조회는 이 페이지의 핵심 데이터라, 실패하면 여기서 명확히 에러 처리
@@ -30,7 +38,7 @@ export const load: PageServerLoad = async ({ params, fetch, cookies, parent }) =
 		);
 	}
 
-	// tasks는 부가 데이터라, 실패해도 페이지 전체를 죽이지 않고 빈 배열로 대체
+	// tasks / orbitSchedules는 부가 데이터라, 실패해도 페이지 전체를 죽이지 않고 빈 배열로 대체
 	let tasks = [];
 	if (tasksRes.ok) {
 		tasks = await tasksRes.json();
@@ -39,6 +47,16 @@ export const load: PageServerLoad = async ({ params, fetch, cookies, parent }) =
 		console.error(`GetTasksByMonth failed (${tasksRes.status}):`, body);
 	}
 
+	let orbitSchedules = [];
+	if (orbitSchedulesRes) {
+		if (orbitSchedulesRes.ok) {
+			orbitSchedules = await orbitSchedulesRes.json();
+		} else {
+			const body = await orbitSchedulesRes.text();
+			console.error(`GetOrbitSchedulesByMonth failed (${orbitSchedulesRes.status}):`, body);
+		}
+	}
+
 	const profileUser = await profileUserRes.json();
-	return { profileUser, tasks, year, month, me };
+	return { profileUser, tasks, orbitSchedules, year, month, me };
 };
