@@ -16,22 +16,36 @@
 	} = $props();
 	let title = $state('');
 	let isPublic = $state(true);
+	// 기본은 하루 종일(00:00~23:59) — 기존 동작과 동일. 끄면 시간을 직접 지정한다.
+	let allDay = $state(true);
+	let startTime = $state('09:00');
+	let endTime = $state('10:00');
 	let loading = $state(false);
 	let error = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
 	$effect(() => {
 		inputEl?.focus();
 	});
+
+	const dateStr = $derived(
+		`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+	);
+
 	async function handleCreate() {
 		if (!title.trim()) return;
+
+		if (!allDay && startTime >= endTime) {
+			error = '종료 시간은 시작 시간보다 늦어야 합니다.';
+			return;
+		}
+
 		loading = true;
 		error = '';
 		try {
-			const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 			const task = await createTask({
 				title: title.trim(),
-				start_at: `${dateStr}T00:00:00Z`,
-				end_at: `${dateStr}T23:59:59Z`,
+				start_at: allDay ? `${dateStr}T00:00:00Z` : `${dateStr}T${startTime}:00Z`,
+				end_at: allDay ? `${dateStr}T23:59:59Z` : `${dateStr}T${endTime}:00Z`,
 				is_public: isPublic
 			});
 			onCreated(task);
@@ -81,6 +95,34 @@
 				/>
 				<span class="char-count">{title.length}/100</span>
 			</div>
+
+			<label class="toggle-row">
+				<span class="toggle-label">하루 종일</span>
+				<button
+					class="toggle {allDay ? 'on' : ''}"
+					type="button"
+					onclick={() => (allDay = !allDay)}
+					aria-pressed={allDay}
+					aria-label="하루 종일 여부 전환"
+				>
+					<span class="toggle-thumb"></span>
+				</button>
+			</label>
+
+			{#if !allDay}
+				<div class="time-row">
+					<label class="time-field">
+						<span class="time-field-label">시작</span>
+						<input type="time" bind:value={startTime} disabled={loading} />
+					</label>
+					<span class="time-sep">–</span>
+					<label class="time-field">
+						<span class="time-field-label">종료</span>
+						<input type="time" bind:value={endTime} disabled={loading} />
+					</label>
+				</div>
+			{/if}
+
 			<label class="toggle-row">
 				<span class="toggle-label">공개</span>
 				<button
@@ -128,9 +170,6 @@
 		border-radius: var(--radius-lg);
 		box-sizing: border-box;
 	}
-	/* ==========================
-    Header
-    ========================== */
 	.modal-header {
 		display: flex;
 		justify-content: space-between;
@@ -171,9 +210,6 @@
 		background: var(--surface-hover);
 		color: var(--text-primary);
 	}
-	/* ==========================
-    Input
-    ========================== */
 	.input-group {
 		position: relative;
 		margin-bottom: var(--space-lg);
@@ -214,14 +250,11 @@
 		font-size: 0.75rem;
 		pointer-events: none;
 	}
-	/* ==========================
-    Toggle
-    ========================== */
 	.toggle-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: var(--space-xl);
+		margin-bottom: var(--space-md);
 	}
 	.toggle-label {
 		color: var(--text-secondary);
@@ -255,9 +288,43 @@
 	.toggle.on .toggle-thumb {
 		transform: translateX(18px);
 	}
-	/* ==========================
-    Error
-    ========================== */
+	.time-row {
+		display: flex;
+		align-items: flex-end;
+		gap: var(--space-sm);
+		margin-bottom: var(--space-xl);
+	}
+	.time-field {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.time-field-label {
+		color: var(--text-muted);
+		font-size: 0.7rem;
+		font-weight: 600;
+	}
+	.time-field input[type='time'] {
+		width: 100%;
+		height: 38px;
+		padding: 0 10px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-primary);
+		font: inherit;
+		box-sizing: border-box;
+	}
+	.time-field input[type='time']:focus {
+		outline: none;
+		border-color: var(--planet-primary);
+		box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.12);
+	}
+	.time-sep {
+		padding-bottom: 9px;
+		color: var(--text-muted);
+	}
 	.error-msg {
 		margin: 0 0 var(--space-md);
 		padding: var(--space-sm) var(--space-md);
@@ -267,9 +334,6 @@
 		color: var(--danger);
 		font-size: 0.875rem;
 	}
-	/* ==========================
-    Actions
-    ========================== */
 	.modal-actions {
 		display: flex;
 		gap: var(--space-sm);
@@ -316,9 +380,6 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
-	/* ==========================
-    Spinner
-    ========================== */
 	.spinner {
 		width: 14px;
 		height: 14px;
@@ -332,9 +393,6 @@
 			transform: rotate(360deg);
 		}
 	}
-	/* ==========================
-    Responsive
-    ========================== */
 	@media (max-width: 520px) {
 		.modal {
 			padding: var(--space-xl);
