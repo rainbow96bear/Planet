@@ -33,6 +33,7 @@ func RegisterRoutes(
 		tasks.Use(middleware.AuthMiddleware())
 		{
 			tasks.POST("", taskHandler.CreateTask)
+			tasks.PATCH("/:task_id", taskHandler.UpdateTask)
 			tasks.DELETE("/:task_id", taskHandler.DeleteTask)
 			tasks.POST("/:task_id/toggle", taskHandler.ToggleTask)
 

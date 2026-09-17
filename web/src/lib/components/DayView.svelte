@@ -25,6 +25,7 @@
 		onNextWeek,
 		onToggleTask,
 		onDeleteTask,
+		onEditClick,
 		onAddClick,
 		onOrbitRowClick
 	}: {
@@ -45,6 +46,7 @@
 		onNextWeek: () => void;
 		onToggleTask: (task: Task) => void;
 		onDeleteTask: (taskId: string) => void;
+		onEditClick: (task: Task) => void; 
 		onAddClick: (day: number, e: MouseEvent) => void;
 		onOrbitRowClick: (item: OrbitLaneItem) => void;
 	} = $props();
@@ -131,9 +133,8 @@
 							{/if}
 							<span class="day-item-title">{task.title}</span>
 							{#if isOwner}
-								<button class="btn-delete" onclick={() => onDeleteTask(task.id)} title="삭제"
-									>✕</button
-								>
+								<button class="btn-edit" onclick={() => onEditClick(task)} title="수정">✎</button>
+								<button class="btn-delete" onclick={() => onDeleteTask(task.id)} title="삭제">✕</button>
 							{/if}
 						</li>
 					{/each}
@@ -307,6 +308,24 @@
 	.btn-toggle:hover {
 		background: rgba(var(--planet-primary-rgb), 0.08);
 		color: var(--planet-primary-hover);
+	}
+	.btn-edit {
+		width: 24px;
+		height: 24px;
+		border: none;
+		background: transparent;
+		color: var(--text-muted);
+		font-size: 0.85rem;
+		border-radius: var(--radius-sm);
+		cursor: pointer;
+		flex-shrink: 0;
+		transition:
+			color var(--transition-normal),
+			background var(--transition-normal);
+	}
+	.btn-edit:hover {
+		background: rgba(var(--planet-primary-rgb), 0.08);
+		color: var(--planet-primary);
 	}
 	.btn-delete {
 		width: 24px;

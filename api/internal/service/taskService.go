@@ -15,6 +15,7 @@ type TaskService interface {
 	DeleteTask(*dto.DeleteTaskRequest) error
 	GetTasksByMonth(*dto.GetTasksByMonthRequest) ([]*dto.GetTasksByMonthResponse, error)
 	GetOrbitSchedulesByMonth(req *dto.GetOrbitSchedulesByMonthRequest) ([]*dto.OrbitScheduleResponse, error)
+	UpdateTask(req *dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error)
 	ToggleTask(*dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error)
 }
 
@@ -165,6 +166,53 @@ func (s *taskService) GetOrbitSchedulesByMonth(req *dto.GetOrbitSchedulesByMonth
 		return nil, err
 	}
 	return schedules, nil
+}
+
+func (s *taskService) UpdateTask(req *dto.UpdateTaskRequest) (*dto.UpdateTaskResponse, error) {
+	existing, err := s.taskRepo.GetTaskByID(req.ID)
+	if err != nil {
+		return nil, errors.New("존재하지 않는 할 일입니다")
+	}
+	if existing.UserID != req.UserID {
+		slog.Warn("unauthorized task update attempt",
+			"task_id", req.ID,
+			"owner_id", existing.UserID,
+			"requester_id", req.UserID,
+		)
+		return nil, errors.New("권한이 없습니다")
+	}
+
+	updated := &model.Task{
+		BaseModel:   existing.BaseModel,
+		Title:       req.Title,
+		Description: req.Description,
+		StartAt:     req.StartAt,
+		EndAt:       req.EndAt,
+		IsPublic:    req.IsPublic,
+	}
+
+	err = s.db.Transaction(func(tx *gorm.DB) error {
+		if err := s.taskRepo.UpdateTask(tx, updated); err != nil {
+			slog.Error("failed to update task", "task_id", req.ID, "user_id", req.UserID, "error", err)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info("task updated", "task_id", req.ID, "user_id", req.UserID)
+
+	return &dto.UpdateTaskResponse{
+		ID:          existing.ID,
+		Title:       updated.Title,
+		Description: updated.Description,
+		StartAt:     updated.StartAt,
+		EndAt:       updated.EndAt,
+		IsCompleted: existing.IsCompleted,
+		IsPublic:    updated.IsPublic,
+	}, nil
 }
 
 func (s *taskService) ToggleTask(req *dto.ToggleTaskRequest) (*dto.ToggleTaskResponse, error) {

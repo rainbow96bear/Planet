@@ -21,6 +21,26 @@ type CreateTaskResponse struct {
 	IsPublic    bool      `json:"is_public"`
 }
 
+type UpdateTaskRequest struct {
+	ID          string    `json:"-"`
+	UserID      string    `json:"-"`
+	Title       string    `json:"title" binding:"required"`
+	Description string    `json:"description"`
+	StartAt     time.Time `json:"start_at" binding:"required"`
+	EndAt       time.Time `json:"end_at" binding:"required,gtfield=StartAt"`
+	IsPublic    bool      `json:"is_public"`
+}
+
+type UpdateTaskResponse struct {
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	StartAt     time.Time `json:"start_at"`
+	EndAt       time.Time `json:"end_at"`
+	IsCompleted bool      `json:"is_completed"`
+	IsPublic    bool      `json:"is_public"`
+}
+
 type DeleteTaskRequest struct {
 	ID     string `json:"-"`
 	UserID string `json:"-"`

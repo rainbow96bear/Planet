@@ -1,6 +1,8 @@
 import type {
 	CreateTaskBody,
 	CreateTaskResponse,
+	UpdateTaskBody,
+	UpdateTaskResponse,
 	GetTasksByMonthResponse,
 	GetOrbitSchedulesByMonthResponse
 } from '$lib/types/task';
@@ -42,6 +44,24 @@ export const getOrbitSchedulesByMonth = async (
 export const createTask = async (body: CreateTaskBody): Promise<CreateTaskResponse> => {
 	const res = await fetch('/api/v1/tasks', {
 		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body)
+	});
+
+	if (!res.ok) {
+		const err = await res.json();
+		throw new Error(err.error ?? '서버 오류');
+	}
+
+	return res.json();
+};
+
+export const updateTask = async (
+	taskId: string,
+	body: UpdateTaskBody
+): Promise<UpdateTaskResponse> => {
+	const res = await fetch(`/api/v1/tasks/${taskId}`, {
+		method: 'PATCH',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body)
 	});

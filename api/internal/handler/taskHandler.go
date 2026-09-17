@@ -11,6 +11,7 @@ import (
 type TaskHandler interface {
 	CreateTask(c *gin.Context)
 	DeleteTask(c *gin.Context)
+	UpdateTask(c *gin.Context)
 	GetTasksByMonth(c *gin.Context)
 	GetOrbitSchedulesByMonth(c *gin.Context)
 	ToggleTask(c *gin.Context)
@@ -112,6 +113,26 @@ func (h *taskHandler) GetOrbitSchedulesByMonth(c *gin.Context) {
 	}
 
 	pkg.Success(c, 200, schedules)
+}
+
+func (h *taskHandler) UpdateTask(c *gin.Context) {
+	taskID := c.Param("task_id")
+
+	var req dto.UpdateTaskRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.Fail(c, 400, err.Error())
+		return
+	}
+	req.ID = taskID
+	req.UserID = c.GetString("userID")
+
+	task, err := h.taskSvc.UpdateTask(&req)
+	if err != nil {
+		pkg.Fail(c, 500, err.Error())
+		return
+	}
+
+	pkg.Success(c, 200, task)
 }
 
 func (h *taskHandler) ToggleTask(c *gin.Context) {

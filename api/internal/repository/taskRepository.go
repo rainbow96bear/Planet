@@ -11,6 +11,7 @@ import (
 type TaskRepository interface {
 	CreateTask(tx *gorm.DB, task *model.Task) error
 	DeleteTask(tx *gorm.DB, taskId string) error
+	UpdateTask(tx *gorm.DB, task *model.Task) error
 	GetTaskByID(taskId string) (*model.Task, error)
 	GetTasksByMonth(userid string, year, month int, isOwner bool) ([]*model.Task, error)
 	GetOrbitSchedulesByMonth(orbiterID string, year, month int) ([]*dto.OrbitScheduleResponse, error)
@@ -34,6 +35,15 @@ func (r *taskRepository) getDB(tx *gorm.DB) *gorm.DB {
 
 func (r *taskRepository) CreateTask(tx *gorm.DB, task *model.Task) error {
 	return r.getDB(tx).Create(task).Error
+}
+
+// UpdateTask는 Title/Description/StartAt/EndAt/IsPublic만 갱신한다.
+// UserID/IsCompleted/DeletedAt 등은 이 경로로 바뀌지 않도록 Select로 컬럼을 한정한다.
+func (r *taskRepository) UpdateTask(tx *gorm.DB, task *model.Task) error {
+	return r.getDB(tx).Model(&model.Task{}).
+		Where("id = ?", task.ID).
+		Select("Title", "Description", "StartAt", "EndAt", "IsPublic").
+		Updates(task).Error
 }
 
 func (r *taskRepository) DeleteTask(tx *gorm.DB, taskId string) error {

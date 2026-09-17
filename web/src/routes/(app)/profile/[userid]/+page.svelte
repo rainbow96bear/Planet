@@ -40,11 +40,16 @@
 	// 실제 selectedDay는 스트립에서 날짜를 직접 클릭해야 바뀐다 — 둘러보기와 확정을 분리.
 	let weekAnchorDate = $state<Date>(new Date());
 	let addDay = $state<number | null>(null);
+	// 수정 모드로 열린 일정. 있으면 AddTaskModal이 수정 모드로 렌더링된다.
+	let editingTask = $state<Task | null>(null);
 	// 클릭한 Orbit 행 — 이 값이 있으면 상세 모달이 열린다.
 	let activeOrbitItem = $state<OrbitLaneItem | null>(null);
 
 	const orbitCount = $derived(data.profileUser.orbit ?? 0);
 	const gravityCount = $derived(data.profileUser.gravity ?? 0);
+	const modalYear = $derived(editingTask ? new Date(editingTask.start_at).getFullYear() : year);
+	const modalMonth = $derived(editingTask ? new Date(editingTask.start_at).getMonth() + 1 : month);
+	const modalDay = $derived(editingTask ? new Date(editingTask.start_at).getDate() : (addDay ?? 1));
 
 	$effect(() => {
 		tasks = Array.isArray(data.tasks) ? data.tasks : [];
@@ -213,8 +218,12 @@
 		}
 	}
 
-	function handleTaskCreated(task: Task) {
-		tasks = [...tasks, task];
+	function handleTaskSaved(task: Task) {
+		tasks = [...tasks.filter((t) => t.id !== task.id), task];
+	}
+
+	function handleEditClick(task: Task) {
+		editingTask = task;
 	}
 
 	// 문서 6번 정책: 일정은 시작일(start_at) 기준 셀/리스트에만 표시한다.
@@ -322,13 +331,17 @@
 	</div>
 </div>
 
-{#if addDay !== null}
+{#if addDay !== null || editingTask !== null}
 	<AddTaskModal
-		day={addDay}
-		{year}
-		{month}
-		onClose={() => (addDay = null)}
-		onCreated={handleTaskCreated}
+		day={modalDay}
+		year={modalYear}
+		month={modalMonth}
+		task={editingTask ?? undefined}
+		onClose={() => {
+			addDay = null;
+			editingTask = null;
+		}}
+		onSaved={handleTaskSaved}
 	/>
 {/if}
 

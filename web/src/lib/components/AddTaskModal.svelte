@@ -1,25 +1,37 @@
 <script lang="ts">
 	import type { Task } from '$lib/types/task';
-	import { createTask } from '$lib/api/task';
+	import { createTask, updateTask } from '$lib/api/task';
 	let {
 		day,
 		year,
 		month,
+		task,
 		onClose,
-		onCreated
+		onSaved
 	}: {
 		day: number;
 		year: number;
 		month: number;
+		// task가 있으면 수정 모드, 없으면 기존과 동일한 생성 모드.
+		task?: Task;
 		onClose: () => void;
-		onCreated: (task: Task) => void;
+		onSaved: (task: Task) => void;
 	} = $props();
-	let title = $state('');
-	let isPublic = $state(true);
-	// 기본은 하루 종일(00:00~23:59) — 기존 동작과 동일. 끄면 시간을 직접 지정한다.
-	let allDay = $state(true);
-	let startTime = $state('09:00');
-	let endTime = $state('10:00');
+
+	const isEditMode = task !== undefined;
+
+	function timeOf(iso: string) {
+		const d = new Date(iso);
+		return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+	}
+
+	let title = $state(task?.title ?? '');
+	let isPublic = $state(task?.is_public ?? true);
+	let allDay = $state(
+		task ? timeOf(task.start_at) === '00:00' && timeOf(task.end_at) === '23:59' : true
+	);
+	let startTime = $state(task && !allDay ? timeOf(task.start_at) : '09:00');
+	let endTime = $state(task && !allDay ? timeOf(task.end_at) : '10:00');
 	let loading = $state(false);
 	let error = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
@@ -31,7 +43,7 @@
 		`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 	);
 
-	async function handleCreate() {
+	async function handleSubmit() {
 		if (!title.trim()) return;
 
 		if (!allDay && startTime >= endTime) {
@@ -42,16 +54,17 @@
 		loading = true;
 		error = '';
 		try {
-			const task = await createTask({
+			const body = {
 				title: title.trim(),
 				start_at: allDay ? `${dateStr}T00:00:00Z` : `${dateStr}T${startTime}:00Z`,
 				end_at: allDay ? `${dateStr}T23:59:59Z` : `${dateStr}T${endTime}:00Z`,
 				is_public: isPublic
-			});
-			onCreated(task);
+			};
+			const saved = isEditMode ? await updateTask(task!.id, body) : await createTask(body);
+			onSaved(saved);
 			onClose();
 		} catch {
-			error = '추가에 실패했습니다.';
+			error = isEditMode ? '수정에 실패했습니다.' : '추가에 실패했습니다.';
 		} finally {
 			loading = false;
 		}
@@ -74,7 +87,7 @@
 	<div class="modal">
 		<div class="modal-header">
 			<span class="modal-date">
-				<span class="label">할 일 추가</span>
+				<span class="label">{isEditMode ? '할 일 수정' : '할 일 추가'}</span>
 				<span class="sub">{year}년 {month}월 {day}일</span>
 			</span>
 			<button class="modal-close" onclick={onClose}>✕</button>
@@ -137,11 +150,11 @@
 			</label>
 			<div class="modal-actions">
 				<button class="btn-cancel" onclick={onClose} disabled={loading}>취소</button>
-				<button class="btn-submit" onclick={handleCreate} disabled={loading || !title.trim()}>
+				<button class="btn-submit" onclick={handleSubmit} disabled={loading || !title.trim()}>
 					{#if loading}
 						<span class="spinner"></span>
 					{:else}
-						추가
+						{isEditMode ? '저장' : '추가'}
 					{/if}
 				</button>
 			</div>

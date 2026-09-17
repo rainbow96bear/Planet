@@ -54,3 +54,16 @@ export interface OrbitOverlapGroup {
 	rangeEndMin: number;
 	schedules: OrbitSchedule[];
 }
+
+// UpdateTaskBody — CreateTaskBody와 필드는 동일하지만 별도 타입으로 둔다.
+// 의미가 "새 일정 생성"과 "기존 일정 수정"으로 다르고, 나중에 필드가 갈라질
+// 여지도 있어서 처음부터 구분해뒀다.
+export interface UpdateTaskBody {
+	title: string;
+	description?: string;
+	start_at: string;
+	end_at: string;
+	is_public: boolean;
+}
+
+export type UpdateTaskResponse = Task;
