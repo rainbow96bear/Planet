@@ -36,7 +36,6 @@
 		return Array.from(seen.values());
 	}
 
-
 	const participants = $derived(dedupeParticipants(schedules));
 	const visibleParticipants = $derived(participants.slice(0, 5));
 	const overflowCount = $derived(Math.max(participants.length - 5, 0));
@@ -113,7 +112,8 @@
 				</div>
 				<div class="density-labels">
 					{#each [0, 6, 12, 18, 23] as bucketGroup (bucketGroup)}
-						<span>{String(Math.floor((bucketGroup * bucketMinutes) / 60)).padStart(2, '0')}:00</span>
+						<span>{String(Math.floor((bucketGroup * bucketMinutes) / 60)).padStart(2, '0')}:00</span
+						>
 					{/each}
 				</div>
 			</div>
