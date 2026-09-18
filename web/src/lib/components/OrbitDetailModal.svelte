@@ -111,7 +111,8 @@
 				</div>
 				<div class="density-labels">
 					{#each [0, 6, 12, 18, 23] as bucketGroup}
-						<span>{String(Math.floor((bucketGroup * bucketMinutes) / 60)).padStart(2, '0')}:00</span>
+						<span>{String(Math.floor((bucketGroup * bucketMinutes) / 60)).padStart(2, '0')}:00</span
+						>
 					{/each}
 				</div>
 			</div>

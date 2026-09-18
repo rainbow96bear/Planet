@@ -46,7 +46,7 @@
 		onNextWeek: () => void;
 		onToggleTask: (task: Task) => void;
 		onDeleteTask: (taskId: string) => void;
-		onEditClick: (task: Task) => void; 
+		onEditClick: (task: Task) => void;
 		onAddClick: (day: number, e: MouseEvent) => void;
 		onOrbitRowClick: (item: OrbitLaneItem) => void;
 	} = $props();
@@ -134,7 +134,9 @@
 							<span class="day-item-title">{task.title}</span>
 							{#if isOwner}
 								<button class="btn-edit" onclick={() => onEditClick(task)} title="수정">✎</button>
-								<button class="btn-delete" onclick={() => onDeleteTask(task.id)} title="삭제">✕</button>
+								<button class="btn-delete" onclick={() => onDeleteTask(task.id)} title="삭제"
+									>✕</button
+								>
 							{/if}
 						</li>
 					{/each}
