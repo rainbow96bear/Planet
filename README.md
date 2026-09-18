@@ -55,25 +55,29 @@
 - Backend 로그 시스템 구축
 - Reaction(좋아요 · 응원) API
 - CI 파이프라인 (GitHub Actions, dev/main 브랜치 검증)
+- 캘린더 일정 Layer — My Schedule / Orbit Schedule 분리, Layer별 독립 ON/OFF, Date Detail(주간 스트립 + 시간순 뷰)
+- 일정 수정(Edit) 기능
 
 ### 🚧 진행 중
-- 캘린더 일정 Layer — My Schedule / Orbit Schedule 분리 및 ON/OFF 토글
+_(현재 진행 중인 작업 없음 — 다음 계획 1번부터 순서대로 착수 예정)_
 
 ### 🔮 다음 계획
-- Orbit / Gravity 목록 보기
-- 회원 탈퇴 (Soft Delete 설계)
-- 피드 UI 개선 및 request/response 구조 개선
-- 일정 시작/종료 시간 변경 시에만 Feed 발행되도록 개선
-- 겹치는 시간 찾기 · 반복 일정 · 공개 캘린더 링크 공유
+
+1. Orbit / Gravity 목록 보기
+2. 회원 탈퇴 (Soft Delete 설계)
+3. 피드 UI 개선 및 request/response 구조 개선
+4. 일정 시작/종료 시간 변경 시에만 Feed 발행되도록 개선
+5. 겹치는 시간 찾기
+6. 반복 일정
+7. 공개 캘린더 링크 공유
+8. 주간 리캡
 
 ---
 
 ## 🐛 기술적으로 다뤄본 문제들
 
-- **pgx + PgBouncer `prepared statement already exists`** — Supabase PgBouncer(트랜잭션 풀링 모드)와 pgx의 prepared statement 캐싱 충돌(SQLSTATE 42P05) → `PreferSimpleProtocol` 옵션으로 해결
-- **Feed 조회 N+1 쿼리** — 좋아요/응원 수 집계 시 반복 쿼리 발생 → PostgreSQL `FILTER` / `BOOL_OR` 집계로 단일 쿼리 재설계
-- **Soft Delete 연쇄 삭제 이슈** — 삭제 정책이 다른 Task/Feed/Reaction 간 연쇄 삭제 시 트랜잭션 누락으로 비공개 Task 노출 버그 발견 → 트랜잭션으로 다단계 삭제 정합성 보장
-- **Cloud Run 배포 시 Go 버전 호환성 문제** — Go 1.24 환경에서 Gin / `golang.org/x/net` 버전 비호환 → 의존성 버전 조정으로 정상화
+- **Feed 조회 N+1 쿼리 제거** — 좋아요/응원 수를 Feed 항목마다 별도 쿼리로 집계하던 구조를 PostgreSQL의 `FILTER`/`BOOL_OR` 집계 함수로 재설계해, Feed 목록 조회를 단일 쿼리로 통합. Feed 개수에 비례해 늘어나던 쿼리 수를 O(N)에서 O(1)로 줄여 응답 지연을 개선했다.
+- **Soft Delete 연쇄 삭제 시 트랜잭션 정합성 확보** — Task 삭제 시 연관된 Feed/Reaction이 별도 쿼리로 순차 삭제되던 구조에서, 중간 실패 시 Task는 삭제됐지만 Feed는 남아 비공개 데이터가 계속 노출되는 버그를 발견. 삭제 로직 전체를 하나의 DB 트랜잭션으로 묶어 부분 삭제로 인한 데이터 정합성 문제를 원천 차단했다.
 
 ---
 
