@@ -73,7 +73,7 @@
 		if (e.target === e.currentTarget) onClose();
 	}
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter') handleCreate();
+		if (e.key === 'Enter') handleSubmit();
 		if (e.key === 'Escape') onClose();
 	}
 </script>

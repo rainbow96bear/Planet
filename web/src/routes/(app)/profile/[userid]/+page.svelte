@@ -324,6 +324,7 @@
 				onNextWeek={goToNextWeek}
 				onToggleTask={handleToggleTask}
 				onDeleteTask={handleDeleteTask}
+				onEditClick={handleEditClick}
 				onAddClick={openAddModal}
 				onOrbitRowClick={openOrbitDetail}
 			/>
