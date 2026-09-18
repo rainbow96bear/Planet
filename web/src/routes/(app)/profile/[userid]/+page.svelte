@@ -1,46 +1,85 @@
 <script lang="ts">
-	import { getTasksByMonth } from '$lib/api/task';
+	import { getTasksByMonth, getOrbitSchedulesByMonth, deleteTask, toggleTask } from '$lib/api/task';
 	import { enterOrbit, leaveOrbit } from '$lib/api/user';
-	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
-	import type { Task } from '$lib/types/task';
-	import TaskModal from '$lib/components/TaskModal.svelte';
+	import type { Task, OrbitSchedule, OrbitLaneItem } from '$lib/types/task';
+	import ProfileHeader from '$lib/components/ProfileHeader.svelte';
+	import MonthCalendar from '$lib/components/MonthCalendar.svelte';
+	import DayView from '$lib/components/DayView.svelte';
 	import AddTaskModal from '$lib/components/AddTaskModal.svelte';
+	import OrbitDetailModal from '$lib/components/OrbitDetailModal.svelte';
+	import { shiftDate } from '$lib/utils/date';
+	import { DAY_MINUTES, startMinutes, endMinutesClamped } from '$lib/utils/schedule';
 	import './page.css';
 	import { page } from '$app/stores';
+
+	const BUCKET_MINUTES = 30;
 
 	let { data }: { data: PageData } = $props();
 	const userid = $derived($page.params.userid || '');
 	const isOwner = $derived(userid === data.me?.userid);
 	let tasks = $state<Task[]>(Array.isArray(data.tasks) ? data.tasks : []);
+	let orbitSchedules = $state<OrbitSchedule[]>(
+		Array.isArray(data.orbitSchedules) ? data.orbitSchedules : []
+	);
 	let year = $state(data.year);
 	let month = $state(data.month);
 	let loading = $state(false);
 	let isOrbiting = $state(data.profileUser.is_orbiting ?? false);
 	let orbitLoading = $state(false);
+	let dayViewError = $state('');
 
-	// Orbit(내가 궤도를 도는 대상 수) / Gravity(나를 궤도로 끌어들인 사람 수)는
-	// 이미 GetProfile 응답(/api/v1/users/:userid)에 포함되어 있어 별도 요청이 필요 없다.
+	// Layer ON/OFF — 조회와 분리된 순수 표시 상태 (문서 9번 원칙)
+	let myLayerOn = $state(true);
+	let orbitLayerOn = $state(true);
+
+	// 월간 캘린더 ↔ 특정 날짜 상세(Day View) 전환.
+	let viewMode = $state<'month' | 'day'>('month');
+	let selectedDay = $state<number | null>(null);
+	// Day View의 주간 스트립이 보여주는 "기준 주". prev/next week 이동은 이것만 바꾸고,
+	// 실제 selectedDay는 스트립에서 날짜를 직접 클릭해야 바뀐다 — 둘러보기와 확정을 분리.
+	let weekAnchorDate = $state<Date>(new Date());
+	let addDay = $state<number | null>(null);
+	// 수정 모드로 열린 일정. 있으면 AddTaskModal이 수정 모드로 렌더링된다.
+	let editingTask = $state<Task | null>(null);
+	// 클릭한 Orbit 행 — 이 값이 있으면 상세 모달이 열린다.
+	let activeOrbitItem = $state<OrbitLaneItem | null>(null);
+
 	const orbitCount = $derived(data.profileUser.orbit ?? 0);
 	const gravityCount = $derived(data.profileUser.gravity ?? 0);
-
-	let selectedDay = $state<number | null>(null);
-	let addDay = $state<number | null>(null);
+	const modalYear = $derived(editingTask ? new Date(editingTask.start_at).getFullYear() : year);
+	const modalMonth = $derived(editingTask ? new Date(editingTask.start_at).getMonth() + 1 : month);
+	const modalDay = $derived(editingTask ? new Date(editingTask.start_at).getDate() : (addDay ?? 1));
 
 	$effect(() => {
 		tasks = Array.isArray(data.tasks) ? data.tasks : [];
+		orbitSchedules = Array.isArray(data.orbitSchedules) ? data.orbitSchedules : [];
 	});
 
-	// 다른 유저 프로필로 이동(userid 변경)했을 때, 이전 프로필에서 쓰던
-	// year/month/isOrbiting이 그대로 남아있지 않도록 새로 내려온
-	// 서버 데이터로 다시 맞춘다. (prevMonth/nextMonth로 인한 로컬 변경은
-	// userid가 그대로라 이 effect가 다시 실행되지 않아 덮어써지지 않는다.)
 	$effect(() => {
 		void userid;
 		year = data.year;
 		month = data.month;
 		isOrbiting = data.profileUser.is_orbiting ?? false;
+		myLayerOn = true;
+		orbitLayerOn = true;
+		viewMode = 'month';
+		selectedDay = null;
 	});
+
+	async function fetchMonth(targetYear: number, targetMonth: number) {
+		loading = true;
+		try {
+			const [newTasks, newOrbitSchedules] = await Promise.all([
+				getTasksByMonth(userid, targetYear, targetMonth),
+				isOwner ? getOrbitSchedulesByMonth(userid, targetYear, targetMonth) : Promise.resolve([])
+			]);
+			tasks = newTasks;
+			orbitSchedules = newOrbitSchedules;
+		} finally {
+			loading = false;
+		}
+	}
 
 	async function prevMonth() {
 		if (month === 1) {
@@ -49,9 +88,7 @@
 		} else {
 			month -= 1;
 		}
-		loading = true;
-		tasks = await getTasksByMonth(userid, year, month);
-		loading = false;
+		await fetchMonth(year, month);
 	}
 
 	async function nextMonth() {
@@ -61,9 +98,100 @@
 		} else {
 			month += 1;
 		}
-		loading = true;
-		tasks = await getTasksByMonth(userid, year, month);
-		loading = false;
+		await fetchMonth(year, month);
+	}
+
+	function openDayView(day: number) {
+		selectedDay = day;
+		weekAnchorDate = new Date(year, month - 1, day);
+		viewMode = 'day';
+		activeOrbitItem = null;
+		dayViewError = '';
+	}
+
+	function backToMonth() {
+		viewMode = 'month';
+		selectedDay = null;
+	}
+
+	async function selectDateInStrip(d: Date) {
+		const targetYear = d.getFullYear();
+		const targetMonth = d.getMonth() + 1;
+		const targetDay = d.getDate();
+
+		if (targetYear !== year || targetMonth !== month) {
+			year = targetYear;
+			month = targetMonth;
+			await fetchMonth(year, month);
+		}
+
+		selectedDay = targetDay;
+		weekAnchorDate = d;
+		activeOrbitItem = null;
+		dayViewError = '';
+	}
+
+	function goToPrevWeek() {
+		weekAnchorDate = shiftDate(weekAnchorDate, -7);
+	}
+
+	function goToNextWeek() {
+		weekAnchorDate = shiftDate(weekAnchorDate, 7);
+	}
+
+	// 특정 시간 구간과 겹치는 스케줄만 모은다 (Orbit 상세 모달용).
+	function getOverlappingSchedules(
+		schedules: OrbitSchedule[],
+		rangeStart: number,
+		rangeEnd: number
+	): OrbitSchedule[] {
+		return schedules.filter((s) => {
+			const start = startMinutes(s.start_at);
+			const end = Math.max(endMinutesClamped(s.start_at, s.end_at), start + 1);
+			return start < rangeEnd && end > rangeStart;
+		});
+	}
+
+	// 하루를 30분 단위 버킷으로 나눠, 각 구간에 몇 개의 Orbit 일정이 걸쳐있는지 센다.
+	function computeDensityBuckets(schedules: OrbitSchedule[]): number[] {
+		const bucketCount = DAY_MINUTES / BUCKET_MINUTES;
+		const density = new Array(bucketCount).fill(0);
+		for (const s of schedules) {
+			const start = startMinutes(s.start_at);
+			const end = Math.max(endMinutesClamped(s.start_at, s.end_at), start + 1);
+			const startBucket = Math.floor(start / BUCKET_MINUTES);
+			const endBucket = Math.ceil(end / BUCKET_MINUTES);
+			for (let b = startBucket; b < endBucket && b < bucketCount; b++) {
+				density[b]++;
+			}
+		}
+		return density;
+	}
+
+	function openOrbitDetail(item: OrbitLaneItem) {
+		activeOrbitItem = item;
+	}
+
+	function closeOrbitDetail() {
+		activeOrbitItem = null;
+	}
+
+	async function handleDeleteTask(taskId: string) {
+		try {
+			await deleteTask(taskId);
+			tasks = tasks.filter((t) => t.id !== taskId);
+		} catch {
+			dayViewError = '삭제에 실패했습니다.';
+		}
+	}
+
+	async function handleToggleTask(task: Task) {
+		try {
+			await toggleTask(task.id);
+			tasks = tasks.map((t) => (t.id === task.id ? { ...t, is_completed: !t.is_completed } : t));
+		} catch {
+			dayViewError = '변경에 실패했습니다.';
+		}
 	}
 
 	async function handleEnterOrbit() {
@@ -90,41 +218,25 @@
 		}
 	}
 
-	// 삭제 콜백: 페이지 tasks에서 제거
-	function handleTaskDeleted(taskId: string) {
-		tasks = tasks.filter((t) => t.id !== taskId);
+	function handleTaskSaved(task: Task) {
+		tasks = [...tasks.filter((t) => t.id !== task.id), task];
 	}
 
-	// 토글 콜백: 페이지 tasks에서 완료 상태 반전
-	function handleTaskToggled(taskId: string) {
-		tasks = tasks.map((t) => (t.id === taskId ? { ...t, is_completed: !t.is_completed } : t));
+	function handleEditClick(task: Task) {
+		editingTask = task;
 	}
 
-	const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
-	function getCalendarDays(year: number, month: number) {
-		const firstDay = new Date(year, month - 1, 1).getDay();
-		const lastDate = new Date(year, month, 0).getDate();
-		const days: (number | null)[] = [];
-		for (let i = 0; i < firstDay; i++) days.push(null);
-		for (let i = 1; i <= lastDate; i++) days.push(i);
-		return days;
-	}
-
+	// 문서 6번 정책: 일정은 시작일(start_at) 기준 셀/리스트에만 표시한다.
 	function getTasksForDay(day: number) {
-		return tasks.filter((t) => new Date(t.date).getDate() === day);
+		return tasks
+			.filter((t) => new Date(t.start_at).getDate() === day)
+			.sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
 	}
 
-	function getTodayDay() {
-		const now = new Date();
-		if (now.getFullYear() === year && now.getMonth() + 1 === month) {
-			return now.getDate();
-		}
-		return null;
-	}
-
-	function openTaskModal(day: number) {
-		selectedDay = day;
+	function getOrbitSchedulesForDay(day: number) {
+		return orbitSchedules
+			.filter((s) => new Date(s.start_at).getDate() === day)
+			.sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime());
 	}
 
 	function openAddModal(day: number, e: MouseEvent) {
@@ -132,167 +244,115 @@
 		addDay = day;
 	}
 
-	function handleAddClick() {
-		if (selectedDay !== null) {
-			addDay = selectedDay;
-		}
-	}
-
-	function handleTaskCreated(task: Task) {
-		tasks = [...tasks, task];
-	}
-
-	function handleCellKeydown(e: KeyboardEvent, day: number) {
-		if (e.key === 'Enter' || e.key === ' ') {
-			e.preventDefault();
-			openTaskModal(day);
-		}
-	}
+	const orbitOverlapGroup = $derived(
+		activeOrbitItem && selectedDay !== null
+			? getOverlappingSchedules(
+					getOrbitSchedulesForDay(selectedDay),
+					activeOrbitItem.startMin,
+					activeOrbitItem.endMin
+				)
+			: []
+	);
+	const orbitDensityBuckets = $derived(
+		selectedDay !== null ? computeDensityBuckets(getOrbitSchedulesForDay(selectedDay)) : []
+	);
 </script>
 
 <div class="profile-container">
-	<div class="profile-header">
-		<div class="profile-image">
-			{#if data.profileUser.profile_image}
-				<img
-					src={data.profileUser.profile_image}
-					alt="{data.profileUser.nickname}님의 프로필 이미지"
-					class="profile-image-photo"
-				/>
-			{:else}
-				<span class="profile-image-placeholder">🪐</span>
-			{/if}
-		</div>
-		<div class="profile-info">
-			<h1 class="profile-nickname">{data.profileUser.nickname}</h1>
-			<span class="profile-username">@{data.profileUser.username}</span>
-
-			<div class="orbit-stats">
-				<span class="orbit-stat">
-					<strong>{orbitCount}</strong>
-					<span class="orbit-stat-label">Orbit</span>
-				</span>
-				<span class="orbit-stat">
-					<strong>{gravityCount}</strong>
-					<span class="orbit-stat-label">Gravity</span>
-				</span>
-			</div>
-		</div>
-
-		<div class="profile-actions">
-			{#if isOwner}
-				<a href={resolve('/settings/profile')} class="action-btn secondary">
-					<svg
-						width="14"
-						height="14"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-					</svg>
-					프로필 수정
-				</a>
-			{:else if orbitLoading}
-				<button class="action-btn primary" disabled aria-label="처리 중">
-					<span class="spinner"></span>
-				</button>
-			{:else if isOrbiting}
-				<button class="action-btn orbiting" onclick={handleLeaveOrbit}>
-					<span class="btn-text-default">In Orbit</span>
-					<span class="btn-text-hover">Leave Orbit</span>
-				</button>
-			{:else}
-				<button class="action-btn primary" onclick={handleEnterOrbit}> Enter Orbit </button>
-			{/if}
-		</div>
-	</div>
+	<ProfileHeader
+		profileUser={data.profileUser}
+		{orbitCount}
+		{gravityCount}
+		{isOwner}
+		{isOrbiting}
+		{orbitLoading}
+		onEnterOrbit={handleEnterOrbit}
+		onLeaveOrbit={handleLeaveOrbit}
+	/>
 
 	<div class="calendar-card">
-		<div class="calendar-nav">
-			<button class="nav-btn" onclick={prevMonth} disabled={loading}>◀</button>
-			<span class="calendar-title">{year}년 {month}월</span>
-			<button class="nav-btn" onclick={nextMonth} disabled={loading}>▶</button>
+		<div class="layer-pills">
+			<button
+				class="layer-pill {myLayerOn ? 'active my' : ''}"
+				onclick={() => (myLayerOn = !myLayerOn)}
+				aria-pressed={myLayerOn}
+			>
+				{#if myLayerOn}✓{/if} My Schedule
+			</button>
+			{#if isOwner}
+				<button
+					class="layer-pill {orbitLayerOn ? 'active orbit' : ''}"
+					onclick={() => (orbitLayerOn = !orbitLayerOn)}
+					aria-pressed={orbitLayerOn}
+				>
+					{#if orbitLayerOn}✓{/if} Orbit Schedule
+				</button>
+			{/if}
 		</div>
 
-		{#if loading}
-			<div class="calendar-loading">불러오는 중...</div>
-		{:else}
-			<div class="calendar-grid">
-				{#each DAYS as day (day)}
-					<div class="calendar-day-header">{day}</div>
-				{/each}
-
-				{#each getCalendarDays(year, month) as day, i (i)}
-					{@const isToday = day === getTodayDay()}
-					{#if day === null}
-						<div class="calendar-cell empty" aria-hidden="true"></div>
-					{:else}
-						<div
-							class="calendar-cell {isToday ? 'today' : ''}"
-							role="button"
-							tabindex="0"
-							onclick={() => openTaskModal(day)}
-							onkeydown={(e) => handleCellKeydown(e, day)}
-						>
-							<div class="cell-top">
-								<span
-									class="day-number {i % 7 === 0
-										? 'sunday'
-										: i % 7 === 6
-											? 'saturday'
-											: ''} {isToday ? 'today-number' : ''}"
-								>
-									{day}
-								</span>
-								{#if isOwner}
-									<button
-										class="add-task-btn"
-										onclick={(e) => openAddModal(day, e)}
-										title="할 일 추가"
-										aria-label="할 일 추가">+</button
-									>
-								{/if}
-							</div>
-							<div class="task-list">
-								{#each getTasksForDay(day) as task (task.id)}
-									<div class="task-chip {task.is_completed ? 'completed' : ''}">
-										{task.title}
-									</div>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				{/each}
-			</div>
+		{#if viewMode === 'month'}
+			<MonthCalendar
+				{year}
+				{month}
+				{loading}
+				{isOwner}
+				{myLayerOn}
+				{orbitLayerOn}
+				{getTasksForDay}
+				{getOrbitSchedulesForDay}
+				onPrevMonth={prevMonth}
+				onNextMonth={nextMonth}
+				onDayClick={openDayView}
+				onAddClick={openAddModal}
+			/>
+		{:else if selectedDay !== null}
+			<DayView
+				{year}
+				{month}
+				{selectedDay}
+				{weekAnchorDate}
+				myTasksForDay={getTasksForDay(selectedDay)}
+				orbitSchedulesForDay={getOrbitSchedulesForDay(selectedDay)}
+				{isOwner}
+				{myLayerOn}
+				{orbitLayerOn}
+				{dayViewError}
+				activeOrbitScheduleId={activeOrbitItem?.schedule.id ?? null}
+				onBack={backToMonth}
+				onSelectDate={selectDateInStrip}
+				onPrevWeek={goToPrevWeek}
+				onNextWeek={goToNextWeek}
+				onToggleTask={handleToggleTask}
+				onDeleteTask={handleDeleteTask}
+				onEditClick={handleEditClick}
+				onAddClick={openAddModal}
+				onOrbitRowClick={openOrbitDetail}
+			/>
 		{/if}
 	</div>
 </div>
 
-{#if selectedDay !== null && addDay === null}
-	<TaskModal
-		day={selectedDay}
-		{year}
-		{month}
-		tasks={getTasksForDay(selectedDay)}
-		{isOwner}
-		onClose={() => (selectedDay = null)}
-		onAddClick={handleAddClick}
-		onDeleted={handleTaskDeleted}
-		onToggled={handleTaskToggled}
+{#if addDay !== null || editingTask !== null}
+	<AddTaskModal
+		day={modalDay}
+		year={modalYear}
+		month={modalMonth}
+		task={editingTask ?? undefined}
+		onClose={() => {
+			addDay = null;
+			editingTask = null;
+		}}
+		onSaved={handleTaskSaved}
 	/>
 {/if}
 
-{#if addDay !== null}
-	<AddTaskModal
-		day={addDay}
-		{year}
-		{month}
-		onClose={() => (addDay = null)}
-		onCreated={handleTaskCreated}
+{#if activeOrbitItem}
+	<OrbitDetailModal
+		schedules={orbitOverlapGroup}
+		rangeStartMin={activeOrbitItem.startMin}
+		rangeEndMin={activeOrbitItem.endMin}
+		densityBuckets={orbitDensityBuckets}
+		bucketMinutes={BUCKET_MINUTES}
+		onClose={closeOrbitDetail}
 	/>
 {/if}

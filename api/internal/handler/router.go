@@ -33,6 +33,7 @@ func RegisterRoutes(
 		tasks.Use(middleware.AuthMiddleware())
 		{
 			tasks.POST("", taskHandler.CreateTask)
+			tasks.PATCH("/:task_id", taskHandler.UpdateTask)
 			tasks.DELETE("/:task_id", taskHandler.DeleteTask)
 			tasks.POST("/:task_id/toggle", taskHandler.ToggleTask)
 
@@ -56,6 +57,7 @@ func RegisterRoutes(
 			usersProtected.DELETE("/:userid/profile-image", userHandler.DeleteProfileImage)
 			usersProtected.POST("/:userid/orbit", userHandler.EnterOrbit)
 			usersProtected.DELETE("/:userid/orbit", userHandler.LeaveOrbit)
+			usersProtected.GET("/:userid/orbit-schedules", taskHandler.GetOrbitSchedulesByMonth)
 		}
 
 		search := v1.Group("/search")

@@ -1,41 +1,70 @@
 <script lang="ts">
 	import type { Task } from '$lib/types/task';
-	import { createTask } from '$lib/api/task';
+	import { createTask, updateTask } from '$lib/api/task';
 	let {
 		day,
 		year,
 		month,
+		task,
 		onClose,
-		onCreated
+		onSaved
 	}: {
 		day: number;
 		year: number;
 		month: number;
+		// task가 있으면 수정 모드, 없으면 기존과 동일한 생성 모드.
+		task?: Task;
 		onClose: () => void;
-		onCreated: (task: Task) => void;
+		onSaved: (task: Task) => void;
 	} = $props();
-	let title = $state('');
-	let isPublic = $state(true);
+
+	const isEditMode = task !== undefined;
+
+	function timeOf(iso: string) {
+		const d = new Date(iso);
+		return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+	}
+
+	let title = $state(task?.title ?? '');
+	let isPublic = $state(task?.is_public ?? true);
+	let allDay = $state(
+		task ? timeOf(task.start_at) === '00:00' && timeOf(task.end_at) === '23:59' : true
+	);
+	let startTime = $state(task && !allDay ? timeOf(task.start_at) : '09:00');
+	let endTime = $state(task && !allDay ? timeOf(task.end_at) : '10:00');
 	let loading = $state(false);
 	let error = $state('');
 	let inputEl = $state<HTMLInputElement | null>(null);
 	$effect(() => {
 		inputEl?.focus();
 	});
-	async function handleCreate() {
+
+	const dateStr = $derived(
+		`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+	);
+
+	async function handleSubmit() {
 		if (!title.trim()) return;
+
+		if (!allDay && startTime >= endTime) {
+			error = '종료 시간은 시작 시간보다 늦어야 합니다.';
+			return;
+		}
+
 		loading = true;
 		error = '';
 		try {
-			const task = await createTask({
+			const body = {
 				title: title.trim(),
-				date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00:00Z`,
+				start_at: allDay ? `${dateStr}T00:00:00Z` : `${dateStr}T${startTime}:00Z`,
+				end_at: allDay ? `${dateStr}T23:59:59Z` : `${dateStr}T${endTime}:00Z`,
 				is_public: isPublic
-			});
-			onCreated(task);
+			};
+			const saved = isEditMode ? await updateTask(task!.id, body) : await createTask(body);
+			onSaved(saved);
 			onClose();
 		} catch {
-			error = '추가에 실패했습니다.';
+			error = isEditMode ? '수정에 실패했습니다.' : '추가에 실패했습니다.';
 		} finally {
 			loading = false;
 		}
@@ -44,7 +73,7 @@
 		if (e.target === e.currentTarget) onClose();
 	}
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter') handleCreate();
+		if (e.key === 'Enter') handleSubmit();
 		if (e.key === 'Escape') onClose();
 	}
 </script>
@@ -58,7 +87,7 @@
 	<div class="modal">
 		<div class="modal-header">
 			<span class="modal-date">
-				<span class="label">할 일 추가</span>
+				<span class="label">{isEditMode ? '할 일 수정' : '할 일 추가'}</span>
 				<span class="sub">{year}년 {month}월 {day}일</span>
 			</span>
 			<button class="modal-close" onclick={onClose}>✕</button>
@@ -79,6 +108,34 @@
 				/>
 				<span class="char-count">{title.length}/100</span>
 			</div>
+
+			<label class="toggle-row">
+				<span class="toggle-label">하루 종일</span>
+				<button
+					class="toggle {allDay ? 'on' : ''}"
+					type="button"
+					onclick={() => (allDay = !allDay)}
+					aria-pressed={allDay}
+					aria-label="하루 종일 여부 전환"
+				>
+					<span class="toggle-thumb"></span>
+				</button>
+			</label>
+
+			{#if !allDay}
+				<div class="time-row">
+					<label class="time-field">
+						<span class="time-field-label">시작</span>
+						<input type="time" bind:value={startTime} disabled={loading} />
+					</label>
+					<span class="time-sep">–</span>
+					<label class="time-field">
+						<span class="time-field-label">종료</span>
+						<input type="time" bind:value={endTime} disabled={loading} />
+					</label>
+				</div>
+			{/if}
+
 			<label class="toggle-row">
 				<span class="toggle-label">공개</span>
 				<button
@@ -93,11 +150,11 @@
 			</label>
 			<div class="modal-actions">
 				<button class="btn-cancel" onclick={onClose} disabled={loading}>취소</button>
-				<button class="btn-submit" onclick={handleCreate} disabled={loading || !title.trim()}>
+				<button class="btn-submit" onclick={handleSubmit} disabled={loading || !title.trim()}>
 					{#if loading}
 						<span class="spinner"></span>
 					{:else}
-						추가
+						{isEditMode ? '저장' : '추가'}
 					{/if}
 				</button>
 			</div>
@@ -126,9 +183,6 @@
 		border-radius: var(--radius-lg);
 		box-sizing: border-box;
 	}
-	/* ==========================
-    Header
-    ========================== */
 	.modal-header {
 		display: flex;
 		justify-content: space-between;
@@ -169,9 +223,6 @@
 		background: var(--surface-hover);
 		color: var(--text-primary);
 	}
-	/* ==========================
-    Input
-    ========================== */
 	.input-group {
 		position: relative;
 		margin-bottom: var(--space-lg);
@@ -212,14 +263,11 @@
 		font-size: 0.75rem;
 		pointer-events: none;
 	}
-	/* ==========================
-    Toggle
-    ========================== */
 	.toggle-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: var(--space-xl);
+		margin-bottom: var(--space-md);
 	}
 	.toggle-label {
 		color: var(--text-secondary);
@@ -253,9 +301,43 @@
 	.toggle.on .toggle-thumb {
 		transform: translateX(18px);
 	}
-	/* ==========================
-    Error
-    ========================== */
+	.time-row {
+		display: flex;
+		align-items: flex-end;
+		gap: var(--space-sm);
+		margin-bottom: var(--space-xl);
+	}
+	.time-field {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.time-field-label {
+		color: var(--text-muted);
+		font-size: 0.7rem;
+		font-weight: 600;
+	}
+	.time-field input[type='time'] {
+		width: 100%;
+		height: 38px;
+		padding: 0 10px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-primary);
+		font: inherit;
+		box-sizing: border-box;
+	}
+	.time-field input[type='time']:focus {
+		outline: none;
+		border-color: var(--planet-primary);
+		box-shadow: 0 0 0 3px rgba(var(--planet-primary-rgb), 0.12);
+	}
+	.time-sep {
+		padding-bottom: 9px;
+		color: var(--text-muted);
+	}
 	.error-msg {
 		margin: 0 0 var(--space-md);
 		padding: var(--space-sm) var(--space-md);
@@ -265,9 +347,6 @@
 		color: var(--danger);
 		font-size: 0.875rem;
 	}
-	/* ==========================
-    Actions
-    ========================== */
 	.modal-actions {
 		display: flex;
 		gap: var(--space-sm);
@@ -314,9 +393,6 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
-	/* ==========================
-    Spinner
-    ========================== */
 	.spinner {
 		width: 14px;
 		height: 14px;
@@ -330,9 +406,6 @@
 			transform: rotate(360deg);
 		}
 	}
-	/* ==========================
-    Responsive
-    ========================== */
 	@media (max-width: 520px) {
 		.modal {
 			padding: var(--space-xl);
